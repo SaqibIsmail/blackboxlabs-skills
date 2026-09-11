@@ -62,10 +62,27 @@ pipeline.
    later (its new spec is written as a delta against this baseline, not from scratch). Skip
    entirely for a genuinely greenfield epic — nothing to mine.
 5. **UI check**: ask whether a UI/design idea already exists (mockup, Figma, reference
-   screenshot, or none yet).
-   - If none exists: propose a design spike ticket first (e.g. "Design: `<page/flow>` layout and
-     states") — functional tickets for that surface wait on it, or proceed with an explicit
+   screenshot/site, or none yet).
+   - **No idea exists**: propose a design spike ticket first (e.g. "Design: `<page/flow>` layout
+     and states") — functional tickets for that surface wait on it, or proceed with an explicit
      placeholder noted as a follow-up risk if the user prefers to unblock now.
+   - **An idea exists *with a concrete reference*** (a live site, an existing component, an
+     animation seen somewhere) — **always** propose a separate research spike first, never let
+     the build ticket "just match the reference" from memory. Motive (Saqib's own): given only a
+     description of a reference, a coding agent approximates it differently every time instead of
+     reproducing the actual technique. The research spike's job: inspect the reference for real
+     (live site: read its actual DOM/CSS/JS, computed styles, animation timing/easing, and
+     network requests for the libraries it loads — this session's own browser tools are the
+     model for what that inspection looks like; an existing component: read its real source, not
+     just how it looks) and write up the *actual mechanism* — library used, exact CSS
+     properties/keyframes, DOM structure, state transitions — then map that mechanism onto this
+     project's own stack (what's already available, what's missing, the concrete
+     component/file it becomes here). The build ticket that implements the effect is created
+     *after* and depends on this spike, and reads its findings instead of re-guessing from the
+     original reference. Log the mapping via `log-decision` once written, so the grounding isn't
+     lost if the build ticket runs in a separate session.
+   - **An idea exists with no concrete reference** (a verbal description only): no research spike
+     needed — proceeds straight into the feature/ticket split below.
 6. **Decide the feature split**: does this epic need one `plan-feature` pass or several (e.g. a
    "notifications" epic → "email notifications" + "in-app notifications" as separate spec-kit
    features)? Call `/plan-feature` once per identified feature (via the `Skill` tool, a real
@@ -120,6 +137,12 @@ shared-scoped, just as one axis of a richer split, not the only one).
    location regardless of project, or does that path come from `PROJECT.md` (so a project using a
    different spec layout still works)? Also: does a mined baseline ever get re-mined later if the
    existing code changes again before the epic ships, or is it a one-time snapshot per capability?
+6. Step 5's research spike needs a concrete deliverable format — is the reference's mechanism
+   written directly in the ticket description, a linked file in the repo, or a `log-decision`
+   entry the ticket just links to (consistent with the back-link convention above)? Also needs a
+   concrete "how to inspect a live reference" mechanism named — this session's own browser tools
+   are the model, but the actual coding agent picking up that spike ticket later needs a named,
+   available equivalent in its own environment, not just "go look at it."
 
 ## TODOs (block turning this into a real `SKILL.md`)
 
