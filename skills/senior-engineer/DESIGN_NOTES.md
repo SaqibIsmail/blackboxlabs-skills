@@ -83,7 +83,12 @@ pipeline.
    feature/spec they come from. Ask "does this capture it? what's wrong?" Iterate until confirmed.
 9. **Create tickets** via `jira-integration` (or delegate to spec-kit's `/speckit.taskstoissues`
    for the `github-issues` backend), each linked to the parent epic and to its originating
-   `spec.md`/`plan.md`.
+   `spec.md`/`plan.md`. **Each ticket's description also embeds the path/link to its relevant
+   `log-decision` entry (entries)** — the epic's decision file from `define-epic` and, if this
+   ticket's feature has its own, `plan-feature`'s entry too — using the path `log-decision`
+   returned when it wrote them (see `log-decision/DESIGN_NOTES.md`'s "Ticket ↔ decision
+   back-link"). Without this, a ticket in Jira has no way back to why it was scoped the way it
+   was.
 10. Call `log-decision` if the investigation surfaced a non-obvious scoping call (e.g. "epic split
     into two features because X" or "deferred Y as a separate spike because Z").
 

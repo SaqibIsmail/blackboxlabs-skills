@@ -74,9 +74,24 @@ can call it directly mid-conversation:
 ## Modes
 
 - **Write** — append a new decision file, or (if `status: superseded` applies) mark a prior file
-  superseded and link forward to the new one, never silently overwrite.
-- **Query** — given a feature name (or ticket ref), return the decision(s) on record for it,
-  most recent first.
+  superseded and link forward to the new one, never silently overwrite. **Always returns the
+  written file's path** (`<vault_path>/<decisions_subpath>/NNNN-<slug>.md`) to the caller — this
+  is the mechanism that lets `senior-engineer` embed a link back to the decision in each ticket it
+  creates (see "Ticket ↔ decision back-link," below). Not an afterthought: the return value is
+  part of this skill's contract, same as any other skill's declared output.
+- **Query** — given a feature name (or ticket ref), return the decision(s) on record for it, most
+  recent first — each result includes its file path, for the same reason.
+
+## Ticket ↔ decision back-link
+
+Two-way linking, not just one direction. `ticket-refs` in the frontmatter above already points
+*from* a decision file *to* its tickets. The reverse must also hold: every ticket
+`senior-engineer` creates embeds a path/link *back* to the relevant decision file(s) (the epic's
+entry from `define-epic`, and the feature's entry from `plan-feature`, whichever apply) in its
+description — the same traceability convention already planned for linking a ticket to its
+`spec.md`/`plan.md`, just extended to cover the Obsidian decision log too. Without this, someone
+reading a ticket in Jira has no way back to *why* it was scoped the way it was — only someone
+reading the Obsidian side would see the tickets it produced.
 
 ## Vault initialization (resolves open question 2, below)
 
