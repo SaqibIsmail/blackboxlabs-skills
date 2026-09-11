@@ -68,9 +68,11 @@ pipeline.
      placeholder noted as a follow-up risk if the user prefers to unblock now.
 6. **Decide the feature split**: does this epic need one `plan-feature` pass or several (e.g. a
    "notifications" epic → "email notifications" + "in-app notifications" as separate spec-kit
-   features)? Call `/plan-feature` once per identified feature to produce
-   `specs/<feature>/{spec.md,plan.md,tasks.md}` via spec-kit — handing it any baseline spec from
-   step 4 as input, for the features it applies to.
+   features)? Call `/plan-feature` once per identified feature (via the `Skill` tool, a real
+   sub-invocation — resolves open question 3, below), **passing along as context**: `define-epic`'s
+   Phase 1–2 answers, this skill's own investigation findings from step 3, and any baseline spec
+   from step 4. `plan-feature` only interviews about what that context leaves unanswered — it does
+   not re-ask scope/non-goals already covered at the epic level.
 7. **Right-size into tickets**: walk each feature's `tasks.md`, and using the right-sizing
    judgment above, group or split spec-kit's `T0xx` tasks into tickets small enough that a coding
    agent implementing one doesn't also have to hold an unrelated concern in its head (structure
@@ -101,10 +103,10 @@ shared-scoped, just as one axis of a richer split, not the only one).
 2. If step 5 finds no UI idea and the user wants to proceed anyway (not block on a design spike) —
    does this skill create placeholder/best-guess UI tickets, or explicitly tag them "needs design
    input" and let `build-frontend` surface that gap later?
-3. Does this skill call `/plan-feature` as a literal sub-invocation (via the `Skill` tool) per
-   feature, or does it need to inline a slimmed-down version of `plan-feature`'s own interview to
-   avoid the "duplicate questions" risk already flagged in both `plan-feature` and `define-epic`'s
-   open questions? Whichever is chosen here has to match what those two files decide.
+3. ~~Does this skill call `/plan-feature` as a literal sub-invocation...~~ **Resolved
+   (2026-09-11):** yes, a literal sub-invocation via the `Skill` tool — "smart hand-off," not
+   inlining. See step 6, above. `plan-feature` and `define-epic`'s own open questions updated to
+   match.
 4. Confidence/reversibility of ticket right-sizing — if the user disagrees with a specific split
    after tickets are already filed (step 8 confirmed it, but real usage surfaces a bad split
    later), is there a "merge these two tickets" / "split this one further" follow-up mode, or does
@@ -116,8 +118,9 @@ shared-scoped, just as one axis of a richer split, not the only one).
 
 ## TODOs (block turning this into a real `SKILL.md`)
 
-1. Resolve open question 3 first — it determines whether this skill depends on `plan-feature` at
-   runtime or duplicates part of it.
+1. ~~Resolve open question 3 first...~~ Resolved above. Remaining: write the exact shape of the
+   context object passed to `/plan-feature` in step 6 (a structured handoff, or just prose in the
+   invocation prompt?).
 2. Read BMAD's `bmad-create-epics-and-stories`, ECC's `jira-integration`, and ECC's `spec-miner`
    skill files in full (already excerpted during source selection) and write the concrete
    ticket-template fields (title format, description sections, type mapping) before finalizing.

@@ -46,10 +46,10 @@ cherry-picked here. Phases 3–5 are covered elsewhere in this pipeline, in its 
 
 ## Open questions
 
-1. Overlap with `plan-feature`'s own interview (scope, non-goals) — since `plan-feature` now runs
-   *underneath* an epic (per-feature), does it re-ask anything this skill already answered? Needs
-   the same "don't ask near-duplicate questions twice" resolution `plan-feature`'s own open
-   question 1 already flags, just one level higher up.
+1. ~~Overlap with `plan-feature`'s own interview...~~ **Resolved (2026-09-11):** "smart hand-off"
+   — `senior-engineer` passes this skill's Phase 1–2 answers to `plan-feature` as pre-filled
+   context; `plan-feature` only asks about what that leaves unanswered. See
+   `plan-feature/DESIGN_NOTES.md` and `senior-engineer/DESIGN_NOTES.md` step 3.
 2. What does an "epic" concretely look like when `ticketing.system: none`? A single markdown file
    at a fixed path (`epics/<slug>.md`) that `senior-engineer` and any spawned `plan-feature` calls
    read for context?

@@ -5,10 +5,14 @@ Status: design drafted (architecture agreed via plan review 2026-09-10); not yet
 
 **Updated 2026-09-11:** this skill now runs *underneath* an epic, called once per feature by
 `senior-engineer` (an epic may decompose into several features) rather than being invoked
-directly from a bare ask. See `define-epic/DESIGN_NOTES.md` and
-`senior-engineer/DESIGN_NOTES.md` — both flag the same open risk this file's own open question 1
-already named: near-duplicate interview questions across the epic → feature → clarify chain.
-Not yet resolved; affects all three files together.
+directly from a bare ask.
+
+**Resolved (2026-09-11): epic → feature duplicate-question risk.** Decided "smart hand-off" —
+`senior-engineer` passes this skill everything `define-epic` and its own investigation already
+learned (see Sequence step 3, below) as pre-filled context, not just the epic name. This skill's
+own interview (Sequence step 3) only asks about what that context leaves genuinely unanswered.
+This does **not** resolve this file's own open question 1 below, which is a separate, narrower
+overlap (this skill's interview vs. spec-kit's own `/speckit.clarify` step) — still open.
 
 ## What this is
 
@@ -42,13 +46,19 @@ different jobs:
 2. Check `log-decision` for any prior entry on this feature (a resume, not a fresh start, if one
    exists — same "resume, don't restart" courtesy `build-frontend`'s `shape` step gives page
    revisions).
-3. Interview: don't assume — ask about scope, users/audience for this specific feature, explicit
-   non-goals, and anything spec-kit's own `/speckit.clarify` step would otherwise have to guess
-   at later. This is the hard requirement from the original ask ("asks questions on what I want
-   to build") — the skill should refuse to silently assume major scope.
-4. Drive `/speckit.specify` → `/speckit.clarify` → `/speckit.plan` to produce
+3. **Read the handed-off context** — when called by `senior-engineer`, this includes: the epic's
+   `define-epic` answers (who/what/why/scope/non-goals/MVP-cut), anything `senior-engineer`'s own
+   code investigation already found, and a mined baseline spec if `spec-miner` ran. Treat this as
+   already-answered, not a prompt to re-verify by re-asking.
+4. Interview: don't assume — ask only about what step 3's context left genuinely unanswered:
+   scope/audience/non-goals specific to *this* feature (not already covered at the epic level),
+   and anything spec-kit's own `/speckit.clarify` step would otherwise have to guess at later.
+   The hard requirement from the original ask ("asks questions on what I want to build") still
+   holds — this skill refuses to silently assume major scope — it just doesn't re-ask what's
+   already known.
+5. Drive `/speckit.specify` → `/speckit.clarify` → `/speckit.plan` to produce
    `specs/<feature>/{spec.md,plan.md}`.
-5. Call `log-decision` (write) once `plan.md` is finalized — first entry for this feature: scope,
+6. Call `log-decision` (write) once `plan.md` is finalized — first entry for this feature: scope,
    chosen approach, explicit non-goals.
 
 ## Open questions
