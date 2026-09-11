@@ -31,11 +31,20 @@ firing on PR review comment events, invoking this skill via `claude-code-action`
 2. **Consult `log-decision`** for this feature/PR — read before editing anything. If a prior
    decision entry explains *why* the flagged code is the way it is, that's the deciding context
    for step 3.
-3. Decide, informed by BMAD-METHOD's `bmad-code-review` adversarial-review *technique*
-   (cherry-picked as a validation lens, not the actual reviewer agents) — specifically its
-   "Verification Gap" discipline (would a test actually catch this if it's real?) and its
-   "claims-check only after path-tracing" discipline (verify the code's actual behavior before
-   trusting the comment's framing, and before trusting the decision log's framing either):
+3. Decide, informed by an adversarial-review *technique* as a validation lens (not the actual
+   reviewer agents) — originally scoped to BMAD-METHOD's `bmad-code-review`: its "Verification
+   Gap" discipline (would a test actually catch this if it's real?) and its "claims-check only
+   after path-tracing" discipline (verify the code's actual behavior before trusting the
+   comment's framing, and before trusting the decision log's framing either). **Two stronger/
+   broader candidates found after that scoping, both needing the same read-the-actual-file
+   treatment BMAD's got before picking one:** `obra/superpowers` (284.8k★) dispatches code review
+   to a subagent given only precisely-crafted context — never the coordinator's own session
+   history — which maps well onto this skill's own "read the comment fresh, don't inherit bias
+   from however the PR conversation went" need. `garrytan/gstack` (132.5k★) covers 8 specialist
+   review categories (api-contract, data-migration, maintainability, performance, red-team,
+   security, simplification, testing) versus BMAD's 2 (edge-case-hunter, verification-gap) —
+   broader, but reportedly more coupled to its author's own infra (telemetry, a custom
+   AskUserQuestion decision-brief format), so may cherry-pick less cleanly. See open question 4.
    - **The comment is valid** → fix it, following the project's own coding standards.
    - **The comment is already addressed by a recorded decision** → reply explaining why, citing
      the specific decision entry, and re-trigger review (mirrors the exact manual step already
@@ -56,9 +65,15 @@ firing on PR review comment events, invoking this skill via `claude-code-action`
 3. Re-triggering a Greptile review from an Actions-run agent — needs confirming the actual
    mechanism (commenting on the PR, per `hosting.md`'s existing manual instructions) is something
    `claude-code-action`'s permissions allow it to do on its own, not just read comments.
+4. BMAD vs superpowers vs gstack for the validation-lens technique in step 3 — not settled; the
+   plan this repo's owner approved named BMAD specifically, so swapping needs their sign-off, not
+   a unilateral pick, even though superpowers' star count and isolated-context dispatch pattern
+   look like a better fit on paper.
 
 ## TODOs (block turning this into a real `SKILL.md`)
 
 1. Resolve open question 3 — a real permissions/mechanism check, not a design preference.
 2. Write the actual GitHub Actions workflow YAML this skill's `SETUP.md` will tell people to add
    to their target repo.
+3. Resolve open question 4 — read `obra/superpowers`' code-review-dispatch skill and
+   `garrytan/gstack`'s `review` skill in full (not just their descriptions) before finalizing.
