@@ -14,19 +14,26 @@ real addition spec-kit doesn't provide on its own.
 spec-kit's own templates — `/speckit.implement` carries no dev persona at all; it just drives
 whatever generic agent runs it through `tasks.md` in order, and its own docs mark tests as
 "OPTIONAL... only if explicitly requested." Originally scoped to cherry-pick from BMAD-METHOD's
-`bmad-agent-dev` (persona "Amelia") for this — a genuine test-first discipline: red, green,
-refactor, tied to acceptance-criterion IDs. **Superseded by a stronger candidate found after
-that scoping: `obra/superpowers` (284.8k★ — over 5x BMAD's 52.9k★).** Its
-`test-driven-development` skill enforces TDD as a stated "Iron Law" with harder mechanical
-guardrails than BMAD's persona-based approach: delete any code written before its test existed,
-a mandatory watch-the-test-fail step (never trust a test you haven't seen fail first), and an
-explicit anti-rationalization table naming specific excuses ("I'll test after," etc.) and
-refusing them. It also has a separate `verification-before-completion` skill — a hard gate
-forbidding any success/completion claim without pasting fresh command output in the same turn —
-which is a real, independently useful addition to this skill's own Step 6 ("present to user").
-Both need weighing against BMAD's version (see open question 4) before this is finalized — not
-a settled swap yet, since the plan this repo's owner approved specifically named BMAD and this
-is a real change to that, not just an implementation detail.
+`bmad-agent-dev` (persona "Amelia"); **decided (2026-09-10, after reading both sources'
+actual skill files, not just descriptions) to use `obra/superpowers` instead** (284.8k★ — over
+5x BMAD's 52.9k★). Its `skills/test-driven-development/SKILL.md`, read in full: an "Iron Law" —
+**"NO PRODUCTION CODE WITHOUT A FAILING TEST FIRST"** — with any code written before its test
+required to be deleted and reimplemented ("delete means delete," no keeping it "as reference");
+a mandatory watch-the-test-fail step ("MANDATORY. Never skip.") to prove the test actually
+detects the missing behavior; and a named anti-rationalization table ("too simple to test,"
+"I'll test after," "already manually tested," "keep as reference") that each trigger a restart
+rather than an exception. Confirmed this skill is **purely procedural/generic — it has no
+concept of an acceptance-criterion ID**, unlike BMAD's version which is naturally spec-kit-aware.
+So this pipeline adds that bridge itself: superpowers' mechanical rules (Iron Law, watch-fail,
+anti-rationalization, delete-means-delete) are the enforcement; *this* skill is what ties each
+test to the `spec.md` acceptance-criterion ID it's meant to satisfy, since neither source does
+that on its own.
+
+Also adopting `skills/verification-before-completion/SKILL.md` (read in full) for this skill's
+own Step 6: **"NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE"** — identify the
+verification command, run it fresh, read the full output (exit code, failure count), confirm it
+actually supports the claim, only then state it. No hedging language ("should," "probably"), no
+trusting a sub-agent's self-report without independently re-running the command.
 
 ## Command
 
@@ -51,9 +58,11 @@ is a real change to that, not just an implementation detail.
 5. **Call `log-decision`** — only if a non-obvious deviation from `plan.md` actually happened
    during implementation, same fuzzy-by-design trigger as `build-frontend`'s own entry in the
    `log-decision` design notes.
-6. **Present to user** — summary of tasks completed, tests written, and anything skipped/deviated
-   with why; leave unstaged for review, same as `build-frontend`'s and `page-builder`'s existing
-   "don't commit, this is for review first" convention.
+6. **Present to user** — per `verification-before-completion`: run the real verification command
+   (the project's test suite, at minimum) fresh, read its actual output, and only then state
+   which tasks are done — never "should be passing." Summary of tasks completed, tests written,
+   and anything skipped/deviated with why; leave unstaged for review, same as `build-frontend`'s
+   and `page-builder`'s existing "don't commit, this is for review first" convention.
 
 ## Open questions
 
@@ -68,23 +77,20 @@ is a real change to that, not just an implementation detail.
    entirely on `resolve-pr-comments` + Greptile downstream to catch issues?
 3. TDD discipline assumes `spec.md` actually has acceptance criteria with IDs stable enough to
    tie tests to — needs confirming spec-kit's real `/speckit.specify` output always produces
-   these in a consistent, parseable format (not verified yet, only assumed from BMAD's side of
-   the equation).
-4. **BMAD's `bmad-agent-dev` vs `obra/superpowers`' `test-driven-development` +
-   `verification-before-completion`** — which is the actual cherry-pick source for this skill's
-   Step 3/6? Superpowers is far more adopted and, on the description alone, more mechanically
-   strict (an "Iron Law" plus a hard completion-gate) rather than persona-flavored guidance.
-   BMAD's version is tied to spec-kit's acceptance-criterion IDs more naturally, since both are
-   already part of this pipeline's spec/plan/tasks flow — superpowers' skill isn't spec-kit-aware
-   and would need its own adaptation to key off criterion IDs the same way. Worth reading
-   superpowers' actual skill file (not just the description) before deciding, same as BMAD's own
-   dev-agent file was read directly rather than assumed from its README.
+   these in a consistent, parseable format. (Confirmed separately: superpowers' own TDD skill has
+   no ID scheme of its own, so this pipeline's criterion-ID bridge is needed regardless of that
+   answer — it just determines whether the bridge is clean or needs a fallback naming scheme.)
+
+**Resolved:** BMAD vs. superpowers for the TDD/completion-gate technique — settled on
+superpowers (see above), after reading both sources' actual skill files rather than deciding
+from descriptions alone.
 
 ## TODOs (block turning this into a real `SKILL.md`)
 
 1. Resolve open question 3 first — if spec-kit's spec format doesn't reliably number acceptance
-   criteria, the whole TDD-tied-to-criterion-ID mechanic needs a fallback.
+   criteria, the criterion-ID bridge needs a fallback naming scheme.
 2. Decide open question 2 before writing the self-QA step in detail.
-3. Resolve open question 4 — read `obra/superpowers`' actual `test-driven-development` and
-   `verification-before-completion` skill files in full before finalizing which source (or both,
-   combined) this skill's TDD/completion-gate steps are built on.
+3. Write the actual criterion-ID bridge: the concrete rule for "this test's `it()`/`describe()`
+   block name (or a comment) references acceptance-criterion `AC-3` from `spec.md`" — the one
+   piece neither spec-kit nor superpowers provides, now that the source skills themselves are
+   settled.
