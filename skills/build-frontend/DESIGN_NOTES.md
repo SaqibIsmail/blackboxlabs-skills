@@ -142,3 +142,13 @@ Loops until approved.
    description), does it still count as Mode 1, or fall back to Mode 2?
 4. Is one `/build-frontend` call always scoped to exactly one page/route, or
    could it target a multi-page flow in a single run?
+
+## Open questions (added 2026-09-10 — pipeline integration)
+
+5. `assign-tasks` (a new scrum-master skill, see `../assign-tasks/DESIGN_NOTES.md`) will produce
+   `[FE]`-tagged tasks from a shared `spec.md`/`plan.md`/`tasks.md` per feature. Should
+   `/build-frontend` accept a ticket/task reference (e.g. a `FE-<slug>` ID or a `tasks.md` line)
+   as an alternate input alongside its current free-text description, so the scrum-master skill
+   can hand it work directly instead of a human re-describing the task in prose? If so, does the
+   Step 3 `shape` brief get derived from the referenced spec/task instead of interviewed fresh —
+   and does that skip or shorten the interview this skill currently always does?
