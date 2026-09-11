@@ -1,7 +1,15 @@
 # /assign-tasks — Pipeline Design (draft, not yet a working skill)
 
-Status: design drafted (architecture agreed via plan review 2026-09-10); not yet implemented as
-`SKILL.md`. Open questions below block that.
+**Status (2026-09-11): superseded by `senior-engineer`.** The pipeline grew an epic layer above
+spec-kit's features, and the ticket-splitting job needed real granularity control (ticket size,
+not just FE/BE labeling) — see `senior-engineer/DESIGN_NOTES.md`'s "Relationship to
+`assign-tasks`" section. Kept here, not deleted, because its BMAD decomposition-rigor citation
+and ticketing-backend research (spec-kit delegation, Jira title conventions) are still the basis
+`senior-engineer`'s own notes build on. Do not implement this file as a `SKILL.md` — implement
+`senior-engineer` instead.
+
+~~Status: design drafted (architecture agreed via plan review 2026-09-10); not yet implemented as
+`SKILL.md`. Open questions below block that.~~
 
 ## What this is
 

@@ -3,6 +3,13 @@
 Status: design drafted (architecture agreed via plan review 2026-09-10); not yet implemented as
 `SKILL.md`. Open questions below block that.
 
+**Updated 2026-09-11:** this skill now runs *underneath* an epic, called once per feature by
+`senior-engineer` (an epic may decompose into several features) rather than being invoked
+directly from a bare ask. See `define-epic/DESIGN_NOTES.md` and
+`senior-engineer/DESIGN_NOTES.md` — both flag the same open risk this file's own open question 1
+already named: near-duplicate interview questions across the epic → feature → clarify chain.
+Not yet resolved; affects all three files together.
+
 ## What this is
 
 The PM skill: interviews about what to build, then drives `github/spec-kit` to produce the

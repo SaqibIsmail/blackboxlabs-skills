@@ -24,6 +24,9 @@ It deliberately does **not** duplicate two things a project may already have:
   doc map (including SEO/AEO/GEO doc paths). `define-project` scans for this first and
   links/absorbs from it, asking only about the fields nothing existing already answers:
   ticketing, Obsidian vault, pentest scope/RoE.
+- **`VISION.md`** — `founder-vision`'s output (target user/wedge, non-goals, why-now). If
+  present, `PROJECT.md` links to it (`vision_context: ./VISION.md`) instead of re-asking. Added
+  2026-09-11: `founder-vision` now runs once per project, before this skill.
 
 ## Command
 
@@ -35,8 +38,8 @@ No arguments — it interviews only for what a scan genuinely can't answer.
 
 ## Bootstrap sequence
 
-1. Scan the project root for `PRODUCT.md`, `AGENTS.md` (or a `CLAUDE.md` that just imports one),
-   `README.md`, `package.json`/`pyproject.toml`, and any `docs/standards*` path.
+1. Scan the project root for `VISION.md`, `PRODUCT.md`, `AGENTS.md` (or a `CLAUDE.md` that just
+   imports one), `README.md`, `package.json`/`pyproject.toml`, and any `docs/standards*` path.
 2. Pre-fill every `PROJECT.md` field a scan can answer confidently — stack from manifest deps,
    coding-standards doc paths and SEO/AEO/GEO doc paths from an existing doc-map table if one is
    found (concretely: `blackboxlabs/AGENTS.md`'s "Documentation map" table already lists
@@ -53,6 +56,7 @@ No arguments — it interviews only for what a scan genuinely can't answer.
 ```yaml
 ---
 project_name: string
+vision_context: ./VISION.md | null          # founder-vision's file, if present — link, don't re-ask
 product_context: ./PRODUCT.md | null        # impeccable's file, if present — link, don't re-ask
 existing_context_doc: ./AGENTS.md | null    # a project's own comprehensive doc, if one exists
 stack: { frontend: [...], backend: [...] }
