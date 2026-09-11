@@ -3,6 +3,11 @@
 Status: design drafted (architecture agreed via plan review 2026-09-10); not yet implemented as
 `SKILL.md`. Open questions below block that.
 
+**Not final (2026-09-11):** flagged for re-discussion now that the epic layer
+(`founder-vision`→`define-epic`→`senior-engineer`) exists upstream of this skill. The
+epic-to-feature handoff below is settled, but treat the rest of this file as provisional until
+revisited as a whole against the new pipeline shape.
+
 **Updated 2026-09-11:** this skill now runs *underneath* an epic, called once per feature by
 `senior-engineer` (an epic may decompose into several features) rather than being invoked
 directly from a bare ask.

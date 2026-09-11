@@ -2,6 +2,11 @@
 
 Status: design agreed, not implemented. Two TODOs and a few open questions block turning this into an actual SKILL.md — see bottom.
 
+**Not final (2026-09-11):** flagged for re-discussion now that the epic layer
+(`founder-vision`→`define-epic`→`senior-engineer`) exists upstream. This skill now receives
+tickets produced by `senior-engineer`'s right-sizing step rather than a simpler upstream source —
+worth revisiting whether anything here needs to change as a result before treating it as settled.
+
 ## What this is
 
 A single top-level command that orchestrates two existing skills — **Impeccable**

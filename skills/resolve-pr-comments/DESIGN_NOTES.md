@@ -1,5 +1,10 @@
 # /resolve-pr-comments — Pipeline Design (draft, not yet a working skill)
 
+**Not final (2026-09-11):** flagged for re-discussion now that the epic layer
+(`founder-vision`→`define-epic`→`senior-engineer`) exists upstream. The PRs this skill reacts to
+now trace back to epic-linked tickets from `senior-engineer` — revisit as a whole before treating
+it as settled.
+
 Status: design drafted (architecture agreed via plan review 2026-09-10); not yet implemented as
 `SKILL.md`. Open questions below block that.
 

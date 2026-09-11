@@ -1,5 +1,9 @@
 # /log-decision — Pipeline Design (draft, not yet a working skill)
 
+**Not final (2026-09-11):** flagged for re-discussion alongside the rest of the pipeline
+downstream of `senior-engineer`. The ADR-format and call-sites updates below are settled; the
+rest of this file hasn't been revisited as a whole against the new epic-layer shape yet.
+
 Status: design drafted (architecture agreed via plan review 2026-09-10); not yet implemented as
 `SKILL.md`. Open questions below block that.
 

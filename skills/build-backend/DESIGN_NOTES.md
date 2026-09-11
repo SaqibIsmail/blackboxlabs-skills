@@ -1,5 +1,10 @@
 # /build-backend — Pipeline Design (draft, not yet a working skill)
 
+**Not final (2026-09-11):** flagged for re-discussion now that the epic layer
+(`founder-vision`→`define-epic`→`senior-engineer`) exists upstream. Tickets now come from
+`senior-engineer`'s right-sizing step, not directly from spec-kit/`assign-tasks` as assumed when
+this was drafted — revisit as a whole before treating it as settled.
+
 Status: design drafted (architecture agreed via plan review 2026-09-10); not yet implemented as
 `SKILL.md`. Open questions below block that.
 
