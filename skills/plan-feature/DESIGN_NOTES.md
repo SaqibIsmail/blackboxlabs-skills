@@ -17,7 +17,20 @@ directly from a bare ask.
 learned (see Sequence step 3, below) as pre-filled context, not just the epic name. This skill's
 own interview (Sequence step 3) only asks about what that context leaves genuinely unanswered.
 This does **not** resolve this file's own open question 1 below, which is a separate, narrower
-overlap (this skill's interview vs. spec-kit's own `/speckit.clarify` step) — still open.
+overlap (this skill's interview vs. spec-kit's own `/speckit.clarify` step) — resolved separately,
+see Open Questions below.
+
+**Resolved (2026-09-12), both of this file's own open questions:**
+- **Interview ordering**: this skill's interview (step 4) runs *before* spec-kit's own commands
+  (step 5) and hands spec-kit an already-resolved brief — `/speckit.clarify` then has little left
+  to surface, one clean round of questions instead of two. See step 4/5, below.
+- **Question-set source**: a shorter, purpose-built list for this narrower context — but *derived
+  by actually reading BMAD's real question categories* (not invented from scratch), matching this
+  repo's own habit of reading source skill files directly rather than working from descriptions.
+  Also: this pipeline is *not* always missing the "upstream artifact" BMAD's rigor assumes —
+  `PRODUCT.md` (from `impeccable`, already linked via `PROJECT.md.product_context`) plays that
+  role when present, so step 1 should lean on it rather than treating its absence as the default
+  case.
 
 ## What this is
 
@@ -62,24 +75,21 @@ different jobs:
    holds — this skill refuses to silently assume major scope — it just doesn't re-ask what's
    already known.
 5. Drive `/speckit.specify` → `/speckit.clarify` → `/speckit.plan` to produce
-   `specs/<feature>/{spec.md,plan.md}`.
+   `specs/<feature>/{spec.md,plan.md}`. Because step 4 already interviewed first, this brief is
+   already resolved going in — `/speckit.clarify` should have little left to surface.
 6. Call `log-decision` (write) once `plan.md` is finalized — first entry for this feature: scope,
    chosen approach, explicit non-goals.
 
 ## Open questions
 
-1. Where does the *interview* actually happen relative to spec-kit's own `/speckit.clarify`
-   step — does `plan-feature` do its own interview first and then hand a mostly-resolved brief
-   into spec-kit's commands, or does it let `/speckit.clarify` surface ambiguities and only add
-   BMAD-style rigor on top of whatever spec-kit's own clarify step already asks? Doing both risks
-   asking the user near-duplicate questions twice.
-2. How much of BMAD's actual question set is worth reproducing verbatim vs. genuinely
-   reinventing for this narrower single-command context — BMAD's PM persona runs as one part of
-   a much longer multi-step engagement (analyst → PM → architect), and some of its rigor may
-   assume upstream artifacts (a product brief) this pipeline doesn't always have.
+Both resolved 2026-09-12 — see the resolution note near the top of this file. No open questions
+remain for this skill.
 
 ## TODOs (block turning this into a real `SKILL.md`)
 
-1. Resolve open question 1 — it fixes the actual step order.
+1. Read BMAD's `bmad-agent-pm`/`bmad-prd` skill files in full (not just descriptions) and extract
+   the actual question categories worth keeping — this is the concrete next step now that "derive
+   from BMAD's real files, don't invent" is the confirmed approach.
 2. Draft the concrete question list/categories this skill asks, reviewed against a couple of
-   real feature examples before finalizing.
+   real feature examples before finalizing — including how `PRODUCT.md` (when present) changes
+   which questions are still needed.

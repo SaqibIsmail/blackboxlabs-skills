@@ -40,13 +40,22 @@ No arguments — it interviews only for what a scan genuinely can't answer.
 
 1. Scan the project root for `VISION.md`, `PRODUCT.md`, `AGENTS.md` (or a `CLAUDE.md` that just
    imports one), `README.md`, `package.json`/`pyproject.toml`, and any `docs/standards*` path.
-2. Pre-fill every `PROJECT.md` field a scan can answer confidently — stack from manifest deps,
-   coding-standards doc paths and SEO/AEO/GEO doc paths from an existing doc-map table if one is
-   found (concretely: `blackboxlabs/AGENTS.md`'s "Documentation map" table already lists
-   `docs/standards/{seo,geo-aeo,content-seo}.md` — that should populate `seo_aeo_geo_docs`
-   without asking).
-3. Interview only for what's left — primarily `ticketing.*`, `obsidian.*`, `pentest.*`, and stack
-   fields if nothing was found at all.
+2. Pre-fill every `PROJECT.md` field a scan can answer confidently — stack from manifest deps.
+   For coding-standards and SEO/AEO/GEO doc paths: **resolved 2026-09-12 — store a pointer, not a
+   copy.** If an existing doc-map table is found (concretely: `blackboxlabs/AGENTS.md`'s
+   "Documentation map" table), `PROJECT.md` records where that table lives
+   (`doc_map_source: ./AGENTS.md#Documentation map`) and downstream skills resolve actual paths
+   from it lazily, at read time — never copied in as a snapshot. Copying risked drift if the
+   source doc's own map changed later; every downstream skill already reads `existing_context_doc`
+   anyway, so pointing costs nothing extra. Only when no doc-map table exists at all does
+   `define-project` ask directly and store literal paths in `coding_standards`/`seo_aeo_geo_docs`.
+3. Interview for what's left:
+   - `ticketing.*` — **resolved 2026-09-12: this is an active interview step, not a passive
+     field.** Saqib is connecting Jira, so treat Jira as the expected default: ask directly for
+     the Jira site URL, project key, and which env var holds the API token (never the token
+     itself) — the exact fields ECC's `jira-integration` skill needs for its MCP setup. Only fall
+     back to asking "what ticketing system, if any" when the project genuinely isn't using Jira.
+   - `obsidian.*`, `pentest.*`, and stack fields if nothing was found at all.
 4. Write `PROJECT.md` at the project root. Re-running later should update in place, not
    overwrite blind — the same "resume" courtesy `build-frontend`'s `shape` step already gives
    revisions of an existing page.
@@ -59,20 +68,26 @@ project_name: string
 vision_context: ./VISION.md | null          # founder-vision's file, if present — link, don't re-ask
 product_context: ./PRODUCT.md | null        # impeccable's file, if present — link, don't re-ask
 existing_context_doc: ./AGENTS.md | null    # a project's own comprehensive doc, if one exists
+doc_map_source: ./AGENTS.md#Documentation map | null   # pointer, not a copy — resolved lazily by
+                                                        # downstream skills. Only unset when no
+                                                        # doc-map table was found at all.
 stack: { frontend: [...], backend: [...] }
 ticketing:
-  system: none | jira | github-issues       # "none" is first-class, not a fallback — most
-                                             # projects (e.g. blackboxlabs today) have no ticketing system yet
+  system: jira | github-issues | none       # Jira is the expected default (Saqib is connecting
+                                             # it) — define-project actively interviews for the
+                                             # fields below when this is jira, not just recording
+                                             # a flag. "none" stays supported for other projects.
   project_key: null
+  jira_site_url: null
   auth_env: null                            # env var NAME holding the token, never the token itself
-coding_standards: [ ... ]                    # doc paths, pulled from an existing doc map if found
+coding_standards: [ ... ]                    # only literal paths when no doc_map_source exists
 obsidian:
   vault_path: null                          # almost certainly outside the repo; filled in on first real run
   decisions_subpath: decisions/
 pentest:
   scope: null                               # a PROPOSAL only — pentest-app must still confirm live, every run
   rules_of_engagement_doc: null
-seo_aeo_geo_docs: [ ... ]                    # doc paths
+seo_aeo_geo_docs: [ ... ]                    # only literal paths when no doc_map_source exists
 ---
 ```
 
@@ -87,20 +102,21 @@ not vendored" convention.
 
 ## Open questions
 
-1. If a scanned context doc already lists SEO/AEO/GEO docs and coding standards in its own
-   doc-map table, should `define-project` copy those paths into `PROJECT.md` verbatim, or store
-   a pointer to the doc-map table itself and resolve paths lazily? Copying risks drift if the
-   source doc's map changes later; a pointer requires every downstream skill to parse an
-   arbitrary table format, which won't be consistent project to project.
-2. Should `ticketing.system: none` require nothing further, or should it still record a
-   task-ID-prefix convention (e.g. `FE-<slug>`/`BE-<slug>`) so `assign-tasks` has something
-   concrete to put in commit messages/PR titles even with no external ticket system?
+1. ~~If a scanned context doc already lists SEO/AEO/GEO docs...~~ **Resolved (2026-09-12):**
+   pointer, not copy — see `doc_map_source` in the schema above.
+2. ~~Should `ticketing.system: none` require nothing further...~~ **Resolved (2026-09-12):** Jira
+   is the expected default — this became a real interview step (site URL, project key, auth env
+   var), not just a recorded flag. See "Bootstrap sequence" step 3 and the schema above. The
+   original `none`-case ID-prefix question is deprioritized, not answered — revisit only if this
+   pipeline is ever run on a project that genuinely has no ticketing system.
 3. Re-running `/define-project` after someone has hand-edited `PROJECT.md` (e.g. filled in
    `obsidian.vault_path` themselves) — does the skill need to preserve edits it didn't generate,
    and how does it tell the difference from a stale scan result?
 
 ## TODOs (block turning this into a real `SKILL.md`)
 
-1. Resolve open question 1 — it changes the schema.
+1. Write the concrete Jira-connection interview flow (what to ask, in what order, how to verify
+   the token env var is actually set before finishing) — this is now load-bearing since Jira is
+   the expected path, not an edge case.
 2. Write the actual scan heuristics (which manifest fields, which doc filenames/paths count as
    "an existing comprehensive context doc") concretely enough to implement, not just describe.

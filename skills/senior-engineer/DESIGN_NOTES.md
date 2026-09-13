@@ -39,6 +39,13 @@ read/write) — or spec-kit's own `/speckit.taskstoissues` when `ticketing.syste
 All four cherry-picked as prose/technique, not runtime — same rule as every other skill in this
 pipeline.
 
+**Declared dependency (resolved 2026-09-12): Playwright.** The research spike (step 5, "an idea
+exists with a concrete reference") named a specific required tool for inspecting a live reference
+site's real DOM/CSS/JS/timing, rather than leaving it to "whatever browser tool happens to be
+available" — Playwright, since it's already referenced elsewhere in this pipeline (ECC's
+`tdd-workflow` uses it for E2E tests), so target projects only need one browser-automation
+dependency, not two competing ones.
+
 ## Command
 
 ```
@@ -54,33 +61,42 @@ pipeline.
    Grep/Glob/Read the actual codebase for the systems the epic touches. Ground every question in
    what was actually found — cite the file/line, don't ask "what should I look at?"
 4. **Mine existing behavior, if any** (`spec-miner`): if step 3 found that the epic touches an
-   existing capability with no prior baseline spec (check for
-   `openspec/specs/<capability>/spec.md`), run `spec-miner` against that capability *now*, before
-   interviewing further — it extracts current behavior as flat Requirement/Invariant assertions.
-   This becomes known, verified context for both the remaining investigation questions (step 3
-   continues, now grounded in documented behavior, not just raw code) and for `plan-feature`
-   later (its new spec is written as a delta against this baseline, not from scratch). Skip
-   entirely for a genuinely greenfield epic — nothing to mine.
+   existing capability with no prior baseline spec, check `openspec/specs/<capability>/spec.md` —
+   **resolved 2026-09-12: this is a fixed path everywhere**, not project-configurable, for
+   consistency across every project this pipeline runs in. If missing, run `spec-miner` against
+   that capability *now*, before interviewing further — it extracts current behavior as flat
+   Requirement/Invariant assertions. If a baseline *does* already exist, **resolved 2026-09-12:
+   re-mine if the touched code changed since it was mined** — compare the capability's source
+   file(s) mtime/hash against the baseline spec's own recorded mining date/commit SHA; re-run
+   `spec-miner` if they've diverged, so the baseline never quietly goes stale. This becomes known,
+   verified context for both the remaining investigation questions (step 3 continues, now
+   grounded in documented behavior, not just raw code) and for `plan-feature` later (its new spec
+   is written as a delta against this baseline, not from scratch). Skip entirely for a genuinely
+   greenfield epic — nothing to mine.
 5. **UI check**: ask whether a UI/design idea already exists (mockup, Figma, reference
    screenshot/site, or none yet).
    - **No idea exists**: propose a design spike ticket first (e.g. "Design: `<page/flow>` layout
-     and states") — functional tickets for that surface wait on it, or proceed with an explicit
-     placeholder noted as a follow-up risk if the user prefers to unblock now.
+     and states") — functional tickets for that surface wait on it. **Resolved 2026-09-12,** if
+     the user wants to proceed anyway rather than block on the spike: the resulting ticket(s)
+     describe the functional UI requirement needed to complete the task, plus an explicit "no
+     design decided yet" note in the description — `build-frontend` makes the actual design
+     decision itself when it picks the ticket up, rather than this skill guessing at one now.
    - **An idea exists *with a concrete reference*** (a live site, an existing component, an
      animation seen somewhere) — **always** propose a separate research spike first, never let
      the build ticket "just match the reference" from memory. Motive (Saqib's own): given only a
      description of a reference, a coding agent approximates it differently every time instead of
      reproducing the actual technique. The research spike's job: inspect the reference for real
-     (live site: read its actual DOM/CSS/JS, computed styles, animation timing/easing, and
-     network requests for the libraries it loads — this session's own browser tools are the
-     model for what that inspection looks like; an existing component: read its real source, not
-     just how it looks) and write up the *actual mechanism* — library used, exact CSS
-     properties/keyframes, DOM structure, state transitions — then map that mechanism onto this
-     project's own stack (what's already available, what's missing, the concrete
-     component/file it becomes here). The build ticket that implements the effect is created
-     *after* and depends on this spike, and reads its findings instead of re-guessing from the
-     original reference. Log the mapping via `log-decision` once written, so the grounding isn't
-     lost if the build ticket runs in a separate session.
+     using Playwright (live site: read its actual DOM/CSS/JS, computed styles, animation
+     timing/easing, and network requests for the libraries it loads; an existing component: read
+     its real source, not just how it looks) and write up the *actual mechanism* — library used,
+     exact CSS properties/keyframes, DOM structure, state transitions — then map that mechanism
+     onto this project's own stack (what's already available, what's missing, the concrete
+     component/file it becomes here). **Resolved 2026-09-12:** the spike's findings are embedded
+     directly in the resulting build ticket's description (not just linked) — the build ticket
+     that implements the effect is created *after* and depends on this spike, and reads its
+     findings inline instead of re-guessing from the original reference. Log the mapping via
+     `log-decision` once written too, so the grounding also survives if the build ticket runs in
+     a separate session.
    - **An idea exists with no concrete reference** (a verbal description only): no research spike
      needed — proceeds straight into the feature/ticket split below.
 6. **Decide the feature split**: does this epic need one `plan-feature` pass or several (e.g. a
@@ -118,40 +134,39 @@ shared-scoped, just as one axis of a richer split, not the only one).
 
 ## Open questions
 
-1. Step 6 (deciding feature count per epic) has no source skill backing it — every cherry-picked
-   technique either operates *within* one feature (right-sizing, code investigation) or *above*
-   the epic (gstack's own scoping in Phase 2 of `define-epic`). This specific judgment call may
-   need its own worked examples rather than a borrowed technique.
-2. If step 5 finds no UI idea and the user wants to proceed anyway (not block on a design spike) —
-   does this skill create placeholder/best-guess UI tickets, or explicitly tag them "needs design
-   input" and let `build-frontend` surface that gap later?
+1. ~~Step 6 (deciding feature count per epic) has no source skill backing it...~~ **Resolved
+   (2026-09-12):** judgment via questions, no fixed heuristic — same principle as ticket
+   right-sizing, kept consistent rather than inventing a second rule shape for a similar problem.
+2. ~~If step 5 finds no UI idea and the user wants to proceed anyway...~~ **Resolved
+   (2026-09-12):** see step 5, above — functional requirement + "no design decided yet" note,
+   `build-frontend` decides the design at build time.
 3. ~~Does this skill call `/plan-feature` as a literal sub-invocation...~~ **Resolved
    (2026-09-11):** yes, a literal sub-invocation via the `Skill` tool — "smart hand-off," not
    inlining. See step 6, above. `plan-feature` and `define-epic`'s own open questions updated to
    match.
-4. Confidence/reversibility of ticket right-sizing — if the user disagrees with a specific split
-   after tickets are already filed (step 8 confirmed it, but real usage surfaces a bad split
-   later), is there a "merge these two tickets" / "split this one further" follow-up mode, or does
-   that just become manual Jira editing?
-5. Step 4's "no prior baseline spec" check needs a concrete rule — is `openspec/specs/` the fixed
-   location regardless of project, or does that path come from `PROJECT.md` (so a project using a
-   different spec layout still works)? Also: does a mined baseline ever get re-mined later if the
-   existing code changes again before the epic ships, or is it a one-time snapshot per capability?
-6. Step 5's research spike needs a concrete deliverable format — is the reference's mechanism
-   written directly in the ticket description, a linked file in the repo, or a `log-decision`
-   entry the ticket just links to (consistent with the back-link convention above)? Also needs a
-   concrete "how to inspect a live reference" mechanism named — this session's own browser tools
-   are the model, but the actual coding agent picking up that spike ticket later needs a named,
-   available equivalent in its own environment, not just "go look at it."
+4. ~~Confidence/reversibility of ticket right-sizing...~~ **Resolved (2026-09-12):** no built-in
+   follow-up mode — a bad split found after filing is fixed by manual Jira editing. Simplest
+   option; revisit only if this turns out to happen often in practice.
+5. ~~Step 4's "no prior baseline spec" check needs a concrete rule...~~ **Resolved (2026-09-12):**
+   fixed path (`openspec/specs/<capability>/spec.md`) everywhere, not project-configurable. And a
+   mined baseline **does** get re-mined if the touched code changed since mining — see step 4,
+   above, for the staleness check.
+6. ~~Step 5's research spike needs a concrete deliverable format...~~ **Resolved (2026-09-12):**
+   findings go directly in the build ticket's description (not just a link), and the named
+   inspection tool is Playwright — see step 5 and "Declared dependency," above.
+
+All 6 open questions for this skill are now resolved. Remaining work is write-up, not more
+decisions — see TODOs below.
 
 ## TODOs (block turning this into a real `SKILL.md`)
 
-1. ~~Resolve open question 3 first...~~ Resolved above. Remaining: write the exact shape of the
-   context object passed to `/plan-feature` in step 6 (a structured handoff, or just prose in the
-   invocation prompt?).
+1. Write the exact shape of the context object passed to `/plan-feature` in step 6 (a structured
+   handoff, or just prose in the invocation prompt?).
 2. Read BMAD's `bmad-create-epics-and-stories`, ECC's `jira-integration`, and ECC's `spec-miner`
    skill files in full (already excerpted during source selection) and write the concrete
    ticket-template fields (title format, description sections, type mapping) before finalizing.
 3. Write 2-3 worked examples (a real epic → the tickets it should produce) to pressure-test the
-   right-sizing judgment before implementation — this is the part with the least mechanical
-   backing.
+   right-sizing and feature-count judgment before implementation — this is the part with the
+   least mechanical backing.
+4. Write the staleness-check mechanics for spec-miner re-mining concretely (mtime? content hash?
+   recorded commit SHA at mining time?) — step 4 names the idea, not the exact comparison.

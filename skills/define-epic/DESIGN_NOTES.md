@@ -39,9 +39,10 @@ cherry-picked here. Phases 3–5 are covered elsewhere in this pipeline, in its 
    - Any ordering constraints?
    - What's the smallest version that delivers the value (MVP cut)?
    - What are the failure modes / rollback options?
-5. Create the epic in the configured ticketing system (`PROJECT.md.ticketing.system`) — or, if
-   `none`, write an epic brief file that `senior-engineer` reads the same way. Hand off the epic
-   reference to `senior-engineer`.
+5. Create the epic in Jira (the expected ticketing system, per `define-project`'s resolved
+   Jira-connection interview — **resolved 2026-09-12: no `ticketing.system: none` fallback
+   designed here**, a real epic always gets created). Hand off the epic reference to
+   `senior-engineer`.
 6. Call `log-decision` (write) — first entry for this epic: scope, explicit non-goals, why-now.
 
 ## Open questions
@@ -50,16 +51,18 @@ cherry-picked here. Phases 3–5 are covered elsewhere in this pipeline, in its 
    — `senior-engineer` passes this skill's Phase 1–2 answers to `plan-feature` as pre-filled
    context; `plan-feature` only asks about what that leaves unanswered. See
    `plan-feature/DESIGN_NOTES.md` and `senior-engineer/DESIGN_NOTES.md` step 3.
-2. What does an "epic" concretely look like when `ticketing.system: none`? A single markdown file
-   at a fixed path (`epics/<slug>.md`) that `senior-engineer` and any spawned `plan-feature` calls
-   read for context?
+2. ~~What does an "epic" concretely look like when `ticketing.system: none`?~~ **Resolved
+   (2026-09-12): dropped.** Jira is always on for this pipeline's actual use — no fallback
+   designed. Revisit only if this pipeline is ever reused on a project without Jira.
 3. Can an epic be filed without committing to how many features/tickets it becomes — i.e. is that
-   count decided here, or genuinely left open until `senior-engineer` investigates? (Current
-   design: left open — this skill only scopes the *ask*, not the *breakdown*.)
+   count decided here, or genuinely left open until `senior-engineer` investigates? **Confirmed
+   (2026-09-12), consistent with `senior-engineer`'s own resolution:** left open — judgment via
+   questions at `senior-engineer`-time, no fixed rule, same principle as ticket right-sizing. This
+   skill only scopes the *ask*, never the *breakdown*.
 
 ## TODOs (block turning this into a real `SKILL.md`)
 
-1. Resolve open question 1 first — it affects both this file and `plan-feature/DESIGN_NOTES.md`.
-2. Read gstack's `spec/SKILL.md` Phase 1–2 sections in full (already excerpted during source
+1. Read gstack's `spec/SKILL.md` Phase 1–2 sections in full (already excerpted during source
    selection) and write the exact question wording, reviewed against a real epic-shaped example.
-3. Resolve open question 2 — needed before writing the `ticketing.system: none` path.
+2. Write the Jira epic-creation call concretely (which `jira-integration` fields, what the epic
+   description template looks like) — now load-bearing since Jira is the confirmed path.

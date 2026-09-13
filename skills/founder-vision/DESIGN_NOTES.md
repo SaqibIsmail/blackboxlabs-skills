@@ -63,19 +63,30 @@ and links it (`vision_context: ./VISION.md | null`) rather than duplicating its 
 
 ## Open questions
 
-1. Should this skill refuse to run for a clearly-not-a-startup project (an internal tool, a
-   client site) where "who has this problem / would they pay" doesn't really apply — or just let
-   low-stakes answers ("just me, solo dev" / "N/A, internal tool") pass through undramatically?
-2. Does `VISION.md` ever get revisited/updated (pivots, scope changes), or is it a point-in-time
-   artifact only referenced, never edited, after the project's first real epic ships?
+1. ~~Should this skill refuse to run for a clearly-not-a-startup project...~~ **Resolved
+   (2026-09-12):** no bail-out path — always ask the same 6 questions. Low-stakes answers ("just
+   me, solo dev" / "N/A, internal tool") are fine and pass through without friction. Keeps the
+   skill simple; no detection logic to get wrong.
+2. ~~Does `VISION.md` ever get revisited/updated...~~ **Resolved (2026-09-12):** yes, it can be
+   re-run/updated when the project's direction genuinely changes — see "Revisions," below (new
+   section this resolution requires).
 3. Confirmed to run per-project, not once company-wide — but for a multi-project owner (same
    person running blackboxlabs, tgc, etc.), does each project really get a from-scratch
    six-question interview with zero pre-fill from a prior project's answers? Worth confirming
    that's genuinely intended, not just simplest-to-describe.
 
+## Revisions (resolves open question 2, above)
+
+`founder-vision` can be re-invoked on a project that already has `VISION.md`. On re-run: don't
+overwrite in place — append a new dated section and mark the superseded parts as such (same
+non-destructive spirit as `log-decision`'s own "never silently overwrite" rule), so the original
+reasoning stays visible even after a pivot. A re-run should also prompt `log-decision` to record
+*why* the pivot happened, separately from the vision update itself.
+
 ## TODOs (block turning this into a real `SKILL.md`)
 
-1. Resolve open question 1 — determines whether this skill has a bail-out path.
-2. Read gstack's actual `office-hours` phase files (`sections/phase-2a-startup-diagnostic.md`,
+1. Read gstack's actual `office-hours` phase files (`sections/phase-2a-startup-diagnostic.md`,
    `phase-2b-builder-brainstorm.md`) in full before finalizing exact question wording — this draft
    is based on the top-level `SKILL.md` description only, not those phase files yet.
+2. Write the concrete revision format (new section header convention, how much of the old answers
+   stay inline vs. get summarized) for the "Revisions" mechanism above.
