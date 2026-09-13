@@ -1,11 +1,12 @@
-# /log-decision — Pipeline Design (draft, not yet a working skill)
+# /log-decision — Pipeline Design
 
-**Not final (2026-09-11):** flagged for re-discussion alongside the rest of the pipeline
-downstream of `senior-engineer`. The ADR-format and call-sites updates below are settled; the
-rest of this file hasn't been revisited as a whole against the new epic-layer shape yet.
+**Status (2026-09-13): implemented.** See `SKILL.md`/`SETUP.md`. Built ahead of its place in the
+original front-half order because `senior-engineer` (and `define-epic`/`plan-feature` before it)
+depend on it directly — Saqib flagged this exact gap before starting `senior-engineer`. This file
+stays as the rationale record.
 
-Status: design drafted (architecture agreed via plan review 2026-09-10); not yet implemented as
-`SKILL.md`. Open questions below block that.
+**Still open, not blocking:** open question 1, below (the `build-frontend`/`build-backend` write
+trigger) — specific to those two skills, which this pass doesn't reach yet.
 
 ## What this is
 
@@ -117,15 +118,23 @@ consent, since `vault_path` is almost certainly outside this repo (a personal Ob
    is inherently fuzzy — this repo already tolerates similar fuzziness elsewhere (`build-frontend`'s
    own `--ref` Mode-1-vs-Mode-2 split), but it's worth naming concrete examples before
    implementation so the two build skills don't drift into either "never writes" or "writes on
-   every trivial choice."
+   every trivial choice." Left open — it's specific to `build-frontend`/`build-backend`, which
+   this implementation pass doesn't reach yet.
 2. ~~`vault_path` has no default...~~ **Resolved above** — ask before creating, per ECC.
-3. Numbering (`NNNN-`) is global per vault or per-feature-subfolder? Global numbering is simpler
-   but means every writer needs to know the current max across the whole vault before writing —
-   a real race-condition risk if two skills ever write concurrently (unlikely today, since
-   nothing in this pipeline runs FE/BE build agents and `log-decision` writes at truly the same
-   instant, but worth deciding explicitly rather than by accident).
+3. ~~Numbering (`NNNN-`) is global per vault or per-feature-subfolder?~~ **Resolved
+   (2026-09-13):** global per vault. List existing files in `decisions_subpath`, parse the
+   `NNNN-` prefix of each, take the max, write at `max + 1`. Simple; the race-condition risk this
+   question named doesn't apply yet since nothing in this pipeline writes concurrently.
 
-## TODOs (block turning this into a real `SKILL.md`)
+## Query result format (resolves the former TODO 2)
 
-1. Resolve numbering scheme (open question 3) — it's a small decision with an annoying-to-fix-later blast radius if wrong.
-2. Decide the exact query-result format other skills should expect back (a rendered summary? raw frontmatter + body? just the file paths for the caller to read itself?).
+Each result is a structured object, not a raw file dump: `{path, status, date, feature,
+ticket_refs, tags, context, decision, consequences}` — parsed frontmatter fields plus the `##
+Context`/`## Decision`/`## Consequences` body sections extracted as plain text (skip
+`Alternatives Considered` unless the caller asks for full detail — most callers only need the
+decision and why, not the road not taken). Sorted most-recent-`date`-first. A caller that wants
+the raw file (e.g. to read `Alternatives Considered`) can always read `path` directly.
+
+## TODOs
+
+None blocking — this skill is implemented. See `SKILL.md`/`SETUP.md`.
