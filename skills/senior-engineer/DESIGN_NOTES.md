@@ -1,8 +1,22 @@
-# /senior-engineer — Pipeline Design (draft, not yet a working skill)
+# /senior-engineer — Pipeline Design
 
-Status: design drafted (architecture agreed via plan review 2026-09-11); not yet implemented as
-`SKILL.md`. **Supersedes `assign-tasks`** — see that file's status note. Open questions below
-block implementation.
+**Status (2026-09-13): implemented.** See `SKILL.md`/`SETUP.md`. **Supersedes `assign-tasks`** —
+see that file's status note. This file stays as the rationale record.
+
+**Changed while implementing (2026-09-13):**
+- `log-decision` wasn't fully decided yet (numbering, query format) — resolved and implemented
+  first, out of the original order, since this skill depends on it directly. See
+  `log-decision/DESIGN_NOTES.md`.
+- Reading BMAD's real `step-02-design-epics.md`/`step-03-create-stories.md` in full surfaced
+  concrete criteria for the feature-split judgment (Step 6's open question 1, previously "no
+  source skill backing it") and a real story/ticket template (As a/I want/So that + Given/When/
+  Then) neither this file nor the earlier draft had. Flagged both to Saqib before adopting;
+  approved.
+- Reading ECC's `spec-miner` in full showed its own output already records a `Last verified:
+  (commit <sha>)` line — that's the concrete staleness-check mechanism TODO 4 was still missing,
+  not something to invent separately. Also: its "present the whole codebase's capability list"
+  step is skipped here, since Step 3's investigation already identifies the one relevant
+  capability.
 
 ## What this is
 
@@ -46,13 +60,18 @@ available" — Playwright, since it's already referenced elsewhere in this pipel
 `tdd-workflow` uses it for E2E tests), so target projects only need one browser-automation
 dependency, not two competing ones.
 
-## Command
+## Command and sequence
+
+Superseded by `SKILL.md` Steps 1–10, which incorporate the BMAD feature-split criteria and
+story template, and the concrete spec-miner staleness check, none of which this draft had. Kept
+here only as a historical note.
+
+<details>
+<summary>Original draft sequence (superseded)</summary>
 
 ```
 /senior-engineer <epic-ref>
 ```
-
-## Sequence
 
 1. Read `PROJECT.md` and the epic (from `define-epic`).
 2. Query `log-decision` for anything already on record for this epic or touching the same
@@ -125,6 +144,8 @@ dependency, not two competing ones.
 10. Call `log-decision` if the investigation surfaced a non-obvious scoping call (e.g. "epic split
     into two features because X" or "deferred Y as a separate spike because Z").
 
+</details>
+
 ## Relationship to `assign-tasks`
 
 Replaces it. `assign-tasks`'s FE/BE bracket-tag convention on spec-kit's raw `tasks.md` line
@@ -158,15 +179,9 @@ shared-scoped, just as one axis of a richer split, not the only one).
 All 6 open questions for this skill are now resolved. Remaining work is write-up, not more
 decisions — see TODOs below.
 
-## TODOs (block turning this into a real `SKILL.md`)
+## TODOs
 
-1. Write the exact shape of the context object passed to `/plan-feature` in step 6 (a structured
-   handoff, or just prose in the invocation prompt?).
-2. Read BMAD's `bmad-create-epics-and-stories`, ECC's `jira-integration`, and ECC's `spec-miner`
-   skill files in full (already excerpted during source selection) and write the concrete
-   ticket-template fields (title format, description sections, type mapping) before finalizing.
-3. Write 2-3 worked examples (a real epic → the tickets it should produce) to pressure-test the
-   right-sizing and feature-count judgment before implementation — this is the part with the
-   least mechanical backing.
-4. Write the staleness-check mechanics for spec-miner re-mining concretely (mtime? content hash?
-   recorded commit SHA at mining time?) — step 4 names the idea, not the exact comparison.
+None blocking — this skill is implemented. See `SKILL.md`/`SETUP.md`. One nice-to-have left for
+later, not blocking: write 2-3 worked examples (a real epic → the tickets it produces) to
+pressure-test the right-sizing/feature-count judgment against real use, once this pipeline is
+actually run against `blackboxlabs`.
