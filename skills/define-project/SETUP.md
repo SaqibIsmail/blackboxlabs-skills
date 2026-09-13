@@ -25,25 +25,33 @@ Jira itself. The actual Jira access is `senior-engineer`'s dependency, via ECC's
 # Requires Python 3.10+ and uv (https://docs.astral.sh/uv/)
 ```
 
-Add to your MCP config (e.g. `~/.claude.json` → `mcpServers`):
+**Use a project-scoped `.mcp.json` in the repo root, not `~/.claude.json`.** `~/.claude.json` is a
+large internal app-state file (caches, telemetry, account IDs) — too risky to hand-edit for this.
+Create `.mcp.json` at the repo root:
 
 ```json
 {
-  "jira": {
-    "command": "uvx",
-    "args": ["mcp-atlassian==0.21.0"],
-    "env": {
-      "JIRA_URL": "https://YOUR_ORG.atlassian.net",
-      "JIRA_EMAIL": "your.email@example.com",
-      "JIRA_API_TOKEN": "your-api-token"
+  "mcpServers": {
+    "jira": {
+      "command": "uvx",
+      "args": ["mcp-atlassian==0.21.0"],
+      "env": {
+        "JIRA_URL": "https://YOUR_ORG.atlassian.net",
+        "JIRA_EMAIL": "your.email@example.com",
+        "JIRA_API_TOKEN": "PASTE_YOUR_TOKEN_HERE"
+      }
     }
   }
 }
 ```
 
-Get an API token at <https://id.atlassian.com/manage-profile/security/api-tokens>. Never commit
-the token — set it via your shell environment or a secrets manager, and reference only the env
-var name when `/define-project` asks for it.
+**Add `.mcp.json` to `.gitignore` immediately** — it holds a real API token and must never be
+committed.
+
+Get an API token at <https://id.atlassian.com/manage-profile/security/api-tokens>. **If an AI
+agent is helping you set this up: it must never type the actual token value into this file or
+any command — only you should paste your real token in, directly, yourself.** The agent should
+fill in every other field and leave the token as an explicit placeholder for you to replace.
 
 This step can happen after `/define-project` runs — it will warn, not block, if the token env var
 isn't set yet.
