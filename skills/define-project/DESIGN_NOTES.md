@@ -1,8 +1,8 @@
-# /define-project — Pipeline Design (draft, not yet a working skill)
+# /define-project — Pipeline Design
 
-Status: design drafted (overall pipeline architecture agreed via plan review 2026-09-10); this
-skill itself not yet implemented as `SKILL.md`. Open questions below block that — this is the
-single highest-leverage draft in the pipeline, since 7 other skills read its output verbatim.
+**Status (2026-09-12): implemented.** See `SKILL.md` and `SETUP.md` in this directory — the
+design below is kept as the rationale record, not duplicated into the skill file itself. This was
+the first skill built for the pipeline's front half, since 7+ other skills read its output.
 
 ## What this is
 
@@ -109,14 +109,12 @@ not vendored" convention.
    var), not just a recorded flag. See "Bootstrap sequence" step 3 and the schema above. The
    original `none`-case ID-prefix question is deprioritized, not answered — revisit only if this
    pipeline is ever run on a project that genuinely has no ticketing system.
-3. Re-running `/define-project` after someone has hand-edited `PROJECT.md` (e.g. filled in
-   `obsidian.vault_path` themselves) — does the skill need to preserve edits it didn't generate,
-   and how does it tell the difference from a stale scan result?
+3. ~~Re-running `/define-project` after someone has hand-edited `PROJECT.md`...~~ **Resolved
+   (2026-09-12):** re-run asks which mode — "refresh scanned fields only" (default, leaves Step 3
+   answers/hand-edits untouched) or "full re-interview" (rare, explicit reset). See `SKILL.md`
+   Step 4. Also resolved along the way: Jira needs three fields (`jira_site_url`, `jira_email`,
+   `auth_env`), not one — confirmed by reading ECC's `jira-integration` skill in full.
 
-## TODOs (block turning this into a real `SKILL.md`)
+## TODOs
 
-1. Write the concrete Jira-connection interview flow (what to ask, in what order, how to verify
-   the token env var is actually set before finishing) — this is now load-bearing since Jira is
-   the expected path, not an edge case.
-2. Write the actual scan heuristics (which manifest fields, which doc filenames/paths count as
-   "an existing comprehensive context doc") concretely enough to implement, not just describe.
+None blocking — this skill is implemented. See `SKILL.md`/`SETUP.md`.
