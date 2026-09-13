@@ -1,12 +1,20 @@
-# /plan-feature — Pipeline Design (draft, not yet a working skill)
+# /plan-feature — Pipeline Design
 
-Status: design drafted (architecture agreed via plan review 2026-09-10); not yet implemented as
-`SKILL.md`. Open questions below block that.
+**Status (2026-09-13): implemented.** See `SKILL.md`/`SETUP.md` — **this completes the front
+half of the pipeline** (`founder-vision`→`define-project`→`define-epic`→`senior-engineer`→
+`plan-feature`, plus `log-decision` as cross-cutting infrastructure). This file stays as the
+rationale record.
 
-**Not final (2026-09-11):** flagged for re-discussion now that the epic layer
-(`founder-vision`→`define-epic`→`senior-engineer`) exists upstream of this skill. The
-epic-to-feature handoff below is settled, but treat the rest of this file as provisional until
-revisited as a whole against the new pipeline shape.
+**Design enriched while implementing (2026-09-13):** reading BMAD's actual `bmad-prd/SKILL.md` in
+full (the TODO below) confirmed it's far too heavy to vendor as designed (memlog audit trail,
+multi-agent reviewer gate, `addendum.md` — a standalone PRD workflow, not a per-feature
+interview). Extracted three specific, portable techniques instead of the whole system: **(1)
+"elicitation, not direction"** — pull the answer out of the user, don't propose scope and ask
+them to confirm it; **(2) a concern-scan question** (ask what quality/domain concerns this
+specific feature carries, don't run a fixed checklist); **(3) a Fast-path/Coaching-path choice**
+for interview pacing, consistent with the escape-hatch pattern already used in `founder-vision`
+and `define-epic`. Also wired interview rigor to scale with `VISION.md.mode` (from
+`founder-vision`), since BMAD's own "stakes calibration" step is the same idea one level up.
 
 **Updated 2026-09-11:** this skill now runs *underneath* an epic, called once per feature by
 `senior-engineer` (an epic may decompose into several features) rather than being invoked
@@ -51,45 +59,15 @@ different jobs:
   trademark-restricted, so citing it in prose (as `build-frontend` already does for `impeccable`)
   is fine, cherry-picking the technique is fine, vendoring its runtime files is not planned.
 
-## Command
+## Command and sequence
 
-```
-/plan-feature "<what to build>"
-```
-
-## Sequence
-
-1. Read `PROJECT.md` (from `define-project`) and `PRODUCT.md` if present, for context — stack,
-   coding standards, existing decisions.
-2. Check `log-decision` for any prior entry on this feature (a resume, not a fresh start, if one
-   exists — same "resume, don't restart" courtesy `build-frontend`'s `shape` step gives page
-   revisions).
-3. **Read the handed-off context** — when called by `senior-engineer`, this includes: the epic's
-   `define-epic` answers (who/what/why/scope/non-goals/MVP-cut), anything `senior-engineer`'s own
-   code investigation already found, and a mined baseline spec if `spec-miner` ran. Treat this as
-   already-answered, not a prompt to re-verify by re-asking.
-4. Interview: don't assume — ask only about what step 3's context left genuinely unanswered:
-   scope/audience/non-goals specific to *this* feature (not already covered at the epic level),
-   and anything spec-kit's own `/speckit.clarify` step would otherwise have to guess at later.
-   The hard requirement from the original ask ("asks questions on what I want to build") still
-   holds — this skill refuses to silently assume major scope — it just doesn't re-ask what's
-   already known.
-5. Drive `/speckit.specify` → `/speckit.clarify` → `/speckit.plan` to produce
-   `specs/<feature>/{spec.md,plan.md}`. Because step 4 already interviewed first, this brief is
-   already resolved going in — `/speckit.clarify` should have little left to surface.
-6. Call `log-decision` (write) once `plan.md` is finalized — first entry for this feature: scope,
-   chosen approach, explicit non-goals.
+Superseded by `SKILL.md` Steps 1–6, which incorporate the BMAD-derived interview techniques
+above. Kept here only as a historical note.
 
 ## Open questions
 
-Both resolved 2026-09-12 — see the resolution note near the top of this file. No open questions
-remain for this skill.
+None — all resolved (see resolution notes near the top of this file).
 
-## TODOs (block turning this into a real `SKILL.md`)
+## TODOs
 
-1. Read BMAD's `bmad-agent-pm`/`bmad-prd` skill files in full (not just descriptions) and extract
-   the actual question categories worth keeping — this is the concrete next step now that "derive
-   from BMAD's real files, don't invent" is the confirmed approach.
-2. Draft the concrete question list/categories this skill asks, reviewed against a couple of
-   real feature examples before finalizing — including how `PRODUCT.md` (when present) changes
-   which questions are still needed.
+None blocking — this skill is implemented. See `SKILL.md`/`SETUP.md`.
