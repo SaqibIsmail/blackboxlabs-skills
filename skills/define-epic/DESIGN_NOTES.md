@@ -1,7 +1,15 @@
-# /define-epic — Pipeline Design (draft, not yet a working skill)
+# /define-epic — Pipeline Design
 
-Status: design drafted (architecture agreed via plan review 2026-09-11); not yet implemented as
-`SKILL.md`. Open questions below block that.
+**Status (2026-09-13): implemented.** See `SKILL.md`/`SETUP.md`. This file stays as the rationale
+record.
+
+**Added while implementing (2026-09-13):** reading gstack's `spec/SKILL.md` in full (the TODO
+below) surfaced a step neither this file nor `SKILL.md`'s earlier draft had: a **dedupe check**
+before creating anything — search for similar existing epics, ask whether to merge rather than
+file a duplicate. Gstack's version is GitHub-issue-specific (`gh issue list` + its own
+issue-title-guard tooling); adapted here to a Jira JQL search via `jira-integration`, treating
+returned titles as untrusted data per that skill's own security guidance. Flagged to Saqib before
+adding it since it's new scope, not just detail-filling; approved. See `SKILL.md` Step 2.
 
 ## What this is
 
@@ -16,34 +24,10 @@ through issue-filing and worktree-spawning; only the Phase 1–2 questioning dis
 cherry-picked here. Phases 3–5 are covered elsewhere in this pipeline, in its own way, by
 `senior-engineer` and `plan-feature`.
 
-## Command
+## Command and sequence
 
-```
-/define-epic "<what to build>"
-```
-
-## Sequence
-
-1. Read `PROJECT.md` (including `vision_context`, if `founder-vision` has run) for grounding.
-2. Check `log-decision` for any prior entry referencing this epic (resume, not restart).
-3. **Phase 1 — Why** (adapted from gstack `spec`): ask until all five are answered without
-   hand-waving:
-   - Who is affected (end user, internal team, just you)?
-   - What's the current behavior/situation (verified, not assumed)?
-   - What should it be instead?
-   - Why now?
-   - How will we know it's done — an observable, measurable outcome?
-4. **Phase 2 — Scope and boundaries** (adapted from gstack `spec`):
-   - What's explicitly out of scope?
-   - What existing systems/features does this touch?
-   - Any ordering constraints?
-   - What's the smallest version that delivers the value (MVP cut)?
-   - What are the failure modes / rollback options?
-5. Create the epic in Jira (the expected ticketing system, per `define-project`'s resolved
-   Jira-connection interview — **resolved 2026-09-12: no `ticketing.system: none` fallback
-   designed here**, a real epic always gets created). Hand off the epic reference to
-   `senior-engineer`.
-6. Call `log-decision` (write) — first entry for this epic: scope, explicit non-goals, why-now.
+Superseded by `SKILL.md` Steps 1–6, which now include the dedupe check (Step 2) this draft
+didn't have. Kept here only as a historical note.
 
 ## Open questions
 
@@ -60,9 +44,6 @@ cherry-picked here. Phases 3–5 are covered elsewhere in this pipeline, in its 
    questions at `senior-engineer`-time, no fixed rule, same principle as ticket right-sizing. This
    skill only scopes the *ask*, never the *breakdown*.
 
-## TODOs (block turning this into a real `SKILL.md`)
+## TODOs
 
-1. Read gstack's `spec/SKILL.md` Phase 1–2 sections in full (already excerpted during source
-   selection) and write the exact question wording, reviewed against a real epic-shaped example.
-2. Write the Jira epic-creation call concretely (which `jira-integration` fields, what the epic
-   description template looks like) — now load-bearing since Jira is the confirmed path.
+None blocking — this skill is implemented. See `SKILL.md`/`SETUP.md`.
