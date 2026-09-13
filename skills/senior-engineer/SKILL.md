@@ -3,7 +3,8 @@ name: senior-engineer
 description: >
   Takes one epic (from define-epic) and turns it into small, individually-implementable Jira
   tickets. Investigates the codebase before asking anything technical, mines existing behavior
-  into a baseline spec when the epic touches undocumented existing code, checks for a UI
+  into a baseline spec when the epic touches undocumented business logic, mines existing UI
+  component interfaces when it touches undocumented visual/component code, checks for a UI
   reference and spikes a research ticket when one exists, decides how many spec-kit features the
   epic needs, drives plan-feature per feature, then right-sizes the resulting tasks into tickets
   small enough for a coding agent to implement one without also holding an unrelated concern in
@@ -13,6 +14,7 @@ argument-hint: '<epic-key-or-ref>'
 user-invocable: true
 allowed-tools:
   - Read
+  - Write
   - Grep
   - Glob
   - AskUserQuestion
@@ -53,9 +55,13 @@ Map the epic's request to evidence:
 
 ## Step 4 — Mine existing behavior, if any
 
-If Step 3 found the epic touches an existing capability, check for a baseline spec at the fixed
-path `openspec/specs/<capability>/spec.md` (same path convention everywhere this pipeline runs,
-not project-configurable):
+Step 3's findings split into two different kinds of "existing thing this epic touches," each
+needing a different mining approach — `spec-miner`'s Requirement/Invariant model fits business
+logic; it doesn't fit UI/visual/component code, which mostly has no WHEN→THEN triggers to extract.
+
+**4a — Existing business-logic capability.** Check for a baseline spec at the fixed path
+`openspec/specs/<capability>/spec.md` (same path convention everywhere this pipeline runs, not
+project-configurable):
 
 - **No baseline exists:** run `spec-miner` (via `Skill`) against *only this specific capability* —
   do not run its own "present the whole codebase's capability list, ask which to mine" step; this
@@ -66,11 +72,36 @@ not project-configurable):
   files>` and compare against that recorded SHA. If they differ, the code changed since mining —
   re-run `spec-miner` against the same capability to refresh the baseline. If they match, use the
   existing baseline as-is.
-- **Genuinely greenfield epic:** skip this step entirely — nothing to mine.
 
-The (possibly freshly-mined) baseline becomes grounding for both the rest of this investigation
-and for `plan-feature` later (Step 6 hands it along so the new spec is written as a delta against
-known behavior, not from scratch).
+**4b — Existing UI/visual/component code the epic builds on or extends.** Check for
+`openspec/components/<component-name>/interface.md` (same fixed-path convention, sibling to
+`openspec/specs/`). If missing, mine it directly (no external skill for this — an original
+technique, since none of BMAD/gstack/superpowers/ECC cover UI-component interface extraction):
+
+- **Props/API surface** — every prop, its type, required/optional, defaults. Explicitly note when
+  a component has **no props** (self-contained, not configurable from outside) or **hardcodes
+  content** that looks like it should be configurable (e.g. literal text baked into the component)
+  — these are exactly the details that cause a second use case to silently break.
+- **Behavior summary** — what it does, in plain terms (not a full spec, just enough to orient).
+- **Dependencies** — libraries used, and required ancestors/context (e.g. "must be wrapped by
+  `X`" — verify this by reading the code, not by assuming from how it's currently used).
+- **Key constants/config** — cite `file:line`, same discipline as `spec-miner`'s `enforced` field.
+- **Accessibility notes** — anything already handled (e.g. `prefers-reduced-motion`) that a new
+  use case must not silently drop.
+- **Existing integration points** — `Grep` for every current usage site, cite `file:line`. This is
+  often the most important finding: a component already wired into a specific page is a real
+  constraint on how it can be reused, not a blank slate.
+- **Constraints/gotchas** — performance sensitivity, anything that would break if copied naively.
+
+Write to `openspec/components/<component-name>/interface.md`. No staleness re-check mechanism yet
+for this path (unlike 4a) — re-mine manually if the component changes significantly; formalizing
+an automatic check is a future refinement, not blocking.
+
+**Genuinely greenfield epic, no existing capability or component touched:** skip Step 4 entirely.
+
+The (possibly freshly-mined) baseline(s) become grounding for both the rest of this investigation
+and for `plan-feature` later (Step 6 hands them along so new work is written as a delta against
+known behavior/interfaces, not from scratch).
 
 ## Step 5 — UI check
 
@@ -167,6 +198,14 @@ Via `jira-integration`'s `jira_create_issue` (or delegate to spec-kit's own
 `/speckit.taskstoissues` when `PROJECT.md.ticketing.system: github-issues`), each linked to the
 parent epic (`jira_create_issue_link`) and to its originating `spec.md`/`plan.md`.
 
+**Use real Atlassian Document Format structure, not a wall of prose** — headings, bullet lists,
+and bold labels (`Given:`, `When:`, `Then:`) for the story/AC content, mirroring the actual API
+call shape (`content` blocks), not one dense paragraph per section.
+
+**Ticket type mapping** (per `PROJECT.md.ticketing.issue_types_available`): when the project has
+no native `Bug`/`Spike` issue type (common in a default Jira template), use `Task` plus a label
+(`spike`, `bug`) instead of forcing a nonexistent type.
+
 **Every ticket's description also embeds a path/link back to its relevant `log-decision`
 entry(ies)** — the epic's decision file from `define-epic`, and the feature's from `plan-feature`
 if it wrote its own — using the `path` `log-decision` returned when it wrote them. Without this, a
@@ -193,6 +232,8 @@ just as one axis of a richer split, not the only one.
 
 - `spec-miner` is always targeted at the one capability Step 3 already identified — never asked
   to present a whole-codebase capability list, since this skill isn't onboarding the whole repo.
+- Component-interface mining (Step 4b) has no staleness re-check yet, unlike `spec-miner`'s
+  commit-SHA comparison — re-mine manually when a touched component changes significantly.
 - The feature-split criteria in Step 6 are diagnostic questions to inform judgment, not a formula
   — a "yes" to one doesn't mechanically force a split or merge.
 - No built-in "fix a bad ticket split after filing" mode — a wrong split found later is fixed by

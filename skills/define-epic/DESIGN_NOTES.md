@@ -44,6 +44,14 @@ didn't have. Kept here only as a historical note.
    questions at `senior-engineer`-time, no fixed rule, same principle as ticket right-sizing. This
    skill only scopes the *ask*, never the *breakdown*.
 
+## Findings from live testing against `blackboxlabs` (2026-09-13)
+
+Real epic created successfully (`SCRUM-5`). Two fixes applied directly to `SKILL.md`: (1) Jira's
+`/rest/api/3/search` endpoint is deprecated (`410 Gone`) — must use `/rest/api/3/search/jql`,
+which `jira-integration`'s own docs don't yet reflect; (2) the first real Jira write used dense
+prose paragraphs instead of proper ADF structure (headings/bullets/bold labels) — fixed in the
+skill and applied as a retroactive edit to the real ticket.
+
 ## TODOs
 
 None blocking — this skill is implemented. See `SKILL.md`/`SETUP.md`.

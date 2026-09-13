@@ -135,6 +135,14 @@ Context`/`## Decision`/`## Consequences` body sections extracted as plain text (
 decision and why, not the road not taken). Sorted most-recent-`date`-first. A caller that wants
 the raw file (e.g. to read `Alternatives Considered`) can always read `path` directly.
 
+## Findings from live testing against `blackboxlabs` (2026-09-13)
+
+Vault-creation consent gate worked as designed (asked before creating `brain/decisions/`, user
+confirmed). Numbering worked (`0001-...`, no existing files). One bug found and fixed: the query
+grep pattern matched `README.md` (its own index table coincidentally contained the search term)
+alongside the real decision file — `SKILL.md` now explicitly excludes `README.md`/`template.md`
+from query matches.
+
 ## TODOs
 
 None blocking — this skill is implemented. See `SKILL.md`/`SETUP.md`.

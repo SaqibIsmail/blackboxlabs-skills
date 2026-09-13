@@ -115,6 +115,15 @@ not vendored" convention.
    Step 4. Also resolved along the way: Jira needs three fields (`jira_site_url`, `jira_email`,
    `auth_env`), not one — confirmed by reading ECC's `jira-integration` skill in full.
 
+## Findings from live testing against `blackboxlabs` (2026-09-13)
+
+Confirmed working exactly as designed: the `CLAUDE.md` → `@AGENTS.md` import-detection scan
+heuristic matched real behavior immediately; the doc-map pointer approach was clearly the right
+call once seen against a real, 15-row, actively-changing table. Added `jira_email` and
+`issue_types_available` to the schema in practice (the latter wasn't in the original design —
+worth adding formally: a default Jira template may not have native `Bug`/`Spike` issue types,
+which `senior-engineer` needs to know before ticket creation).
+
 ## TODOs
 
-None blocking — this skill is implemented. See `SKILL.md`/`SETUP.md`.
+None — `issue_types_available` is now a real, documented schema field in `SKILL.md`.

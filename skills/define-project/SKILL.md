@@ -76,6 +76,11 @@ Jira is the expected system for this pipeline (not a hypothetical "if any"). Ask
    in the current shell (`printenv <name>` non-empty). If it isn't, tell the user plainly — "that
    env var isn't set yet; `senior-engineer`/`jira-integration` will fail until it is" — but do
    **not** block finishing this skill on it. Recording the intended name now is still useful.
+5. **If the token is confirmed set and reachable**, query the project's available issue types
+   (`GET /rest/api/3/project/<project_key>`) and record them at
+   `ticketing.issue_types_available`. A default Jira template commonly lacks native `Bug`/`Spike`
+   types — `senior-engineer` needs to know this before it tries to create one. Skip silently if
+   the token isn't set yet; this isn't worth blocking on either.
 
 If the user says this project genuinely won't use Jira (a one-off exception, not the default),
 set `ticketing.system: none` and skip the four fields above — `assign-tasks`/`senior-engineer`'s
@@ -128,6 +133,8 @@ ticketing:
   jira_site_url: null
   jira_email: null
   auth_env: null                             # env var NAME holding the API token, never the token itself
+  issue_types_available: [ ... ]              # queried once the token is confirmed set; e.g. a default
+                                               # template often lacks native Bug/Spike types
 coding_standards: [ ... ]                     # only when doc_map_source is null
 obsidian:
   vault_path: null

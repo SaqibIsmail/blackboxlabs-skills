@@ -63,8 +63,13 @@ name what evidence would change it.
 
 ### The six forcing questions
 
-Ask **one at a time** via `AskUserQuestion`. Stop after each; wait for the answer before the next.
-Smart-skip any question an earlier answer already resolved.
+Ask **one at a time, as plain conversational questions — not via `AskUserQuestion`.** These are
+genuinely open-ended; forcing them into a 2-4 option picker fights the format. Stop after each;
+wait for the answer before the next. Smart-skip any question an earlier answer already resolved.
+
+**Ask the stage directly first** — the routing table below needs it, and it isn't inferable
+silently: "Where is this right now — pre-product, has users but no revenue, has paying customers,
+or pure engineering/infra work?"
 
 **Route by stage — don't ask all six to everyone:**
 
@@ -74,6 +79,11 @@ Smart-skip any question an earlier answer already resolved.
 | Has users, no revenue | Q2, Q4, Q5 |
 | Has paying customers | Q4, Q5, Q6 |
 | Pure engineering/infra | Q2, Q4 only |
+
+**Edge case — "has paying customers" but nothing's shipped yet** (a signed deal doesn't guarantee
+delivery happened): Q5 (Observation) assumes something live exists to watch. If it doesn't, don't
+force an answer — note explicitly that Q5 is deferred until something ships, and say why, rather
+than accepting a hollow answer or skipping silently.
 
 **Mode (b) intrapreneurship reframe:** ask Q4 as "what's the smallest demo that gets your
 sponsor/VP to greenlight this?" and Q6 as "does this survive a reorg, or does it die when your

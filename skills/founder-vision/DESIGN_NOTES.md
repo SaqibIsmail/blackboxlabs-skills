@@ -57,6 +57,18 @@ non-destructive spirit as `log-decision`'s own "never silently overwrite" rule),
 reasoning stays visible even after a pivot. A re-run should also prompt `log-decision` to record
 *why* the pivot happened, separately from the vision update itself.
 
+## Findings from live testing against `blackboxlabs` (2026-09-13)
+
+1. The routing table ("route by stage") never actually said how "stage" gets determined — had to
+   ask it as an explicit question. Should be added as its own micro-step before the routing table.
+2. The six forcing questions are genuinely open-ended — asking them via `AskUserQuestion` (which
+   forces 2-4 discrete options) was a bad fit. Asked as plain conversational questions instead,
+   which worked much better. `SKILL.md` should say this explicitly, not just "via AskUserQuestion."
+3. Q5 (Observation) assumes something is already live to observe — but "has paying customers"
+   doesn't guarantee delivery has shipped yet (a signed deal ≠ a built product). Hit this for
+   real: deferred Q5 with a clear reason rather than forcing an answer. Worth a named case in the
+   routing table, not just an implicit gap.
+
 ## TODOs
 
-None blocking — this skill is implemented. See `SKILL.md`/`SETUP.md`.
+None — all three findings above are now applied in `SKILL.md`.

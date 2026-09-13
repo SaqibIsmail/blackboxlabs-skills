@@ -181,7 +181,30 @@ decisions — see TODOs below.
 
 ## TODOs
 
-None blocking — this skill is implemented. See `SKILL.md`/`SETUP.md`. One nice-to-have left for
-later, not blocking: write 2-3 worked examples (a real epic → the tickets it produces) to
-pressure-test the right-sizing/feature-count judgment against real use, once this pipeline is
-actually run against `blackboxlabs`.
+None blocking — this skill is implemented. See `SKILL.md`/`SETUP.md`.
+
+## Findings from live testing against `blackboxlabs` (2026-09-13) — the worked example
+
+This is that worked example (real epic `SCRUM-5`, "BlackboxLabs landing page"). Findings, all
+already folded into `SKILL.md`:
+
+1. **Step 4 needed a second mining path.** The epic's existing-system touchpoint
+   (`features/logo-animation/`, a particle-physics scroll scene) is UI/visual code, not business
+   logic — `spec-miner`'s Requirement/Invariant model didn't fit it (no real WHEN→THEN triggers in
+   a render loop). Saqib pushed back on dropping mining entirely rather than accepting "greenfield,
+   skip it." Added a new **Step 4b: Component-Interface Mining** — an original technique (no
+   external source covers this), extracting props/API surface, hardcoded content, dependencies,
+   `file:line`-cited constants, accessibility notes, and existing integration points, written to
+   `openspec/components/<name>/interface.md` (sibling convention to `spec-miner`'s output path).
+   Applied for real against `LogoOpenScene`/`SmoothScroll` — found real, load-bearing facts:
+   zero props, hardcoded wordmark text, already wired as the home page's hero in `app/page.tsx`.
+2. **Ticket type mapping was untested until now.** `blackboxlabs`'s real Jira project (a default
+   Scrum template) has no native `Bug`/`Spike` issue type — only `Epic`/`Task`/`Story`/`Subtask`.
+   Added: use `Task` + a label when the project lacks the native type, rather than assuming it
+   exists.
+3. Same Jira-formatting fix as `define-epic` applies here (Step 9).
+
+## TODOs
+
+Component-interface mining (Step 4b) has no staleness re-check yet (unlike `spec-miner`'s
+commit-SHA comparison) — noted as a real gap in `SKILL.md` itself, not blocking.

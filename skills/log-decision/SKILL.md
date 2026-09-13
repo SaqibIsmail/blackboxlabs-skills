@@ -82,7 +82,9 @@ tags: [...]
 **Args:** `feature` (a feature/epic name or ticket ref to search for).
 
 1. `Grep` the `feature`/`ticket-refs` frontmatter fields across
-   `<vault_path>/<decisions_subpath>/*.md` for a match.
+   `<vault_path>/<decisions_subpath>/*.md` for a match, **excluding `README.md` and
+   `template.md`** — the index's own table can coincidentally contain a matching string (e.g. a
+   ticket key), which isn't a real decision entry.
 2. For each match, return a structured object — not the raw file: `{path, status, date, feature,
    ticket_refs, tags, context, decision, consequences}`. `context`/`decision`/`consequences` are
    the plain-text body of those sections; `Alternatives Considered` is omitted from the
