@@ -1,7 +1,14 @@
-# /founder-vision — Pipeline Design (draft, not yet a working skill)
+# /founder-vision — Pipeline Design
 
-Status: design drafted (architecture agreed via plan review 2026-09-11); not yet implemented as
-`SKILL.md`. Open questions below block that.
+**Status (2026-09-12): implemented.** See `SKILL.md`/`SETUP.md`. This file stays as the rationale
+record.
+
+**Design changed while implementing (2026-09-12):** reading gstack's actual `office-hours` phase
+files in full (the TODO below) surfaced that it isn't one fixed 6-question list — it's two modes
+(a rigorous adversarial "startup diagnostic" vs. a generative "builder brainstorm" for side
+projects), with built-in stage-based routing. Flagged this to Saqib before finalizing, since it
+changed the "always ask the same 6" call made before reading the source; **decided to adopt both
+modes** — see `SKILL.md` Step 0.
 
 ## What this is
 
@@ -15,45 +22,11 @@ own plain prose, not its runtime (gstack's actual skill is wired into its own te
 tracking and `gbrain` context-query infra, none of which this pipeline vendors — same
 "technique, not runtime" rule already applied to BMAD and superpowers).
 
-## Command
+## Command, interview, and output
 
-```
-/founder-vision
-```
-
-No arguments — interviews from scratch. Re-running on a project that already has `VISION.md`
-asks for confirmation before overwriting (matching `define-project`'s own "don't silently
-overwrite" courtesy).
-
-## Interview (adapted from gstack `office-hours`'s six forcing questions)
-
-Ask until each is answered without hand-waving — don't accept a vague answer and move on:
-
-1. **Demand reality** — who actually has this problem today, concretely (not "everyone")?
-2. **Status quo** — what do they do about it right now, without this product?
-3. **Desperate specificity** — how painful is this, really — would they pay, switch, or change
-   behavior for a fix?
-4. **Narrowest wedge** — what's the smallest version of this that's still worth building first?
-5. **Observation** — what have you actually seen (not assumed) that makes you think this is real?
-6. **Future-fit** — where does this go if it works, so early choices don't paint the project into
-   a corner?
-
-## Output
-
-Write `VISION.md` at the project root:
-
-```yaml
----
-project_name: string
-date: YYYY-MM-DD
----
-
-## Target user / wedge
-## Status quo (what they do without this)
-## Why now
-## Non-goals (explicit)
-## North star (if this works)
-```
+Superseded by the mode split — see `SKILL.md` Steps 0/1/1′/2 for the actual, current command
+sequence, question wording, and `VISION.md` schema. Kept only as a historical note that the
+original draft assumed a single fixed 6-question list before the source files were read in full.
 
 ## Handoff
 
@@ -63,10 +36,11 @@ and links it (`vision_context: ./VISION.md | null`) rather than duplicating its 
 
 ## Open questions
 
-1. ~~Should this skill refuse to run for a clearly-not-a-startup project...~~ **Resolved
-   (2026-09-12):** no bail-out path — always ask the same 6 questions. Low-stakes answers ("just
-   me, solo dev" / "N/A, internal tool") are fine and pass through without friction. Keeps the
-   skill simple; no detection logic to get wrong.
+1. ~~Should this skill refuse to run for a clearly-not-a-startup project...~~ **Superseded
+   (2026-09-12):** the original resolution ("always ask the same 6, no bail-out") assumed a
+   single fixed question list. Reading gstack's real source in full showed it's actually two
+   modes (startup diagnostic vs. builder brainstorm) — adopted both, see `SKILL.md` Step 0. A
+   non-startup project now gets Builder mode, not a bail-out or the wrong diagnostic.
 2. ~~Does `VISION.md` ever get revisited/updated...~~ **Resolved (2026-09-12):** yes, it can be
    re-run/updated when the project's direction genuinely changes — see "Revisions," below (new
    section this resolution requires).
@@ -83,10 +57,6 @@ non-destructive spirit as `log-decision`'s own "never silently overwrite" rule),
 reasoning stays visible even after a pivot. A re-run should also prompt `log-decision` to record
 *why* the pivot happened, separately from the vision update itself.
 
-## TODOs (block turning this into a real `SKILL.md`)
+## TODOs
 
-1. Read gstack's actual `office-hours` phase files (`sections/phase-2a-startup-diagnostic.md`,
-   `phase-2b-builder-brainstorm.md`) in full before finalizing exact question wording — this draft
-   is based on the top-level `SKILL.md` description only, not those phase files yet.
-2. Write the concrete revision format (new section header convention, how much of the old answers
-   stay inline vs. get summarized) for the "Revisions" mechanism above.
+None blocking — this skill is implemented. See `SKILL.md`/`SETUP.md`.
