@@ -231,3 +231,23 @@ text slots, no pipe connector) — resolved by splitting mechanism (borrow the p
 technique) from content (build text-cards and the pipe connector custom). The pipe connector
 itself reuses `logo-animation`'s `particlePhysics.ts` directly, per Saqib's explicit ask — a good
 real example of Component-Interface Mining's output (Step 4b) actually getting used downstream.
+
+## Bug found and fixed: `plan-feature`/`tasks.md` contract gap (2026-09-14)
+
+The tickets created during the 2026-09-13 test (above) never actually went through
+`plan-feature`/spec-kit at all — Step 6 concluded one feature was enough and the test used a
+hand-built shortcut instead, since `spec-kit` wasn't installed yet. Two build tickets from that
+shortcut (quote-animation, sticky-card mechanism) ended up adapting a reference component with no
+preceding research spike, unlike three sibling tickets that correctly got one (navbar, socials,
+nav-IA) — a plain inconsistency in applying Step 5's own rule that night.
+
+Running the real pipeline the next day (installing `spec-kit`, driving
+`speckit-specify→clarify→plan→tasks` for real) surfaced the deeper, structural version of the same
+problem: this skill's Step 7 already assumed it could "walk each feature's `tasks.md`," but
+`plan-feature`'s Step 5 never actually produced one — it stopped at `plan.md`. And even once fixed,
+Step 6's hand-off to `plan-feature` never included Step 5's own UI-check outcome, so an unresearched
+reference had no path into `/speckit.plan`'s research phase, so it could never become a task in
+`tasks.md` for Step 7 to split into a spike ticket. Fixed both, together (`plan-feature`'s
+`SKILL.md` Step 1/4/5, this skill's Step 6/7) — one gap spanning both files, not two independent
+ones. `tasks.md` is now always produced and is Step 7's actual, required input, not spec-kit's own
+`tasks.md` generation being optional cross-check tooling.

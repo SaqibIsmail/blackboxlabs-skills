@@ -30,8 +30,10 @@ PRD workflow).
 Read `PROJECT.md`, and `PRODUCT.md` if `product_context` is set — audience/purpose/voice already
 answered there, don't re-ask. If called by `senior-engineer`, read the handed-off context: the
 epic's `define-epic` answers (who/what/why/scope/non-goals/MVP-cut), `senior-engineer`'s own code
-investigation findings, and any baseline spec from `spec-miner`. Treat all of this as
-already-answered — the interview in Step 4 only covers what it leaves unanswered.
+investigation findings, any baseline spec from `spec-miner`, and **whether its Step 5 UI-check
+flagged an unresearched reference** (a live site, an existing component) this feature adapts.
+Treat all of this as already-answered — the interview in Step 4 only covers what it leaves
+unanswered.
 
 Also read `PROJECT.md.vision_context` → `VISION.md`'s `mode` field (`startup` /
 `intrapreneurial` / `builder`), if `founder-vision` has run, to calibrate how much interview rigor
@@ -71,25 +73,38 @@ Cover, whatever isn't already answered:
   security, compliance, an integration, concurrency — don't run through a fixed checklist; name
   what's actually relevant and ask only about those. This is what keeps `/speckit.clarify` from
   having to guess at it later.
+- **Unresearched reference check**: if Step 1's handed-off context flagged a UI/animation reference
+  that hasn't actually been inspected yet, confirm it explicitly — it must become a real research
+  item in Step 5's Phase 0, not an assumption baked silently into the spec.
 
 In Fast path, batch all of the above into one or two consolidated questions and mark inferred
 answers `[ASSUMPTION: ...]` in the resulting brief for the user to correct before proceeding.
 
 ## Step 5 — Drive spec-kit
 
-Run `/speckit.specify` → `/speckit.clarify` → `/speckit.plan` to produce
-`specs/<feature>/{spec.md,plan.md}`, passing the resolved brief from Step 4 as input. Because
-Step 4 already interviewed first, `/speckit.clarify` should have little left to surface — this is
-one clean round of questions, not two.
+Run `/speckit.specify` → `/speckit.clarify` → `/speckit.plan` → `/speckit.tasks` to produce
+`specs/<feature>/{spec.md,plan.md,tasks.md}`, passing the resolved brief from Step 4 as input.
+Because Step 4 already interviewed first, `/speckit.clarify` should have little left to surface —
+this is one clean round of questions, not two.
+
+**`tasks.md` is not optional.** `senior-engineer`'s own Step 7 groups its `T0xx` tasks directly
+into tickets using BMAD's right-sizing criteria — without it, Step 7 has nothing to walk. If Step 4
+flagged an unresearched reference, make sure it surfaces as its own research task in
+`/speckit.plan`'s Phase 0 (`research.md`) rather than folded into the build task that depends on
+it — a separate research task is what lets Step 7 split it into its own spike ticket, instead of
+relying on a rule someone has to remember to apply at ticket-creation time.
 
 ## Step 6 — Log the decision
 
-Call `log-decision` (write) once `plan.md` is finalized — first entry for this feature: scope,
-chosen approach, explicit non-goals. Return value (the written path) is used by `senior-engineer`
-for the ticket back-link.
+Call `log-decision` (write) once `plan.md`/`tasks.md` are finalized — first entry for this feature:
+scope, chosen approach, explicit non-goals. Return value (the written path) is used by
+`senior-engineer` for the ticket back-link.
 
 ## Explicit defaults (chosen absent further user input — revisit if wrong)
 
+- `/speckit.tasks` always runs as part of Step 5 (fixed 2026-09-14 — an earlier version of this
+  skill stopped at `plan.md`, which silently broke `senior-engineer`'s Step 7, already written to
+  assume `tasks.md` exists. That was a bug, not a considered design choice).
 - Coaching path (ask one at a time) is the default interaction style; Fast path only when the
   user chooses it or signals impatience.
 - Interview rigor scales with `VISION.md.mode` when available; defaults to full rigor

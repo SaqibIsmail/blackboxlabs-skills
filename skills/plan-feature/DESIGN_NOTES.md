@@ -71,3 +71,19 @@ None — all resolved (see resolution notes near the top of this file).
 ## TODOs
 
 None blocking — this skill is implemented. See `SKILL.md`/`SETUP.md`.
+
+## Bug found and fixed via live pipeline test (2026-09-14)
+
+Step 5 originally stopped at `/speckit.plan` (`spec.md`/`plan.md` only) — but `senior-engineer`'s
+own Step 7 was already written to "walk each feature's `tasks.md`," assuming it exists. These two
+files had silently drifted apart: this skill never generated the artifact the other one depended
+on. Not caught until an actual live run tried to reconcile spec-kit's output against real Jira
+tickets and found `senior-engineer`'s Step 7 had nothing to walk.
+
+Fixed: Step 5 now always runs `/speckit.tasks` too. Also closed a second, related gap — Step 6's
+UI-check (an unresearched reference needing a spike) was never explicitly included in the
+hand-off `senior-engineer` passes to this skill, so even when a reference was flagged, nothing
+carried that flag into `/speckit.plan`'s Phase 0 research, so it never became a task in `tasks.md`
+for `senior-engineer`'s Step 7 to split into a spike ticket. Both this skill's Step 1/4/5 and
+`senior-engineer`'s Step 6/7 were updated together — this was one gap spanning both files, not two
+separate ones.

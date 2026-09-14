@@ -158,7 +158,12 @@ earlier one, never the reverse).
 
 For each identified feature, call `/plan-feature` (via `Skill`, a real sub-invocation — not
 inlined) **passing along as context**: `define-epic`'s Phase 1–2 answers, this skill's own
-investigation findings from Step 3, and any baseline spec from Step 4. `plan-feature` only
+investigation findings from Step 3, any baseline spec from Step 4, **and Step 5's UI-check outcome
+— whether a reference was flagged, and whether it's already been researched.** This last item
+matters as much as the others: without it, an unresearched reference only lives in this skill's own
+judgment and can silently fail to reach `tasks.md` as a real research task, which is how a build
+ticket can end up adapting a reference with no spike behind it (found live, 2026-09-14 —
+see `brain/decisions/0003`/`0004` in a tested project for the concrete case). `plan-feature` only
 interviews about what that context leaves genuinely unanswered — it does not re-ask scope/non-goals
 already covered at the epic level.
 
@@ -174,6 +179,13 @@ combined principles:
 - **No forward dependencies** (BMAD): a ticket must be completable using only what prior tickets
   in the same feature have already delivered — never "this only works once ticket N+2 lands."
   Order tickets so each is independently buildable in sequence.
+
+A task that researches an unfamiliar reference before a dependent build task exists precisely
+because Step 6 handed that flag through to `plan-feature` — group it as its own `spike` ticket
+ordered before the build ticket it unblocks, never folded into the same ticket. This is the actual
+mechanism behind Step 4/5's spike rule, not a separate check to remember here: if `tasks.md`
+contains the research task, this step's own grouping logic (risk-boundary criterion) naturally
+splits it out.
 
 For each ticket, write a description in BMAD's story format:
 
@@ -253,6 +265,10 @@ just as one axis of a richer split, not the only one.
 
 ## Explicit defaults (chosen absent further user input — revisit if wrong)
 
+- Step 6's hand-off to `plan-feature` always includes Step 5's UI-check outcome (fixed
+  2026-09-14 — previously omitted, which is how an unresearched reference could silently reach
+  Step 9 without ever becoming its own spike ticket; found via a live pipeline run where two build
+  tickets adapted a reference with no spike behind them).
 - `spec-miner` is always targeted at the one capability Step 3 already identified — never asked
   to present a whole-codebase capability list, since this skill isn't onboarding the whole repo.
 - Component-interface mining (Step 4b) uses the identical staleness mechanism as `spec-miner`
