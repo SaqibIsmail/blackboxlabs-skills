@@ -2,6 +2,11 @@
 
 Status: design agreed, not implemented. Two TODOs and a few open questions block turning this into an actual SKILL.md — see bottom.
 
+**Not final (2026-09-11):** flagged for re-discussion now that the epic layer
+(`founder-vision`→`define-epic`→`senior-engineer`) exists upstream. This skill now receives
+tickets produced by `senior-engineer`'s right-sizing step rather than a simpler upstream source —
+worth revisiting whether anything here needs to change as a result before treating it as settled.
+
 ## What this is
 
 A single top-level command that orchestrates two existing skills — **Impeccable**
@@ -142,3 +147,13 @@ Loops until approved.
    description), does it still count as Mode 1, or fall back to Mode 2?
 4. Is one `/build-frontend` call always scoped to exactly one page/route, or
    could it target a multi-page flow in a single run?
+
+## Open questions (added 2026-09-10 — pipeline integration)
+
+5. `assign-tasks` (a new scrum-master skill, see `../assign-tasks/DESIGN_NOTES.md`) will produce
+   `[FE]`-tagged tasks from a shared `spec.md`/`plan.md`/`tasks.md` per feature. Should
+   `/build-frontend` accept a ticket/task reference (e.g. a `FE-<slug>` ID or a `tasks.md` line)
+   as an alternate input alongside its current free-text description, so the scrum-master skill
+   can hand it work directly instead of a human re-describing the task in prose? If so, does the
+   Step 3 `shape` brief get derived from the referenced spec/task instead of interviewed fresh —
+   and does that skip or shorten the interview this skill currently always does?
