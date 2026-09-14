@@ -214,9 +214,19 @@ no native `Bug`/`Spike` issue type (common in a default Jira template), use `Tas
 (`spike`, `bug`) instead of forcing a nonexistent type.
 
 **Every ticket's description also embeds a path/link back to its relevant `log-decision`
-entry(ies)** — the epic's decision file from `define-epic`, and the feature's from `plan-feature`
-if it wrote its own — using the `path` `log-decision` returned when it wrote them. Without this, a
-ticket in Jira has no way back to why it was scoped the way it was.
+entry(ies)** that already exist by this point — the epic's decision file from `define-epic`, and
+the feature's from `plan-feature` if it wrote its own — using the `path` `log-decision` returned
+when it wrote them. Without this, a ticket in Jira has no way back to why it was scoped the way
+it was. (This can only cover decisions written *before* this step — see Step 10 for the reverse
+case.)
+
+**For a large epic, group tickets under an intermediate tier, not one flat list.** Jira has no
+native nested-Epic support (without premium Advanced Roadmaps) — use the project's `Story` issue
+type as the grouping/theme tier (one per logical section of the epic), with the concrete tickets
+created as `Subtask`s under each `Story` (`parent` field points to the `Story`, not the `Epic`
+directly). Post any **cross-group integration notes** (dependencies between the groups themselves,
+shared mechanisms one group's work reuses from another) as a comment on the epic — the place a
+reader looking at the whole epic will actually see it, not buried in one subtask's description.
 
 After creation, call `log-decision` (update mode) to enrich the epic's (and relevant feature's)
 decision entry with `ticket-refs: [<created ticket keys>]`.
@@ -224,9 +234,15 @@ decision entry with `ticket-refs: [<created ticket keys>]`.
 ## Step 10 — Log non-obvious deviations
 
 If the investigation surfaced a non-obvious scoping call not already captured (e.g. "epic split
-into two features because X," "deferred Y as a separate spike because Z"), call `log-decision`
-(write) recording it. Skip this step if nothing non-obvious came up — not every run needs a new
-entry beyond what Steps 5/9 already wrote.
+into two features because X," "deferred Y as a separate spike because Z," a reference that didn't
+match intent and how it was resolved), call `log-decision` (write) recording it. Skip this step if
+nothing non-obvious came up — not every run needs a new entry beyond what Steps 5/9 already wrote.
+
+**Back-link the other direction, retroactively.** A decision logged here, by definition, didn't
+exist when Step 9 created the tickets — it can't have been embedded in them. Once this entry is
+written, add its path as a follow-up comment on the epic and any tickets it specifically concerns
+(not every ticket reflexively) — the same back-link Step 9 does at creation time, just applied
+after the fact instead of during.
 
 ## Relationship to `assign-tasks`
 
@@ -245,3 +261,6 @@ just as one axis of a richer split, not the only one.
   — a "yes" to one doesn't mechanically force a split or merge.
 - No built-in "fix a bad ticket split after filing" mode — a wrong split found later is fixed by
   editing Jira directly.
+- Story-as-grouping-tier (Step 9) is judgment, not automatic — use it when an epic is genuinely
+  large enough that a flat ticket list would be hard to navigate; a small epic can skip straight
+  to `Task`/`Subtask` under the `Epic` with no `Story` tier at all.

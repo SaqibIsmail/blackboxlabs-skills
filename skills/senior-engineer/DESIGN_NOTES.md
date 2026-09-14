@@ -208,3 +208,26 @@ already folded into `SKILL.md`:
 
 None — Component-Interface Mining (Step 4b) now uses the identical commit-SHA staleness
 mechanism as `spec-miner` (Step 4a). Both mining paths in Step 4 are symmetric.
+
+## Findings from live testing, continued (2026-09-13) — full ticket creation for real
+
+Ran Steps 6-10 for real against `SCRUM-5`: created 5 `Story`-tier groupings (22 issues total —
+1 epic + 5 stories + 16 subtasks) via the Jira `parent` field, confirmed mechanically first with
+a throwaway test issue pair before bulk-creating. Two more fixes applied:
+
+1. **Story-as-grouping-tier formalized** (Saqib explicitly wanted "smaller epics" containing
+   tickets — Jira has no nested-Epic support without premium Advanced Roadmaps). `Story` fills
+   that role; cross-group integration notes go on the epic as a comment, not buried in one
+   subtask. Added to Step 9 and "Explicit defaults" as judgment-based (skip for a small epic).
+2. **Sequencing bug found and fixed: Step 9's back-link assumed Step 10's decisions already
+   existed.** They don't — Step 10 runs after Step 9, so a decision logged there can't have been
+   embedded in tickets already created. Fixed: Step 10 now explicitly back-links retroactively
+   (a follow-up comment on the epic/relevant tickets) instead of assuming it could happen inline.
+   Caught this because I actually forgot the back-link while live-creating tickets and had to
+   patch it in after — a real gap, not a hypothetical one.
+
+Also: the `skiper17` reference genuinely didn't match Saqib's intent (a sticky *image*-stack, no
+text slots, no pipe connector) — resolved by splitting mechanism (borrow the pin+scrub scroll
+technique) from content (build text-cards and the pipe connector custom). The pipe connector
+itself reuses `logo-animation`'s `particlePhysics.ts` directly, per Saqib's explicit ask — a good
+real example of Component-Interface Mining's output (Step 4b) actually getting used downstream.
