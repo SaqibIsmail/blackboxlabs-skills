@@ -75,27 +75,34 @@ project-configurable):
 
 **4b — Existing UI/visual/component code the epic builds on or extends.** Check for
 `openspec/components/<component-name>/interface.md` (same fixed-path convention, sibling to
-`openspec/specs/`). If missing, mine it directly (no external skill for this — an original
-technique, since none of BMAD/gstack/superpowers/ECC cover UI-component interface extraction):
+`openspec/specs/`):
 
-- **Props/API surface** — every prop, its type, required/optional, defaults. Explicitly note when
-  a component has **no props** (self-contained, not configurable from outside) or **hardcodes
-  content** that looks like it should be configurable (e.g. literal text baked into the component)
-  — these are exactly the details that cause a second use case to silently break.
-- **Behavior summary** — what it does, in plain terms (not a full spec, just enough to orient).
-- **Dependencies** — libraries used, and required ancestors/context (e.g. "must be wrapped by
-  `X`" — verify this by reading the code, not by assuming from how it's currently used).
-- **Key constants/config** — cite `file:line`, same discipline as `spec-miner`'s `enforced` field.
-- **Accessibility notes** — anything already handled (e.g. `prefers-reduced-motion`) that a new
-  use case must not silently drop.
-- **Existing integration points** — `Grep` for every current usage site, cite `file:line`. This is
-  often the most important finding: a component already wired into a specific page is a real
-  constraint on how it can be reused, not a blank slate.
-- **Constraints/gotchas** — performance sensitivity, anything that would break if copied naively.
+- **No interface doc exists:** mine it directly (no external skill for this — an original
+  technique, since none of BMAD/gstack/superpowers/ECC cover UI-component interface extraction).
+  Extract:
+  - **Props/API surface** — every prop, its type, required/optional, defaults. Explicitly note
+    when a component has **no props** (self-contained, not configurable from outside) or
+    **hardcodes content** that looks like it should be configurable (e.g. literal text baked into
+    the component) — these are exactly the details that cause a second use case to silently break.
+  - **Behavior summary** — what it does, in plain terms (not a full spec, just enough to orient).
+  - **Dependencies** — libraries used, and required ancestors/context (e.g. "must be wrapped by
+    `X`" — verify this by reading the code, not by assuming from how it's currently used).
+  - **Key constants/config** — cite `file:line`, same discipline as `spec-miner`'s `enforced`
+    field.
+  - **Accessibility notes** — anything already handled (e.g. `prefers-reduced-motion`) that a new
+    use case must not silently drop.
+  - **Existing integration points** — `Grep` for every current usage site, cite `file:line`. Often
+    the most important finding: a component already wired into a specific page is a real
+    constraint on how it can be reused, not a blank slate.
+  - **Constraints/gotchas** — performance sensitivity, anything that would break if copied naively.
 
-Write to `openspec/components/<component-name>/interface.md`. No staleness re-check mechanism yet
-for this path (unlike 4a) — re-mine manually if the component changes significantly; formalizing
-an automatic check is a future refinement, not blocking.
+  Write to `openspec/components/<component-name>/interface.md`, headed with the same freshness
+  line `spec-miner` uses: `> Mined: YYYY-MM-DD (commit <sha>)`, `<sha>` from
+  `git log -1 --format=%H`.
+- **Interface doc exists — staleness check, identical mechanism to 4a:** run `git log -1
+  --format=%H -- <component's source files>` and compare against the doc's own recorded `Mined:
+  (commit <sha>)` line. If they differ, the component changed since it was mined — re-mine it,
+  same process as above. If they match, use the existing doc as-is.
 
 **Genuinely greenfield epic, no existing capability or component touched:** skip Step 4 entirely.
 
@@ -232,8 +239,8 @@ just as one axis of a richer split, not the only one.
 
 - `spec-miner` is always targeted at the one capability Step 3 already identified — never asked
   to present a whole-codebase capability list, since this skill isn't onboarding the whole repo.
-- Component-interface mining (Step 4b) has no staleness re-check yet, unlike `spec-miner`'s
-  commit-SHA comparison — re-mine manually when a touched component changes significantly.
+- Component-interface mining (Step 4b) uses the identical staleness mechanism as `spec-miner`
+  (Step 4a) — a recorded commit SHA compared against `git log -1` on the component's source files.
 - The feature-split criteria in Step 6 are diagnostic questions to inform judgment, not a formula
   — a "yes" to one doesn't mechanically force a split or merge.
 - No built-in "fix a bad ticket split after filing" mode — a wrong split found later is fixed by

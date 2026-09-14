@@ -206,5 +206,5 @@ already folded into `SKILL.md`:
 
 ## TODOs
 
-Component-interface mining (Step 4b) has no staleness re-check yet (unlike `spec-miner`'s
-commit-SHA comparison) — noted as a real gap in `SKILL.md` itself, not blocking.
+None — Component-Interface Mining (Step 4b) now uses the identical commit-SHA staleness
+mechanism as `spec-miner` (Step 4a). Both mining paths in Step 4 are symmetric.
