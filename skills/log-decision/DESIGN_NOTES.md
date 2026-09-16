@@ -146,3 +146,41 @@ from query matches.
 ## TODOs
 
 None blocking — this skill is implemented. See `SKILL.md`/`SETUP.md`.
+
+## Restructure: hierarchical vault, not a flat numbered list (2026-09-16)
+
+Live use surfaced a real limit in the flat-numbered design: with 6 entries after one epic, several
+already didn't map cleanly to any single ticket (one entry mixed a hierarchy-wide process decision
+with a decision specific to just one story's tickets), and there was no way to go from a specific
+Jira ticket straight to its own decision file without grepping.
+
+**Changed, discussed with Saqib across several turns:**
+- **Global `NNNN-<slug>.md` numbering → nested folders keyed by Jira ID.** `<vault>/<company>/
+  <epic-key>-<slug>/<story-key>-<slug>/<ticket-key>-<slug>.md`. The key is permanent (grep-able,
+  survives a Jira title edit); the slug is generated once and never renamed.
+- **One flat file per decision → append-only dated logs.** A ticket's file (and a
+  story's/epic's `scoping-calls.md`) accumulates dated entries over its whole life — planning-time
+  context *and* later build-time deviations — rather than each decision being its own separate,
+  frozen file.
+- **A Story-level file, added back after initially deciding against one.** Saqib pushed back:
+  some scoping calls (e.g. "these two sibling tickets share a base component, build order
+  matters") only concern tickets within *one* story, not the whole epic — forcing them up to the
+  epic-level file was a real mismatch, not just untidy.
+- **`vision.md`/`project.md`/`openspec/*` also move into the vault**, at company level (not
+  per-epic — `openspec/*` is capability/component-keyed and reused across epics, never owned by
+  just one). This skill doesn't manage those three — they're written directly by the skills that
+  produce them, just relocated.
+- **The flat `README.md` index is dropped.** With Jira as the index of tickets and the folder tree
+  itself now navigable by key, a third, separately-maintained index added upkeep cost without a
+  real reader who needed it.
+- **Query mode now walks up the chain** (ticket → story → epic → company) instead of a single flat
+  grep — a decision made two levels above a ticket still applies to it, and previously nothing
+  surfaced that automatically.
+
+**Known follow-on, not yet done**: every skill that reads/writes `vision.md`, `project.md`, or
+`openspec/*` at their old fixed project-root paths needs updating to the new vault paths
+(`founder-vision`, `define-project`, `senior-engineer`) — tracked as part of this same change, see
+those skills' own `DESIGN_NOTES.md`. Also open: `PROJECT.md` itself can't fully move into the
+vault without breaking the bootstrap (nothing would know where the vault *is* without first
+reading `PROJECT.md`) — resolved by leaving a minimal pointer stub at the project root; see
+`define-project/DESIGN_NOTES.md`.

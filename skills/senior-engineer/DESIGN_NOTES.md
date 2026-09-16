@@ -226,6 +226,17 @@ a throwaway test issue pair before bulk-creating. Two more fixes applied:
    Caught this because I actually forgot the back-link while live-creating tickets and had to
    patch it in after — a real gap, not a hypothetical one.
 
+## Vault restructure follow-on (2026-09-16)
+
+Part of the broader `log-decision` restructure (see that skill's own `DESIGN_NOTES.md`):
+`openspec/specs/*` and `openspec/components/*` move from the project repo into the vault, at
+**company** level specifically — not nested inside whichever epic happens to mine them first,
+since a capability/component is meant to be reused by a later, unrelated epic too. Also: ticket
+creation (Step 9) now seeds each ticket's own vault file directly (at
+`<epic>/<story>/<ticket-key>-<slug>.md`) instead of only linking to a pre-existing epic/feature
+entry — which incidentally simplifies Step 10's old "retroactive back-link" handling, since the
+file already exists by the time a later deviation needs to be appended to it.
+
 Also: the `skiper17` reference genuinely didn't match Saqib's intent (a sticky *image*-stack, no
 text slots, no pipe connector) — resolved by splitting mechanism (borrow the pin+scrub scroll
 technique) from content (build text-cards and the pipe connector custom). The pipe connector

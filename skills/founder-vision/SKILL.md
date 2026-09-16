@@ -157,8 +157,12 @@ mode: startup | intrapreneurial | builder
 
 ## Step 3 — Handoff
 
-`define-project` scans for `VISION.md` and links it (`vision_context: ./VISION.md`) instead of
-re-asking. `define-epic` reads it for grounding before interviewing about a specific epic.
+Always write `VISION.md` at the project root — this skill has no dependency on
+`obsidian.vault_path` (which isn't known until `define-project` runs afterward). `define-project`
+scans for it here, then relocates it into the vault (`vision_context` ends up pointing at
+`<vault_path>/<company-slug>/vision.md`, not the project root) once it knows where the vault is —
+see `define-project`'s own Step 4. `define-epic` reads it (via that vault path) for grounding
+before interviewing about a specific epic.
 
 ## Revisions (re-running on a project that already has `VISION.md`)
 

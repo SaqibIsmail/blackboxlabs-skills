@@ -127,3 +127,24 @@ which `senior-engineer` needs to know before ticket creation).
 ## TODOs
 
 None — `issue_types_available` is now a real, documented schema field in `SKILL.md`.
+
+## `PROJECT.md` splits: root stub + vault copy (2026-09-16)
+
+Part of the broader vault restructure (see `log-decision/DESIGN_NOTES.md`). Saqib wanted
+`PROJECT.md` itself moved into the vault alongside `VISION.md`/`openspec/*` — but every skill's
+first action is "read `PROJECT.md`" specifically *to learn* `obsidian.vault_path`. Moving the whole
+file into the vault would mean nothing could find the vault in the first place (the pointer would
+be inside the thing it points at) — flagged to Saqib as a real circularity, not a hypothetical one,
+before implementing.
+
+**Resolved**: split the file. A minimal stub stays at the project root (`company`,
+`obsidian.vault_path` — just enough to bootstrap); everything else (`stack`, `ticketing`,
+`pentest`, doc pointers) moves to `<vault_path>/<company-slug>/project.md`. Every other skill's
+"read `PROJECT.md`" step becomes a two-hop read: root stub first, then the vault copy. This also
+relocates `VISION.md` (found in Step 1, if `founder-vision` already ran) into the vault at the same
+time, since this is the first point in the pipeline where both `VISION.md`'s existence and
+`vault_path` are known together.
+
+`decisions_subpath` is retired — no longer a separate configurable field, since decisions now live
+in a fixed, company-keyed folder directly under `vault_path` (see `log-decision`'s new vault
+structure), not an arbitrary subpath.

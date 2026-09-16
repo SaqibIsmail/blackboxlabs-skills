@@ -55,3 +55,12 @@ skill and applied as a retroactive edit to the real ticket.
 ## TODOs
 
 None blocking — this skill is implemented. See `SKILL.md`/`SETUP.md`.
+
+## Vault restructure follow-on (2026-09-16)
+
+Part of the broader `log-decision` restructure (see that skill's own `DESIGN_NOTES.md`): Step 6 now
+writes `scope.md` at the epic level (`level: epic`, `doc: scope`) inside a folder keyed by the
+epic's own Jira key + a slug, instead of a flat, globally-numbered file. Also simplified Step 1: an
+epic has no key yet at the point this skill starts (Step 5 is what creates it), so there's nothing
+for `log-decision` to query before then — the dedupe check in Step 2 is what actually catches "this
+was already scoped," not a decision-log lookup on an epic that doesn't exist yet.

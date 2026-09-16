@@ -72,6 +72,13 @@ None — all resolved (see resolution notes near the top of this file).
 
 None blocking — this skill is implemented. See `SKILL.md`/`SETUP.md`.
 
+## Vault restructure follow-on (2026-09-16)
+
+Part of the broader `log-decision` restructure (see that skill's own `DESIGN_NOTES.md`): Step 6's
+decision write now targets the Story level (if `senior-engineer` mapped this feature to one) rather
+than always being its own flat, globally-numbered entry — consistent with decisions living as
+close as possible to the tickets they actually concern.
+
 ## Bug found and fixed via live pipeline test (2026-09-14)
 
 Step 5 originally stopped at `/speckit.plan` (`spec.md`/`plan.md` only) — but `senior-engineer`'s

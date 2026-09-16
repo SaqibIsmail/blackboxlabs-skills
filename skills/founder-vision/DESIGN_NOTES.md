@@ -72,3 +72,13 @@ reasoning stays visible even after a pivot. A re-run should also prompt `log-dec
 ## TODOs
 
 None — all three findings above are now applied in `SKILL.md`.
+
+## `VISION.md` relocates into the vault, but this skill doesn't do it (2026-09-16)
+
+Part of the broader vault restructure (see `log-decision/DESIGN_NOTES.md`): `VISION.md` now
+ultimately lives at `<vault_path>/<company-slug>/vision.md`, not the project root. This skill's own
+behavior is unchanged — it still always writes to the project root, because `obsidian.vault_path`
+isn't known yet at the point `founder-vision` runs (it runs *before* `define-project`, which is
+what determines the vault path). `define-project` relocates the file afterward, once both pieces of
+information exist together. Keeping this skill dependency-free of the vault avoids a real
+chicken-and-egg problem — see `define-project/DESIGN_NOTES.md` for the fuller reasoning.

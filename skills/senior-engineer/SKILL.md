@@ -30,13 +30,16 @@ head at once.
 
 ## Step 1 — Read context
 
-Read `PROJECT.md` and the epic (key/ref from the command argument, fetched via
+Read `PROJECT.md` (the project-root stub, then `<vault_path>/<company-slug>/project.md` for the
+rest — see `define-project`) and the epic (key/ref from the command argument, fetched via
 `jira-integration`'s `jira_get_issue`).
 
 ## Step 2 — Check prior decisions
 
-Call `log-decision` (via `Skill`) in query mode with the epic's name/key. If entries exist, this
-is a resume: read them aloud and treat their `context`/`decision` as already-established, not
+Call `log-decision` (via `Skill`) in query mode with the epic's key. This walks up from the epic
+level (`scoping-calls.md`, `scope.md`) automatically — see `log-decision`'s own query mode. If
+entries exist, this is a resume: read them aloud and treat their `context`/`decision` as
+already-established, not
 something to re-derive from scratch during investigation.
 
 ## Step 3 — Investigate (code-grounded)
@@ -60,8 +63,9 @@ needing a different mining approach — `spec-miner`'s Requirement/Invariant mod
 logic; it doesn't fit UI/visual/component code, which mostly has no WHEN→THEN triggers to extract.
 
 **4a — Existing business-logic capability.** Check for a baseline spec at the fixed path
-`openspec/specs/<capability>/spec.md` (same path convention everywhere this pipeline runs, not
-project-configurable):
+`<vault_path>/<company-slug>/openspec/specs/<capability>/spec.md` (company-level in the vault, not
+per-epic — a capability is reused across epics, same path convention everywhere this pipeline
+runs, not project-configurable):
 
 - **No baseline exists:** run `spec-miner` (via `Skill`) against *only this specific capability* —
   do not run its own "present the whole codebase's capability list, ask which to mine" step; this
@@ -74,8 +78,8 @@ project-configurable):
   existing baseline as-is.
 
 **4b — Existing UI/visual/component code the epic builds on or extends.** Check for
-`openspec/components/<component-name>/interface.md` (same fixed-path convention, sibling to
-`openspec/specs/`):
+`<vault_path>/<company-slug>/openspec/components/<component-name>/interface.md` (same fixed-path
+convention, sibling to `openspec/specs/`, also company-level not per-epic):
 
 - **No interface doc exists:** mine it directly (no external skill for this — an original
   technique, since none of BMAD/gstack/superpowers/ECC cover UI-component interface extraction).
@@ -96,9 +100,11 @@ project-configurable):
     constraint on how it can be reused, not a blank slate.
   - **Constraints/gotchas** — performance sensitivity, anything that would break if copied naively.
 
-  Write to `openspec/components/<component-name>/interface.md`, headed with the same freshness
-  line `spec-miner` uses: `> Mined: YYYY-MM-DD (commit <sha>)`, `<sha>` from
-  `git log -1 --format=%H`.
+  Write to `<vault_path>/<company-slug>/openspec/components/<component-name>/interface.md`, headed
+  with the same freshness line `spec-miner` uses: `> Mined: YYYY-MM-DD (commit <sha>)`, `<sha>`
+  from `git log -1 --format=%H`. The staleness check's `git log` always targets the *project's*
+  source files, regardless of where the mined doc itself lives — moving the doc into the vault
+  doesn't change what it's compared against.
 - **Interface doc exists — staleness check, identical mechanism to 4a:** run `git log -1
   --format=%H -- <component's source files>` and compare against the doc's own recorded `Mined:
   (commit <sha>)` line. If they differ, the component changed since it was mined — re-mine it,
@@ -225,12 +231,14 @@ call shape (`content` blocks), not one dense paragraph per section.
 no native `Bug`/`Spike` issue type (common in a default Jira template), use `Task` plus a label
 (`spike`, `bug`) instead of forcing a nonexistent type.
 
-**Every ticket's description also embeds a path/link back to its relevant `log-decision`
-entry(ies)** that already exist by this point — the epic's decision file from `define-epic`, and
-the feature's from `plan-feature` if it wrote its own — using the `path` `log-decision` returned
-when it wrote them. Without this, a ticket in Jira has no way back to why it was scoped the way
-it was. (This can only cover decisions written *before* this step — see Step 10 for the reverse
-case.)
+**Creating a ticket also seeds its own vault file.** Call `log-decision` (write, `level: ticket`,
+passing the epic/story/ticket key+slug chain) with this ticket's initial scoping context — this
+both creates `<vault_path>/<company-slug>/<epic-key>-<slug>/<story-key>-<slug>/<ticket-key>-<slug>.md`
+(or directly under the epic if there's no Story tier) and returns its path. Embed that path in the
+ticket's own description, alongside a link to the epic's `scope.md` and (if this ticket's feature
+has one) the relevant `scoping-calls.md`. Because a ticket's own file is created *at* ticket-creation
+time now, not just linked to a pre-existing epic/feature entry, there's no ordering problem the way
+there was under the old flat-numbered scheme — see Step 10 for what still comes later.
 
 **For a large epic, group tickets under an intermediate tier, not one flat list.** Jira has no
 native nested-Epic support (without premium Advanced Roadmaps) — use the project's `Story` issue
@@ -247,14 +255,17 @@ decision entry with `ticket-refs: [<created ticket keys>]`.
 
 If the investigation surfaced a non-obvious scoping call not already captured (e.g. "epic split
 into two features because X," "deferred Y as a separate spike because Z," a reference that didn't
-match intent and how it was resolved), call `log-decision` (write) recording it. Skip this step if
-nothing non-obvious came up — not every run needs a new entry beyond what Steps 5/9 already wrote.
+match intent and how it was resolved), call `log-decision` (write) at whichever level actually owns
+it — one ticket → that ticket's own file; several tickets in one story → that story's
+`scoping-calls.md`; spans stories → the epic's `scoping-calls.md`. Skip this step if nothing
+non-obvious came up — not every run needs a new entry beyond what Steps 5/9 already wrote.
 
-**Back-link the other direction, retroactively.** A decision logged here, by definition, didn't
-exist when Step 9 created the tickets — it can't have been embedded in them. Once this entry is
-written, add its path as a follow-up comment on the epic and any tickets it specifically concerns
-(not every ticket reflexively) — the same back-link Step 9 does at creation time, just applied
-after the fact instead of during.
+**No retroactive back-link problem anymore.** Under the old flat-numbered scheme, a decision logged
+here didn't exist yet when Step 9 created the tickets, so it had to be added as a follow-up
+comment after the fact. Now, appending a dated entry to an already-existing story/epic
+`scoping-calls.md` (or a ticket's own file) doesn't require anything new to be *found* — the file
+and its path are already known from Step 9. Post a follow-up comment on the epic/ticket only if the
+entry is genuinely new information a reader wouldn't otherwise think to go looking for.
 
 ## Relationship to `assign-tasks`
 
@@ -265,6 +276,12 @@ just as one axis of a richer split, not the only one.
 
 ## Explicit defaults (chosen absent further user input — revisit if wrong)
 
+- `openspec/specs/*` and `openspec/components/*` live at **company** level in the vault, not
+  per-epic — a mined capability/component is meant to be found and reused by a *later, unrelated*
+  epic, so it can't live nested inside the epic that happened to mine it first.
+- Every ticket this skill creates gets its own vault file at
+  `<epic-key>-<slug>/<story-key>-<slug>/<ticket-key>-<slug>.md` (or directly under the epic if no
+  Story tier applies), seeded at creation time (Step 9) — see `log-decision`'s own vault structure.
 - Step 6's hand-off to `plan-feature` always includes Step 5's UI-check outcome (fixed
   2026-09-14 — previously omitted, which is how an unresearched reference could silently reach
   Step 9 without ever becoming its own spike ticket; found via a live pipeline run where two build

@@ -23,11 +23,11 @@ building and why," precisely enough that `senior-engineer` has real scope to inv
 
 ## Step 1 — Read context
 
-Read `PROJECT.md` (including `vision_context` → `VISION.md`, if `founder-vision` has run) for
-grounding — target user, stack, ticketing connection. Then call `log-decision` (via `Skill`) to
-check for any prior entry referencing this same ask — if found, this is a resume, not a fresh
-start: read the existing entry aloud to the user and confirm before re-asking anything it already
-answers.
+Read `PROJECT.md` (the project-root stub, then `<vault_path>/<company-slug>/project.md` for the
+rest — including `vision_context`, now a vault path, → `VISION.md`, if `founder-vision` has run)
+for grounding — target user, stack, ticketing connection. This ask doesn't have an epic key yet (Step
+5 creates it), so there's nothing to query `log-decision` for until then — the dedupe check in Step
+2 is what catches "this already exists," not a decision-log lookup.
 
 ## Step 2 — Dedupe check (best-effort, never blocks)
 
@@ -102,9 +102,12 @@ Hand off the created epic's key/URL to `senior-engineer` as this skill's output.
 
 ## Step 6 — Log the decision
 
-Call `log-decision` (write) — first entry for this epic: the scope, explicit non-goals, and
-why-now from Steps 3–4. Record the returned file path alongside the epic key, so `senior-engineer`
-can embed the back-link when it later creates tickets against this epic.
+Call `log-decision` (write, `level: epic`, `doc: scope`, `epic: {key: <from Step 5>, slug:
+<short slug from the epic's own title>}`) — this creates the epic's own vault folder
+(`<epic-key>-<slug>/`) and its `scope.md`: the scope, explicit non-goals, and why-now from Steps
+3–4. Record the returned file path alongside the epic key, so `senior-engineer` can reference it
+(and create the epic's `scoping-calls.md` alongside it, later) when it creates tickets against this
+epic.
 
 ## Explicit defaults (chosen absent further user input — revisit if wrong)
 

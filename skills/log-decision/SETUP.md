@@ -5,10 +5,12 @@ Run these once per repo, before other pipeline skills that call `log-decision` (
 
 ## 1. Prerequisites
 
-`/define-project` must already have run — `log-decision` reads `PROJECT.md.obsidian.vault_path`
-and `decisions_subpath`. If `vault_path` is still `null`, re-run `/define-project` in "full
-re-interview" mode, or hand-edit `PROJECT.md` directly with the path to your Obsidian vault (or
-any folder of Markdown files — Obsidian itself isn't required, just the file format).
+`/define-project` must already have run — `log-decision` reads `obsidian.vault_path` from the
+project-root `PROJECT.md` stub (`decisions_subpath` no longer exists as a separate field; decisions
+live in a fixed, company-keyed folder directly under `vault_path`). If `vault_path` is still
+`null`, re-run `/define-project` in "full re-interview" mode, or hand-edit the `PROJECT.md` stub
+directly with the path to your Obsidian vault (or any folder of Markdown files — Obsidian itself
+isn't required, just the file format).
 
 ## 2. Install log-decision
 
@@ -31,8 +33,8 @@ up.
 ## 4. Try it directly (optional — most calls come from other skills)
 
 ```
-/log-decision write "test feature" "trying this out" "recorded a test entry" "none, just testing"
+/log-decision write --level epic --doc scope --epic "TEST-1:test-feature" "trying this out" "recorded a test entry" "none, just testing"
 ```
 
 First real write against a fresh vault path will ask for confirmation before creating the
-decisions folder.
+company folder.

@@ -27,7 +27,8 @@ PRD workflow).
 
 ## Step 1 — Read context
 
-Read `PROJECT.md`, and `PRODUCT.md` if `product_context` is set — audience/purpose/voice already
+Read `PROJECT.md` (the project-root stub, then `<vault_path>/<company-slug>/project.md` for the
+rest), and `PRODUCT.md` if `product_context` is set — audience/purpose/voice already
 answered there, don't re-ask. If called by `senior-engineer`, read the handed-off context: the
 epic's `define-epic` answers (who/what/why/scope/non-goals/MVP-cut), `senior-engineer`'s own code
 investigation findings, any baseline spec from `spec-miner`, and **whether its Step 5 UI-check
@@ -35,15 +36,18 @@ flagged an unresearched reference** (a live site, an existing component) this fe
 Treat all of this as already-answered — the interview in Step 4 only covers what it leaves
 unanswered.
 
-Also read `PROJECT.md.vision_context` → `VISION.md`'s `mode` field (`startup` /
+Also read `PROJECT.md.vision_context` (now a vault path, `<vault_path>/<company-slug>/vision.md`) →
+`VISION.md`'s `mode` field (`startup` /
 `intrapreneurial` / `builder`), if `founder-vision` has run, to calibrate how much interview rigor
 this feature needs — a `builder`-mode project needs a lighter touch than a `startup`-mode one, the
 same way `founder-vision` itself branched on this.
 
 ## Step 2 — Check prior decisions
 
-Call `log-decision` (query) for this feature. If entries exist, this is a resume: read them aloud,
-don't re-derive.
+Call `log-decision` (query) for this feature — at the story level if `senior-engineer` mapped this
+feature to a Jira Story, otherwise the epic level. This walks up automatically (story →
+epic → company), so entries from either level surface without a second call. If entries exist,
+this is a resume: read them aloud, don't re-derive.
 
 ## Step 3 — Choose interaction style
 
@@ -96,8 +100,9 @@ relying on a rule someone has to remember to apply at ticket-creation time.
 
 ## Step 6 — Log the decision
 
-Call `log-decision` (write) once `plan.md`/`tasks.md` are finalized — first entry for this feature:
-scope, chosen approach, explicit non-goals. Return value (the written path) is used by
+Call `log-decision` (write) once `plan.md`/`tasks.md` are finalized — at the same level Step 2
+queried (story, if this feature maps to one; otherwise epic), `doc: scoping-calls`: scope, chosen
+approach, explicit non-goals for this feature. Return value (the written path) is used by
 `senior-engineer` for the ticket back-link.
 
 ## Explicit defaults (chosen absent further user input — revisit if wrong)
