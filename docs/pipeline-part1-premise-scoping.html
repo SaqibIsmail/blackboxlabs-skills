@@ -5131,7 +5131,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
     <!-- Main Diagram -->
     <div class="diagram-container" data-detail-level="read"
          data-preset-badge-editorial-plate="ARCHIFY / PLATE 04">
-      <svg viewBox="0 0 831 528" role="img" lang="en" aria-labelledby="archify-diagram-title archify-diagram-description" data-preset="classic" data-quality-profile="standard">
+      <svg viewBox="0 0 891 534" role="img" lang="en" aria-labelledby="archify-diagram-title archify-diagram-description" data-preset="classic" data-quality-profile="standard">
         <title id="archify-diagram-title">BlackboxLabs Pipeline — Part 1: Premise &amp; Scoping</title>
         <desc id="archify-diagram-description">Continues in pipeline-part2-investigate-plan.html</desc>
         <!-- Definitions -->
@@ -5157,14 +5157,14 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         <rect width="100%" height="100%" fill="url(#grid)" />
 
         <!-- Swimlanes -->
-        <rect data-graph-role="structural-frame" data-composition-frame-kind="lane" data-composition-frame-id="lane-0" x="40" y="52" width="763" height="104" rx="10" class="c-lane" stroke-width="1"/>
+        <rect data-graph-role="structural-frame" data-composition-frame-kind="lane" data-composition-frame-id="lane-0" x="40" y="52" width="823" height="106" rx="10" class="c-lane" stroke-width="1"/>
         <text x="54" y="74" class="t-dim" font-size="10" font-weight="600">01 / Pipeline stages</text>
 
-        <rect data-graph-role="structural-frame" data-composition-frame-kind="lane" data-composition-frame-id="lane-1" x="40" y="176" width="763" height="104" rx="10" class="c-lane" stroke-width="1"/>
-        <text x="54" y="198" class="t-dim" font-size="10" font-weight="600">02 / Branch A</text>
+        <rect data-graph-role="structural-frame" data-composition-frame-kind="lane" data-composition-frame-id="lane-1" x="40" y="178" width="823" height="106" rx="10" class="c-lane" stroke-width="1"/>
+        <text x="54" y="200" class="t-dim" font-size="10" font-weight="600">02 / Branch A</text>
 
-        <rect data-graph-role="structural-frame" data-composition-frame-kind="lane" data-composition-frame-id="lane-2" x="40" y="300" width="763" height="104" rx="10" class="c-lane" stroke-width="1"/>
-        <text x="54" y="322" class="t-dim" font-size="10" font-weight="600">03 / Branch B / log-decision</text>
+        <rect data-graph-role="structural-frame" data-composition-frame-kind="lane" data-composition-frame-id="lane-2" x="40" y="304" width="823" height="106" rx="10" class="c-lane" stroke-width="1"/>
+        <text x="54" y="326" class="t-dim" font-size="10" font-weight="600">03 / Branch B / log-decision</text>
 
         <!-- Phase headers -->
 
@@ -5173,135 +5173,138 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
 
 
         <!-- Edge paths -->
-        <path data-edge-from="de" data-edge-to="epic_dupe_found" data-edge-label="dedupe: match" data-edge-key="0" data-composition-points="363.5,145;363.5,166;272.5,166;272.5,243;288.5,243" d="M 363.5 145 L 363.5 166 L 272.5 166 L 272.5 243 L 288.5 243" class="a-default" stroke-width="1.4" marker-end="url(#arrowhead)"/>
-        <path data-edge-from="de" data-edge-to="epic_new" data-edge-label="dedupe: none" data-edge-key="1" data-composition-points="363.5,93;363.5,77;815,77;815,367;409.5,367" d="M 363.5 93 L 363.5 77 L 815 77 L 815 367 L 409.5 367" class="a-default" stroke-width="1.4" marker-end="url(#arrowhead)"/>
-        <path data-edge-from="de" data-edge-to="handoff" data-edge-key="2" data-composition-points="409.5,119;437.5,119" d="M 409.5 119 L 437.5 119" class="a-default" stroke-width="1.4" marker-end="url(#arrowhead)"/>
-        <path data-edge-from="de" data-edge-to="log_decision" data-edge-key="3" data-composition-points="363.5,145;363.5,161;815,161;815,325;243.5,325;243.5,341" d="M 363.5 145 L 363.5 161 L 815 161 L 815 325 L 243.5 325 L 243.5 341" class="a-dashed" stroke-width="1.4" marker-end="url(#arrowhead-dashed)"/>
-        <path data-edge-from="dp" data-edge-to="de" data-edge-key="4" data-composition-points="289.5,119;317.5,119" d="M 289.5 119 L 317.5 119" class="a-default" stroke-width="1.4" marker-end="url(#arrowhead)"/>
-        <path data-edge-from="dp" data-edge-to="log_decision" data-edge-key="5" data-composition-points="243.5,145;243.5,341" d="M 243.5 145 L 243.5 341" class="a-dashed" stroke-width="1.4" marker-end="url(#arrowhead-dashed)"/>
-        <path data-edge-from="fv" data-edge-to="dp" data-edge-key="6" data-composition-points="161.5,119;197.5,119" d="M 161.5 119 L 197.5 119" class="a-default" stroke-width="1.4" marker-end="url(#arrowhead)"/>
-        <path data-edge-from="fv" data-edge-to="log_decision" data-edge-key="7" data-composition-points="69.5,119;20,119;20,409;236.5,409;236.5,393" d="M 69.5 119 L 20 119 L 20 409 L 236.5 409 L 236.5 393" class="a-dashed" stroke-width="1.4" marker-end="url(#arrowhead-dashed)"/>
-        <path data-edge-from="fv" data-edge-to="vision_builder" data-edge-label="mode c" data-edge-key="8" data-composition-points="69.5,129;53.5,129;53.5,36;32,36;32,367;48,367" d="M 69.5 129 L 53.5 129 L 53.5 36 L 32 36 L 32 367 L 48 367" class="a-default" stroke-width="1.4" marker-end="url(#arrowhead)"/>
-        <path data-edge-from="fv" data-edge-to="vision_startup" data-edge-label="mode a/b" data-edge-key="9" data-composition-points="115.5,145;115.5,166;199,166;199,243;183,243" d="M 115.5 145 L 115.5 166 L 199 166 L 199 243 L 183 243" class="a-default" stroke-width="1.4" marker-end="url(#arrowhead)"/>
+        <path data-edge-from="de" data-edge-to="epic_dupe_found" data-edge-label="dedupe: match" data-edge-key="0" data-composition-points="416.5,86;416.5,70;875,70;875,246;496.5,246" d="M 416.5 86 L 416.5 70 L 875 70 L 875 246 L 496.5 246" class="a-default" stroke-width="1.4" marker-end="url(#arrowhead)"/>
+        <path data-edge-from="de" data-edge-to="epic_new" data-edge-label="dedupe: none" data-edge-key="1" data-composition-points="416.5,154;416.5,170;875,170;875,372;462.5,372" d="M 416.5 154 L 416.5 170 L 875 170 L 875 372 L 462.5 372" class="a-default" stroke-width="1.4" marker-end="url(#arrowhead)"/>
+        <path data-edge-from="de" data-edge-to="handoff" data-edge-key="2" data-composition-points="469,120;497,120" d="M 469 120 L 497 120" class="a-default" stroke-width="1.4" marker-end="url(#arrowhead)"/>
+        <path data-edge-from="de" data-edge-to="log_decision" data-edge-key="3" data-composition-points="402.5,154;402.5,170;20,170;20,414;280.5,414;280.5,398" d="M 402.5 154 L 402.5 170 L 20 170 L 20 414 L 280.5 414 L 280.5 398" class="a-dashed" stroke-width="1.4" marker-end="url(#arrowhead-dashed)"/>
+        <path data-edge-from="dp" data-edge-to="de" data-edge-key="4" data-composition-points="336,120;364,120" d="M 336 120 L 364 120" class="a-default" stroke-width="1.4" marker-end="url(#arrowhead)"/>
+        <path data-edge-from="dp" data-edge-to="log_decision" data-edge-key="5" data-composition-points="273.5,154;273.5,346" d="M 273.5 154 L 273.5 346" class="a-dashed" stroke-width="1.4" marker-end="url(#arrowhead-dashed)"/>
+        <path data-edge-from="fv" data-edge-to="dp" data-edge-key="6" data-composition-points="183,120;211,120" d="M 183 120 L 211 120" class="a-default" stroke-width="1.4" marker-end="url(#arrowhead)"/>
+        <path data-edge-from="fv" data-edge-to="log_decision" data-edge-key="7" data-composition-points="68,120;20,120;20,414;266.5,414;266.5,398" d="M 68 120 L 20 120 L 20 414 L 266.5 414 L 266.5 398" class="a-dashed" stroke-width="1.4" marker-end="url(#arrowhead-dashed)"/>
+        <path data-edge-from="fv" data-edge-to="vision_builder" data-edge-label="mode c" data-edge-key="8" data-composition-points="183,120;199,120;199,36;37,36;37,372;53,372" d="M 183 120 L 199 120 L 199 36 L 37 36 L 37 372 L 53 372" class="a-default" stroke-width="1.4" marker-end="url(#arrowhead)"/>
+        <path data-edge-from="fv" data-edge-to="vision_startup" data-edge-label="mode a/b" data-edge-key="9" data-composition-points="68,106;52,106;52,36;32,36;32,246;48,246" d="M 68 106 L 52 106 L 52 36 L 32 36 L 32 246 L 48 246" class="a-default" stroke-width="1.4" marker-end="url(#arrowhead)"/>
 
         <!-- Nodes -->
-        <g id="node-fv" data-node-id="fv" data-node-label="founder-vision" tabindex="0" role="button" aria-label="Focus founder-vision, validate the premise, Pipeline stages" aria-pressed="false" data-node-kind="backend" data-node-sublabel="validate the premise" data-node-context="Pipeline stages">
-          <title>founder-vision · validate the premise · Pipeline stages</title>
-          <rect x="69.5" y="93" width="92" height="52" rx="6" class="c-mask"/>
-          <rect x="69.5" y="93" width="92" height="52" rx="6" class="c-backend" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(75.5 99) scale(0.6875)">
+        <g id="node-fv" data-node-id="fv" data-node-label="founder-vision" tabindex="0" role="button" aria-label="Focus founder-vision, validate the premise, Pipeline stages" aria-pressed="false" data-node-kind="backend" data-node-sublabel="validate the premise" data-node-tag="You choose mode, then answer" data-node-context="Pipeline stages">
+          <title>founder-vision · validate the premise · Pipeline stages · You choose mode, then answer</title>
+          <rect x="68" y="86" width="115" height="68" rx="6" class="c-mask"/>
+          <rect x="68" y="86" width="115" height="68" rx="6" class="c-backend" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(74 92) scale(0.6875)">
             <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="115.5" y="114" class="t-primary" font-size="10" font-weight="600" text-anchor="middle">founder-vision</text>
-          <text data-detail="context" x="115.5" y="131" class="t-muted" font-size="7" text-anchor="middle">validate the premise</text>
+          <text data-node-label="" data-detail-anchor="" x="125.5" y="107" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">founder-vision</text>
+          <text data-detail="context" x="125.5" y="124" class="t-muted" font-size="8" text-anchor="middle">validate the premise</text>
+        <text data-detail="fine" x="125.5" y="142" class="t-backend" font-size="6.3" text-anchor="middle">You choose mode, then answer</text>
         </g>
 
-        <g id="node-dp" data-node-id="dp" data-node-label="define-project" tabindex="0" role="button" aria-label="Focus define-project, scan + bootstrap, Pipeline stages" aria-pressed="false" data-node-kind="backend" data-node-sublabel="scan + bootstrap" data-node-context="Pipeline stages">
-          <title>define-project · scan + bootstrap · Pipeline stages</title>
-          <rect x="197.5" y="93" width="92" height="52" rx="6" class="c-mask"/>
-          <rect x="197.5" y="93" width="92" height="52" rx="6" class="c-backend" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(203.5 99) scale(0.6875)">
+        <g id="node-dp" data-node-id="dp" data-node-label="define-project" tabindex="0" role="button" aria-label="Focus define-project, scan + bootstrap, Pipeline stages" aria-pressed="false" data-node-kind="backend" data-node-sublabel="scan + bootstrap" data-node-tag="You provide Jira + vault config" data-node-context="Pipeline stages">
+          <title>define-project · scan + bootstrap · Pipeline stages · You provide Jira + vault config</title>
+          <rect x="211" y="86" width="125" height="68" rx="6" class="c-mask"/>
+          <rect x="211" y="86" width="125" height="68" rx="6" class="c-backend" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(217 92) scale(0.6875)">
             <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="243.5" y="114" class="t-primary" font-size="10" font-weight="600" text-anchor="middle">define-project</text>
-          <text data-detail="context" x="243.5" y="131" class="t-muted" font-size="8" text-anchor="middle">scan + bootstrap</text>
+          <text data-node-label="" data-detail-anchor="" x="273.5" y="107" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">define-project</text>
+          <text data-detail="context" x="273.5" y="124" class="t-muted" font-size="8" text-anchor="middle">scan + bootstrap</text>
+        <text data-detail="fine" x="273.5" y="142" class="t-backend" font-size="6.2" text-anchor="middle">You provide Jira + vault config</text>
         </g>
 
-        <g id="node-de" data-node-id="de" data-node-label="define-epic" tabindex="0" role="button" aria-label="Focus define-epic, scope one Jira epic, Pipeline stages" aria-pressed="false" data-node-kind="backend" data-node-sublabel="scope one Jira epic" data-node-context="Pipeline stages">
-          <title>define-epic · scope one Jira epic · Pipeline stages</title>
-          <rect x="317.5" y="93" width="92" height="52" rx="6" class="c-mask"/>
-          <rect x="317.5" y="93" width="92" height="52" rx="6" class="c-backend" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(323.5 99) scale(0.6875)">
+        <g id="node-de" data-node-id="de" data-node-label="define-epic" tabindex="0" role="button" aria-label="Focus define-epic, scope one Jira epic, Pipeline stages" aria-pressed="false" data-node-kind="backend" data-node-sublabel="scope one Jira epic" data-node-tag="Your ask, then you answer" data-node-context="Pipeline stages">
+          <title>define-epic · scope one Jira epic · Pipeline stages · Your ask, then you answer</title>
+          <rect x="364" y="86" width="105" height="68" rx="6" class="c-mask"/>
+          <rect x="364" y="86" width="105" height="68" rx="6" class="c-backend" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(370 92) scale(0.6875)">
             <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="363.5" y="114" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">define-epic</text>
-          <text data-detail="context" x="363.5" y="131" class="t-muted" font-size="7.3" text-anchor="middle">scope one Jira epic</text>
+          <text data-node-label="" data-detail-anchor="" x="416.5" y="107" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">define-epic</text>
+          <text data-detail="context" x="416.5" y="124" class="t-muted" font-size="8" text-anchor="middle">scope one Jira epic</text>
+        <text data-detail="fine" x="416.5" y="142" class="t-backend" font-size="6.4" text-anchor="middle">Your ask, then you answer</text>
         </g>
 
         <g id="node-handoff" data-node-id="handoff" data-node-label="To Part 2" tabindex="0" role="button" aria-label="Focus To Part 2, senior-engineer picks up the epic, Pipeline stages" aria-pressed="false" data-node-kind="external" data-node-sublabel="senior-engineer picks up the epic" data-node-context="Pipeline stages">
           <title>To Part 2 · senior-engineer picks up the epic · Pipeline stages</title>
-          <rect x="437.5" y="93" width="135" height="52" rx="6" class="c-mask"/>
-          <rect x="437.5" y="93" width="135" height="52" rx="6" class="c-external" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="external" class="semantic-sigil s-external" transform="translate(443.5 99) scale(0.6875)">
+          <rect x="497" y="94" width="135" height="52" rx="6" class="c-mask"/>
+          <rect x="497" y="94" width="135" height="52" rx="6" class="c-external" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="external" class="semantic-sigil s-external" transform="translate(503 100) scale(0.6875)">
             <rect x="2.5" y="5" width="8.5" height="8" rx="1.5"/>
             <path d="M8 2.5h5.5V8M13.5 2.5 7.5 8.5"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="505" y="114" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">To Part 2</text>
-          <text data-detail="context" x="505" y="131" class="t-muted" font-size="6.4" text-anchor="middle">senior-engineer picks up the epic</text>
+          <text data-node-label="" data-detail-anchor="" x="564.5" y="115" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">To Part 2</text>
+          <text data-detail="context" x="564.5" y="132" class="t-muted" font-size="6.4" text-anchor="middle">senior-engineer picks up the epic</text>
         </g>
 
-        <g id="node-vision_startup" data-node-id="vision_startup" data-node-label="Startup Diagnostic" tabindex="0" role="button" aria-label="Focus Startup Diagnostic, modes a/b, 6 forcing Qs, Branch A" aria-pressed="false" data-node-kind="frontend" data-node-sublabel="modes a/b, 6 forcing Qs" data-node-context="Branch A">
-          <title>Startup Diagnostic · modes a/b, 6 forcing Qs · Branch A</title>
-          <rect x="48" y="217" width="135" height="52" rx="6" class="c-mask"/>
-          <rect x="48" y="217" width="135" height="52" rx="6" class="c-frontend" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="frontend" class="semantic-sigil s-frontend" transform="translate(54 223) scale(0.6875)">
+        <g id="node-vision_startup" data-node-id="vision_startup" data-node-label="Startup Diagnostic" tabindex="0" role="button" aria-label="Focus Startup Diagnostic, you answer 6 Qs (modes a/b), Branch A" aria-pressed="false" data-node-kind="frontend" data-node-sublabel="you answer 6 Qs (modes a/b)" data-node-context="Branch A">
+          <title>Startup Diagnostic · you answer 6 Qs (modes a/b) · Branch A</title>
+          <rect x="48" y="220" width="155" height="52" rx="6" class="c-mask"/>
+          <rect x="48" y="220" width="155" height="52" rx="6" class="c-frontend" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="frontend" class="semantic-sigil s-frontend" transform="translate(54 226) scale(0.6875)">
             <rect x="2" y="3" width="12" height="10" rx="2"/>
             <path d="M2 6.5h12"/>
             <circle cx="4.1" cy="4.8" r=".7" class="sigil-fill"/>
             <circle cx="6.3" cy="4.8" r=".7" class="sigil-fill"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="115.5" y="238" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Startup Diagnostic</text>
-          <text data-detail="context" x="115.5" y="255" class="t-muted" font-size="8" text-anchor="middle">modes a/b, 6 forcing Qs</text>
+          <text data-node-label="" data-detail-anchor="" x="125.5" y="241" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Startup Diagnostic</text>
+          <text data-detail="context" x="125.5" y="258" class="t-muted" font-size="8" text-anchor="middle">you answer 6 Qs (modes a/b)</text>
         </g>
 
-        <g id="node-epic_dupe_found" data-node-id="epic_dupe_found" data-node-label="Similar Epic Found" tabindex="0" role="button" aria-label="Focus Similar Epic Found, reuse, proceed anyway, or cancel, Branch A" aria-pressed="false" data-node-kind="external" data-node-sublabel="reuse, proceed anyway, or cancel" data-node-context="Branch A">
-          <title>Similar Epic Found · reuse, proceed anyway, or cancel · Branch A</title>
-          <rect x="288.5" y="217" width="150" height="52" rx="6" class="c-mask"/>
-          <rect x="288.5" y="217" width="150" height="52" rx="6" class="c-external" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="external" class="semantic-sigil s-external" transform="translate(294.5 223) scale(0.6875)">
+        <g id="node-epic_dupe_found" data-node-id="epic_dupe_found" data-node-label="Similar Epic Found" tabindex="0" role="button" aria-label="Focus Similar Epic Found, you pick: reuse, proceed, or cancel, Branch A" aria-pressed="false" data-node-kind="external" data-node-sublabel="you pick: reuse, proceed, or cancel" data-node-context="Branch A">
+          <title>Similar Epic Found · you pick: reuse, proceed, or cancel · Branch A</title>
+          <rect x="336.5" y="220" width="160" height="52" rx="6" class="c-mask"/>
+          <rect x="336.5" y="220" width="160" height="52" rx="6" class="c-external" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="external" class="semantic-sigil s-external" transform="translate(342.5 226) scale(0.6875)">
             <rect x="2.5" y="5" width="8.5" height="8" rx="1.5"/>
             <path d="M8 2.5h5.5V8M13.5 2.5 7.5 8.5"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="363.5" y="238" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Similar Epic Found</text>
-          <text data-detail="context" x="363.5" y="255" class="t-muted" font-size="7.3" text-anchor="middle">reuse, proceed anyway, or cancel</text>
+          <text data-node-label="" data-detail-anchor="" x="416.5" y="241" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Similar Epic Found</text>
+          <text data-detail="context" x="416.5" y="258" class="t-muted" font-size="7.2" text-anchor="middle">you pick: reuse, proceed, or cancel</text>
         </g>
 
-        <g id="node-vision_builder" data-node-id="vision_builder" data-node-label="Builder Brainstorm" tabindex="0" role="button" aria-label="Focus Builder Brainstorm, mode c, 5 generative Qs, Branch B / log-decision" aria-pressed="false" data-node-kind="frontend" data-node-sublabel="mode c, 5 generative Qs" data-node-context="Branch B / log-decision">
-          <title>Builder Brainstorm · mode c, 5 generative Qs · Branch B / log-decision</title>
-          <rect x="48" y="341" width="135" height="52" rx="6" class="c-mask"/>
-          <rect x="48" y="341" width="135" height="52" rx="6" class="c-frontend" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="frontend" class="semantic-sigil s-frontend" transform="translate(54 347) scale(0.6875)">
+        <g id="node-vision_builder" data-node-id="vision_builder" data-node-label="Builder Brainstorm" tabindex="0" role="button" aria-label="Focus Builder Brainstorm, you answer 5 Qs (mode c), Branch B / log-decision" aria-pressed="false" data-node-kind="frontend" data-node-sublabel="you answer 5 Qs (mode c)" data-node-context="Branch B / log-decision">
+          <title>Builder Brainstorm · you answer 5 Qs (mode c) · Branch B / log-decision</title>
+          <rect x="53" y="346" width="145" height="52" rx="6" class="c-mask"/>
+          <rect x="53" y="346" width="145" height="52" rx="6" class="c-frontend" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="frontend" class="semantic-sigil s-frontend" transform="translate(59 352) scale(0.6875)">
             <rect x="2" y="3" width="12" height="10" rx="2"/>
             <path d="M2 6.5h12"/>
             <circle cx="4.1" cy="4.8" r=".7" class="sigil-fill"/>
             <circle cx="6.3" cy="4.8" r=".7" class="sigil-fill"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="115.5" y="362" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Builder Brainstorm</text>
-          <text data-detail="context" x="115.5" y="379" class="t-muted" font-size="8" text-anchor="middle">mode c, 5 generative Qs</text>
+          <text data-node-label="" data-detail-anchor="" x="125.5" y="367" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Builder Brainstorm</text>
+          <text data-detail="context" x="125.5" y="384" class="t-muted" font-size="8" text-anchor="middle">you answer 5 Qs (mode c)</text>
         </g>
 
         <g id="node-log_decision" data-node-id="log_decision" data-node-label="log-decision" tabindex="0" role="button" aria-label="Focus log-decision, write + query the vault, Branch B / log-decision" aria-pressed="false" data-node-kind="database" data-node-sublabel="write + query the vault" data-node-context="Branch B / log-decision">
           <title>log-decision · write + query the vault · Branch B / log-decision</title>
-          <rect x="191" y="341" width="105" height="52" rx="6" class="c-mask"/>
-          <rect x="191" y="341" width="105" height="52" rx="6" class="c-database" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="database" class="semantic-sigil s-database" transform="translate(197 347) scale(0.6875)">
+          <rect x="221" y="346" width="105" height="52" rx="6" class="c-mask"/>
+          <rect x="221" y="346" width="105" height="52" rx="6" class="c-database" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="database" class="semantic-sigil s-database" transform="translate(227 352) scale(0.6875)">
             <ellipse cx="8" cy="4" rx="5" ry="2"/>
             <path d="M3 4v8c0 1.1 2.2 2 5 2s5-.9 5-2V4M3 8c0 1.1 2.2 2 5 2s5-.9 5-2"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="243.5" y="362" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">log-decision</text>
-          <text data-detail="context" x="243.5" y="379" class="t-muted" font-size="7" text-anchor="middle">write + query the vault</text>
+          <text data-node-label="" data-detail-anchor="" x="273.5" y="367" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">log-decision</text>
+          <text data-detail="context" x="273.5" y="384" class="t-muted" font-size="7" text-anchor="middle">write + query the vault</text>
         </g>
 
         <g id="node-epic_new" data-node-id="epic_new" data-node-label="No Duplicate" tabindex="0" role="button" aria-label="Focus No Duplicate, scope as a new epic, Branch B / log-decision" aria-pressed="false" data-node-kind="external" data-node-sublabel="scope as a new epic" data-node-context="Branch B / log-decision">
           <title>No Duplicate · scope as a new epic · Branch B / log-decision</title>
-          <rect x="317.5" y="341" width="92" height="52" rx="6" class="c-mask"/>
-          <rect x="317.5" y="341" width="92" height="52" rx="6" class="c-external" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="external" class="semantic-sigil s-external" transform="translate(323.5 347) scale(0.6875)">
+          <rect x="370.5" y="346" width="92" height="52" rx="6" class="c-mask"/>
+          <rect x="370.5" y="346" width="92" height="52" rx="6" class="c-external" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="external" class="semantic-sigil s-external" transform="translate(376.5 352) scale(0.6875)">
             <rect x="2.5" y="5" width="8.5" height="8" rx="1.5"/>
             <path d="M8 2.5h5.5V8M13.5 2.5 7.5 8.5"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="363.5" y="362" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">No Duplicate</text>
-          <text data-detail="context" x="363.5" y="379" class="t-muted" font-size="7.3" text-anchor="middle">scope as a new epic</text>
+          <text data-node-label="" data-detail-anchor="" x="416.5" y="367" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">No Duplicate</text>
+          <text data-detail="context" x="416.5" y="384" class="t-muted" font-size="7.3" text-anchor="middle">scope as a new epic</text>
         </g>
 
         <!-- Edge labels -->
         <g data-detail="context" data-edge-from="de" data-edge-to="epic_dupe_found" data-edge-label="dedupe: match" data-edge-key="0">
-          <rect x="281.8" y="146" width="72.4" height="14" rx="3" class="c-mask"/>
-          <text x="318" y="156" class="t-muted" font-size="8" text-anchor="middle">dedupe: match</text>
+          <rect x="609.55" y="50" width="72.4" height="14" rx="3" class="c-mask"/>
+          <text x="645.75" y="60" class="t-muted" font-size="8" text-anchor="middle">dedupe: match</text>
         </g>
         <g data-detail="context" data-edge-from="de" data-edge-to="epic_new" data-edge-label="dedupe: none" data-edge-key="1">
-          <rect x="555.45" y="57" width="67.6" height="14" rx="3" class="c-mask"/>
-          <text x="589.25" y="67" class="t-muted" font-size="8" text-anchor="middle">dedupe: none</text>
+          <rect x="611.95" y="150" width="67.6" height="14" rx="3" class="c-mask"/>
+          <text x="645.75" y="160" class="t-muted" font-size="8" text-anchor="middle">dedupe: none</text>
         </g>
 
 
@@ -5310,32 +5313,32 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
 
 
         <g data-detail="context" data-edge-from="fv" data-edge-to="vision_builder" data-edge-label="mode c" data-edge-key="8">
-          <rect x="23.35" y="16" width="38.8" height="14" rx="3" class="c-mask"/>
-          <text x="42.75" y="26" class="t-muted" font-size="8" text-anchor="middle">mode c</text>
+          <rect x="98.6" y="16" width="38.8" height="14" rx="3" class="c-mask"/>
+          <text x="118" y="26" class="t-muted" font-size="8" text-anchor="middle">mode c</text>
         </g>
         <g data-detail="context" data-edge-from="fv" data-edge-to="vision_startup" data-edge-label="mode a/b" data-edge-key="9">
-          <rect x="133.05" y="146" width="48.4" height="14" rx="3" class="c-mask"/>
-          <text x="157.25" y="156" class="t-muted" font-size="8" text-anchor="middle">mode a/b</text>
+          <rect x="17.8" y="16" width="48.4" height="14" rx="3" class="c-mask"/>
+          <text x="42" y="26" class="t-muted" font-size="8" text-anchor="middle">mode a/b</text>
         </g>
 
         <!-- Legend -->
         <g data-legend="" data-legend-bridge="">
-          <text x="20" y="428" class="t-primary" font-size="12" font-weight="650">Legend</text>
-          <g data-legend-semantic-kind="frontend" data-legend-kind="frontend" data-legend-label="User UI" data-legend-x="20" data-legend-baseline="448" data-legend-width="74">
-            <rect x="20" y="440" width="14" height="9" rx="2" class="c-frontend" stroke-width="1"/>
-            <text x="42" y="448" class="t-muted" font-size="7.5" font-weight="500">User UI</text>
+          <text x="20" y="434" class="t-primary" font-size="12" font-weight="650">Legend</text>
+          <g data-legend-semantic-kind="frontend" data-legend-kind="frontend" data-legend-label="User UI" data-legend-x="20" data-legend-baseline="454" data-legend-width="74">
+            <rect x="20" y="446" width="14" height="9" rx="2" class="c-frontend" stroke-width="1"/>
+            <text x="42" y="454" class="t-muted" font-size="7.5" font-weight="500">User UI</text>
           </g>
-          <g data-legend-semantic-kind="backend" data-legend-kind="backend" data-legend-label="Agent logic" data-legend-x="101" data-legend-baseline="448" data-legend-width="91">
-            <rect x="101" y="440" width="14" height="9" rx="2" class="c-backend" stroke-width="1"/>
-            <text x="123" y="448" class="t-muted" font-size="7.5" font-weight="500">Agent logic</text>
+          <g data-legend-semantic-kind="backend" data-legend-kind="backend" data-legend-label="Agent logic" data-legend-x="101" data-legend-baseline="454" data-legend-width="91">
+            <rect x="101" y="446" width="14" height="9" rx="2" class="c-backend" stroke-width="1"/>
+            <text x="123" y="454" class="t-muted" font-size="7.5" font-weight="500">Agent logic</text>
           </g>
-          <g data-legend-semantic-kind="database" data-legend-kind="database" data-legend-label="Context / trace" data-legend-x="199" data-legend-baseline="448" data-legend-width="109">
-            <rect x="199" y="440" width="14" height="9" rx="2" class="c-database" stroke-width="1"/>
-            <text x="221" y="448" class="t-muted" font-size="7.5" font-weight="500">Context / trace</text>
+          <g data-legend-semantic-kind="database" data-legend-kind="database" data-legend-label="Context / trace" data-legend-x="199" data-legend-baseline="454" data-legend-width="109">
+            <rect x="199" y="446" width="14" height="9" rx="2" class="c-database" stroke-width="1"/>
+            <text x="221" y="454" class="t-muted" font-size="7.5" font-weight="500">Context / trace</text>
           </g>
-          <g data-legend-semantic-kind="external" data-legend-kind="external" data-legend-label="External system" data-legend-x="315" data-legend-baseline="448" data-legend-width="109">
-            <rect x="315" y="440" width="14" height="9" rx="2" class="c-external" stroke-width="1"/>
-            <text x="337" y="448" class="t-muted" font-size="7.5" font-weight="500">External system</text>
+          <g data-legend-semantic-kind="external" data-legend-kind="external" data-legend-label="External system" data-legend-x="315" data-legend-baseline="454" data-legend-width="109">
+            <rect x="315" y="446" width="14" height="9" rx="2" class="c-external" stroke-width="1"/>
+            <text x="337" y="454" class="t-muted" font-size="7.5" font-weight="500">External system</text>
           </g>
         </g>
       </svg>
@@ -5527,11 +5530,13 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       <div class="card">
         <div class="card-header">
           <div class="card-dot cyan"></div>
-          <h3>founder-vision stage routing, and the shared log-decision vault</h3>
+          <h3>Where you actually type something in Part 1</h3>
         </div>
         <ul>
-          <li>&bull; Startup Diagnostic routes questions by stage; impatience → only the 2 most critical for that stage</li>
-          <li>&bull; log-decision: write/query, nested company → epic → story → ticket by Jira ID, used by every stage in both parts</li>
+          <li>&bull; founder-vision: pick the mode, then answer its questions one at a time in plain chat</li>
+          <li>&bull; define-project: give the real values — Jira site/email/key, token env var name, vault path, pentest scope</li>
+          <li>&bull; define-epic: state the initial ask, then answer 5 Why + 5 Scope questions</li>
+          <li>&bull; log-decision (every stage): write/query, nested company → epic → story → ticket by Jira ID</li>
         </ul>
       </div>
     </div>
