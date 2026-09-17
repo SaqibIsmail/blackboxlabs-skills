@@ -5,16 +5,16 @@ metadata:
   origin: ECC
 ---
 
-> **Provenance note (not part of the original file):** copied verbatim from
-> `affaan-m/ECC`, `skills/backend-patterns/SKILL.md` (MIT), fetched 2026-09-17.
-> This is the **unfiltered canonical reference** — several patterns below assume a
-> specific stack that won't match every project (Supabase client SDK for DB access,
-> Next.js Pages Router API-route middleware, raw `jsonwebtoken` auth, a hand-rolled
-> permission map for RBAC, console-based structured logging). `build-backend`'s own
-> `SKILL.md` decides at build time which of these actually apply to a given
-> project, using that project's `design.md` (allowed backend tech) — see
-> `build-backend/DESIGN_NOTES.md` for the open question on how that filtering step
-> works. Do not treat this file as ready-to-use guidance on its own.
+> **Provenance note (not part of the original file):** originally copied verbatim from
+> `affaan-m/ECC`, `skills/backend-patterns/SKILL.md` (MIT), fetched 2026-09-17, then
+> **filtered for this project** (2026-09-17) against `blackboxlabs`'s own locked stack
+> (`AGENTS.md`'s decision register) — patterns hardcoded to the Supabase client SDK,
+> Pages Router middleware, raw `jsonwebtoken`, a hand-rolled RBAC map, or console-based
+> logging were removed, since this project uses raw `pg`, App Router + `middleware.ts`,
+> Auth.js, CASL, and Winston respectively for each of those. See
+> `build-backend/DESIGN_NOTES.md` for exactly what was removed and why. This file is
+> project-specific now, not the generic upstream copy — regenerate it (don't hand-edit
+> further piecemeal) if the upstream source or this project's locked stack changes.
 
 # Backend Development Patterns
 
@@ -59,26 +59,8 @@ interface MarketRepository {
   delete(id: string): Promise<void>
 }
 
-class SupabaseMarketRepository implements MarketRepository {
-  async findAll(filters?: MarketFilters): Promise<Market[]> {
-    let query = supabase.from('markets').select('*')
-
-    if (filters?.status) {
-      query = query.eq('status', filters.status)
-    }
-
-    if (filters?.limit) {
-      query = query.limit(filters.limit)
-    }
-
-    const { data, error } = await query
-
-    if (error) throw new Error(error.message)
-    return data
-  }
-
-  // Other methods...
-}
+// Implement against the project's own DB client (raw `pg`, no ORM, here) —
+// the Supabase-specific implementation this pattern shipped with was removed.
 ```
 
 ### Service Layer Pattern
@@ -110,52 +92,7 @@ class MarketService {
 }
 ```
 
-### Middleware Pattern
-
-```typescript
-// Request/response processing pipeline
-export function withAuth(handler: NextApiHandler): NextApiHandler {
-  return async (req, res) => {
-    const token = req.headers.authorization?.replace('Bearer ', '')
-
-    if (!token) {
-      return res.status(401).json({ error: 'Unauthorized' })
-    }
-
-    try {
-      const user = await verifyToken(token)
-      req.user = user
-      return handler(req, res)
-    } catch (error) {
-      return res.status(401).json({ error: 'Invalid token' })
-    }
-  }
-}
-
-// Usage
-export default withAuth(async (req, res) => {
-  // Handler has access to req.user
-})
-```
-
 ## Database Patterns
-
-### Query Optimization
-
-```typescript
-// PASS: GOOD: Select only needed columns
-const { data } = await supabase
-  .from('markets')
-  .select('id, name, status, volume')
-  .eq('status', 'active')
-  .order('volume', { ascending: false })
-  .limit(10)
-
-// FAIL: BAD: Select everything
-const { data } = await supabase
-  .from('markets')
-  .select('*')
-```
 
 ### N+1 Query Prevention
 
@@ -175,44 +112,6 @@ const creatorMap = new Map(creators.map(c => [c.id, c]))
 markets.forEach(market => {
   market.creator = creatorMap.get(market.creator_id)
 })
-```
-
-### Transaction Pattern
-
-```typescript
-async function createMarketWithPosition(
-  marketData: CreateMarketDto,
-  positionData: CreatePositionDto
-) {
-  // Use Supabase transaction
-  const { data, error } = await supabase.rpc('create_market_with_position', {
-    market_data: marketData,
-    position_data: positionData
-  })
-
-  if (error) throw new Error('Transaction failed')
-  return data
-}
-
-// SQL function in Supabase
-CREATE OR REPLACE FUNCTION create_market_with_position(
-  market_data jsonb,
-  position_data jsonb
-)
-RETURNS jsonb
-LANGUAGE plpgsql
-AS $$
-BEGIN
-  -- Start transaction automatically
-  INSERT INTO markets VALUES (market_data);
-  INSERT INTO positions VALUES (position_data);
-  RETURN jsonb_build_object('success', true);
-EXCEPTION
-  WHEN OTHERS THEN
-    -- Rollback happens automatically
-    RETURN jsonb_build_object('success', false, 'error', SQLERRM);
-END;
-$$;
 ```
 
 ## Caching Strategies
@@ -355,91 +254,6 @@ async function fetchWithRetry<T>(
 const data = await fetchWithRetry(() => fetchFromAPI())
 ```
 
-## Authentication & Authorization
-
-### JWT Token Validation
-
-```typescript
-import jwt from 'jsonwebtoken'
-
-interface JWTPayload {
-  userId: string
-  email: string
-  role: 'admin' | 'user'
-}
-
-export function verifyToken(token: string): JWTPayload {
-  try {
-    const payload = jwt.verify(token, process.env.JWT_SECRET!) as JWTPayload
-    return payload
-  } catch (error) {
-    throw new ApiError(401, 'Invalid token')
-  }
-}
-
-export async function requireAuth(request: Request) {
-  const token = request.headers.get('authorization')?.replace('Bearer ', '')
-
-  if (!token) {
-    throw new ApiError(401, 'Missing authorization token')
-  }
-
-  return verifyToken(token)
-}
-
-// Usage in API route
-export async function GET(request: Request) {
-  const user = await requireAuth(request)
-
-  const data = await getDataForUser(user.userId)
-
-  return NextResponse.json({ success: true, data })
-}
-```
-
-### Role-Based Access Control
-
-```typescript
-type Permission = 'read' | 'write' | 'delete' | 'admin'
-
-interface User {
-  id: string
-  role: 'admin' | 'moderator' | 'user'
-}
-
-const rolePermissions: Record<User['role'], Permission[]> = {
-  admin: ['read', 'write', 'delete', 'admin'],
-  moderator: ['read', 'write', 'delete'],
-  user: ['read', 'write']
-}
-
-export function hasPermission(user: User, permission: Permission): boolean {
-  return rolePermissions[user.role].includes(permission)
-}
-
-export function requirePermission(permission: Permission) {
-  return (handler: (request: Request, user: User) => Promise<Response>) => {
-    return async (request: Request) => {
-      const user = await requireAuth(request)
-
-      if (!hasPermission(user, permission)) {
-        throw new ApiError(403, 'Insufficient permissions')
-      }
-
-      return handler(request, user)
-    }
-  }
-}
-
-// Usage - HOF wraps the handler
-export const DELETE = requirePermission('delete')(
-  async (request: Request, user: User) => {
-    // Handler receives authenticated user with verified permission
-    return new Response('Deleted', { status: 200 })
-  }
-)
-```
-
 ## Rate Limiting
 
 Rate limiting must use a shared store such as Redis, a gateway, or the
@@ -503,70 +317,6 @@ export async function POST(request: Request) {
   await indexQueue.add({ marketId })
 
   return NextResponse.json({ success: true, message: 'Job queued' })
-}
-```
-
-## Logging & Monitoring
-
-### Structured Logging
-
-```typescript
-interface LogContext {
-  userId?: string
-  requestId?: string
-  method?: string
-  path?: string
-  [key: string]: unknown
-}
-
-class Logger {
-  log(level: 'info' | 'warn' | 'error', message: string, context?: LogContext) {
-    const entry = {
-      timestamp: new Date().toISOString(),
-      level,
-      message,
-      ...context
-    }
-
-    console.log(JSON.stringify(entry))
-  }
-
-  info(message: string, context?: LogContext) {
-    this.log('info', message, context)
-  }
-
-  warn(message: string, context?: LogContext) {
-    this.log('warn', message, context)
-  }
-
-  error(message: string, error: Error, context?: LogContext) {
-    this.log('error', message, {
-      ...context,
-      error: error.message,
-      stack: error.stack
-    })
-  }
-}
-
-const logger = new Logger()
-
-// Usage
-export async function GET(request: Request) {
-  const requestId = crypto.randomUUID()
-
-  logger.info('Fetching markets', {
-    requestId,
-    method: 'GET',
-    path: '/api/markets'
-  })
-
-  try {
-    const markets = await fetchMarkets()
-    return NextResponse.json({ success: true, data: markets })
-  } catch (error) {
-    logger.error('Failed to fetch markets', error as Error, { requestId })
-    return NextResponse.json({ error: 'Internal error' }, { status: 500 })
-  }
 }
 ```
 

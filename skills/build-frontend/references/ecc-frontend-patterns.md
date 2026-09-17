@@ -5,15 +5,15 @@ metadata:
   origin: ECC
 ---
 
-> **Provenance note (not part of the original file):** copied verbatim from
-> `affaan-m/ECC`, `skills/frontend-patterns/SKILL.md` (MIT), fetched 2026-09-17.
-> This is the **unfiltered canonical reference** — every pattern below assumes a
-> specific stack (plain React hooks reimplementing SWR/React Query, `framer-motion`,
-> no specific UI library). `build-frontend`'s own `SKILL.md` decides at build time
-> which of these actually apply to a given project, using that project's `design.md`
-> (allowed frontend tech) — see `build-frontend/DESIGN_NOTES.md` for the open
-> question on how that filtering step works. Do not treat this file as ready-to-use
-> guidance on its own.
+> **Provenance note (not part of the original file):** originally copied verbatim from
+> `affaan-m/ECC`, `skills/frontend-patterns/SKILL.md` (MIT), fetched 2026-09-17, then
+> **filtered for this project** (2026-09-17) against `blackboxlabs`'s own locked stack
+> (`docs/design-system.md` + `AGENTS.md`'s decision register) — patterns that reinvented
+> TanStack Query or competed with Zustand were removed, and the animation example's
+> import was updated from the pre-rebrand `framer-motion` package name to `motion/react`.
+> See `build-frontend/DESIGN_NOTES.md` for exactly what was removed and why. This file
+> is project-specific now, not the generic upstream copy — regenerate it (don't hand-edit
+> further piecemeal) if the upstream source or this project's locked stack changes.
 
 # Frontend Development Patterns
 
@@ -109,40 +109,6 @@ export function Tab({ id, children }: { id: string, children: React.ReactNode })
 </Tabs>
 ```
 
-### Render Props Pattern
-
-```typescript
-interface DataLoaderProps<T> {
-  url: string
-  children: (data: T | null, loading: boolean, error: Error | null) => React.ReactNode
-}
-
-export function DataLoader<T>({ url, children }: DataLoaderProps<T>) {
-  const [data, setData] = useState<T | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<Error | null>(null)
-
-  useEffect(() => {
-    fetch(url)
-      .then(res => res.json())
-      .then(setData)
-      .catch(setError)
-      .finally(() => setLoading(false))
-  }, [url])
-
-  return <>{children(data, loading, error)}</>
-}
-
-// Usage
-<DataLoader<Market[]> url="/api/markets">
-  {(markets, loading, error) => {
-    if (loading) return <Spinner />
-    if (error) return <Error error={error} />
-    return <MarketList markets={markets!} />
-  }}
-</DataLoader>
-```
-
 ## Custom Hooks Patterns
 
 ### State Management Hook
@@ -160,74 +126,6 @@ export function useToggle(initialValue = false): [boolean, () => void] {
 
 // Usage
 const [isOpen, toggleOpen] = useToggle()
-```
-
-### Async Data Fetching Hook
-
-```typescript
-interface UseQueryOptions<T> {
-  onSuccess?: (data: T) => void
-  onError?: (error: Error) => void
-  enabled?: boolean
-}
-
-export function useQuery<T>(
-  key: string,
-  fetcher: () => Promise<T>,
-  options?: UseQueryOptions<T>
-) {
-  const [data, setData] = useState<T | null>(null)
-  const [error, setError] = useState<Error | null>(null)
-  const [loading, setLoading] = useState(false)
-
-  // Keep the latest fetcher/options in refs so refetch stays referentially
-  // stable even when callers pass inline functions and object literals.
-  // Without this, every render creates a new refetch, and the effect below
-  // re-runs after each state update - an infinite fetch loop.
-  const fetcherRef = useRef(fetcher)
-  const optionsRef = useRef(options)
-  useEffect(() => {
-    fetcherRef.current = fetcher
-    optionsRef.current = options
-  })
-
-  const refetch = useCallback(async () => {
-    setLoading(true)
-    setError(null)
-
-    try {
-      const result = await fetcherRef.current()
-      setData(result)
-      optionsRef.current?.onSuccess?.(result)
-    } catch (err) {
-      const error = err as Error
-      setError(error)
-      optionsRef.current?.onError?.(error)
-    } finally {
-      setLoading(false)
-    }
-  }, [])
-
-  const enabled = options?.enabled !== false
-
-  useEffect(() => {
-    if (enabled) {
-      refetch()
-    }
-  }, [key, enabled, refetch])
-
-  return { data, error, loading, refetch }
-}
-
-// Usage
-const { data: markets, loading, error, refetch } = useQuery(
-  'markets',
-  () => fetch('/api/markets').then(r => r.json()),
-  {
-    onSuccess: data => console.log('Fetched', data.length, 'markets'),
-    onError: err => console.error('Failed:', err)
-  }
-)
 ```
 
 ### Debounce Hook
@@ -256,61 +154,6 @@ useEffect(() => {
     performSearch(debouncedQuery)
   }
 }, [debouncedQuery])
-```
-
-## State Management Patterns
-
-### Context + Reducer Pattern
-
-```typescript
-interface State {
-  markets: Market[]
-  selectedMarket: Market | null
-  loading: boolean
-}
-
-type Action =
-  | { type: 'SET_MARKETS'; payload: Market[] }
-  | { type: 'SELECT_MARKET'; payload: Market }
-  | { type: 'SET_LOADING'; payload: boolean }
-
-function reducer(state: State, action: Action): State {
-  switch (action.type) {
-    case 'SET_MARKETS':
-      return { ...state, markets: action.payload }
-    case 'SELECT_MARKET':
-      return { ...state, selectedMarket: action.payload }
-    case 'SET_LOADING':
-      return { ...state, loading: action.payload }
-    default:
-      return state
-  }
-}
-
-const MarketContext = createContext<{
-  state: State
-  dispatch: Dispatch<Action>
-} | undefined>(undefined)
-
-export function MarketProvider({ children }: { children: React.ReactNode }) {
-  const [state, dispatch] = useReducer(reducer, {
-    markets: [],
-    selectedMarket: null,
-    loading: false
-  })
-
-  return (
-    <MarketContext.Provider value={{ state, dispatch }}>
-      {children}
-    </MarketContext.Provider>
-  )
-}
-
-export function useMarkets() {
-  const context = useContext(MarketContext)
-  if (!context) throw new Error('useMarkets must be used within MarketProvider')
-  return context
-}
 ```
 
 ## Performance Optimization
@@ -535,10 +378,10 @@ export class ErrorBoundary extends React.Component<
 
 ## Animation Patterns
 
-### Framer Motion Animations
+### Motion Animations
 
 ```typescript
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence } from 'motion/react'
 
 // PASS: List animations
 export function AnimatedMarketList({ markets }: { markets: Market[] }) {

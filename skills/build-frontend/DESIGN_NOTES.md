@@ -160,24 +160,24 @@ Loops until approved.
 
 ## Open questions (added 2026-09-17 — design.md-driven pattern filtering)
 
-6. **Decided:** `references/ecc-frontend-patterns.md` (copied verbatim from `affaan-m/ECC`,
-   MIT) is the raw, unfiltered pattern library — kept as-is, never hand-edited per project. Confirmed
-   by reading it in full: it does **not** split by tech choice — every pattern assumes one specific
-   stack baked into the code sample (hand-rolled hooks reimplementing SWR/React Query, plain
-   Context+Reducer, `framer-motion`, no specific UI library). Each project this pipeline installs
-   into will have its own `design.md` declaring which frontend tech is actually allowed (UI library,
-   state-management choice, data-fetching choice, animation library, etc.) — analogous to how
-   `define-project`'s doc-map already points at (not copies) a project's existing docs. **Still
-   open, needs designing before this becomes real skill logic:**
-   - Exact shape/location of `design.md` — is it always a real file, or can `define-project`'s
-     `doc_map_source` pointer mechanism resolve it to wherever a project already documents this
-     (e.g. `blackboxlabs`'s own `AGENTS.md` decision register, which already covers this ground)?
-   - The actual filtering mechanism at build time: for each `references/ecc-frontend-patterns.md`
-     pattern, does `/build-frontend` (a) select only patterns whose assumed tech matches
-     `design.md`, silently dropping the rest, (b) always surface a "this pattern assumes X, your
-     project uses Y — rewrite needed" flag rather than silently dropping/rewriting, or (c) something
-     else? Real example to design against: the file's "Async Data Fetching Hook" reinvents what
-     TanStack Query already does — if a project's `design.md` says TanStack Query, this pattern
-     shouldn't just be skipped, the *topic* (data fetching) still needs guidance, just pointing at
-     the decided library instead of the hand-rolled hook.
-   - Whether this filtering happens once per project (cached) or fresh per ticket/run.
+6. **Resolved 2026-09-17: filter once per project into a clean copy, not per build run.**
+   Reconsidered the original plan (keep the raw ECC file forever, have `/build-frontend` filter it
+   live against a `design.md` on every run) — per-run filtering is the same wasted, repeated-
+   judgment-call problem already rejected for FE/BE/SHARED ticket labeling (see
+   `senior-engineer/DESIGN_NOTES.md`): don't re-derive the same answer every time when it can be
+   settled once. Reuses a pattern this skill already has: `Step 1`'s theme-file hash check, which
+   only regenerates `DESIGN.md` when the hash changes rather than every run. Same mechanism here —
+   hash the raw `references/ecc-frontend-patterns.md` plus this project's own stack docs
+   (`docs/design-system.md` + `AGENTS.md`'s decision register, in `blackboxlabs`'s case — no
+   separate `design.md` file needed; `define-project`'s `doc_map_source` pointer already resolves
+   to wherever a project documents this), regenerate the filtered copy only if either source
+   changed.
+   **Applied for real against `blackboxlabs`** (`docs/design-system.md` + `AGENTS.md`'s decision
+   register): removed the Render Props `DataLoader` and the custom `useQuery` hook (both reinvent
+   TanStack Query, the project's actual decided data-fetching library), and the Context+Reducer
+   pattern (competes with Zustand, the decided state library). Fixed the animation example's
+   import from the pre-rebrand `framer-motion` package name to `motion/react` — same library
+   design-system.md already calls for, just an outdated import path, not a real conflict. Kept
+   everything else (composition/compound-component patterns, memoization, code-splitting,
+   `@tanstack/react-virtual`, forms, error boundaries, accessibility) — none of it assumes a
+   library this project doesn't already use.
