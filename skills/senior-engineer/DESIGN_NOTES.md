@@ -262,3 +262,23 @@ reference had no path into `/speckit.plan`'s research phase, so it could never b
 `SKILL.md` Step 1/4/5, this skill's Step 6/7) — one gap spanning both files, not two independent
 ones. `tasks.md` is now always produced and is Step 7's actual, required input, not spec-kit's own
 `tasks.md` generation being optional cross-check tooling.
+
+## FE/BE/SHARED labeling made real, not just implicit (2026-09-17)
+
+Checking the real 25 tickets against the "Relationship to `assign-tasks`" note below exposed that
+its claim — "a ticket still ends up FE-, BE-, or shared-scoped" — was only ever true as an
+unlabeled side-effect of right-sizing, never an actual tag written anywhere. Nothing in Step 7 or
+Step 9 wrote FE/BE/SHARED onto a ticket; a build skill (or a human) had no way to tell which was
+which without re-reading the ticket's file list by hand.
+
+Motivation: Saqib wants `build-frontend`/`build-backend` to pick up their own tickets directly by
+this label, rather than a separate dispatcher agent classifying each ticket right before build —
+reasoned through explicitly rather than assumed: `senior-engineer` already has the classification
+signal for free from its own Step 3 investigation, so a dispatcher agent would only re-derive the
+same thing later with *less* context, for no real benefit, while also losing the human-visible
+win of a real Jira label anyone can see without running an agent.
+
+Fixed: Step 7 now classifies scope (frontend/backend/shared) as a second axis alongside type
+(task/spike/bug), reusing `assign-tasks`'s own file-path-then-keyword signal rather than
+reinventing one. Step 9 now writes it as a real label, the same mechanism already used for
+`spike`/`bug` — no new Jira setup, no Components, no custom field.

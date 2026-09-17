@@ -211,6 +211,22 @@ And <additional_criteria, one per line as needed>
 Classify each ticket as `task`, `spike` (research/design unknowns — includes the Step 4/5 spikes
 above), or `bug` (only when the epic is itself a fix).
 
+**Also classify each ticket's scope — `frontend`, `backend`, or `shared`** (a separate axis from
+type, above; a ticket has exactly one of each). Signal, in order — the same one `assign-tasks`
+worked out, reused here rather than reinvented:
+
+1. **File path**, against `PROJECT.md.stack` conventions — e.g. in `blackboxlabs`,
+   `features/*/components/` → `frontend`; `features/*/server/` or `app/api/**/route.ts` →
+   `backend`. A ticket whose grouped `T0xx` tasks touch only one side is that side; a ticket
+   touching both (e.g. a form component plus its API route, migration, and service in one
+   ticket) is `shared`.
+2. **Keyword fallback** (UI/component/page/style vs. service/route/schema/migration) when the
+   path is ambiguous or the task predates any file existing yet.
+
+This is what lets `build-frontend`/`build-backend` pick up their own tickets directly later,
+without a separate dispatcher agent re-deriving the same signal with less context than this step
+already has.
+
 ## Step 8 — Present the draft
 
 Show all proposed tickets — title, type, story/AC text, linked `T0xx` IDs, and which feature/spec
@@ -230,6 +246,11 @@ call shape (`content` blocks), not one dense paragraph per section.
 **Ticket type mapping** (per `PROJECT.md.ticketing.issue_types_available`): when the project has
 no native `Bug`/`Spike` issue type (common in a default Jira template), use `Task` plus a label
 (`spike`, `bug`) instead of forcing a nonexistent type.
+
+**Ticket scope label** — always add exactly one of `frontend` / `backend` / `shared` (Step 7's
+classification) to the ticket's labels, alongside any type label above (e.g. a spike ticket
+carries both `spike` and `frontend`). Plain Jira labels, no project setup required — the same
+mechanism already used for `spike`/`bug`, not a new one.
 
 **Creating a ticket also seeds its own vault file.** Call `log-decision` (write, `level: ticket`,
 passing the epic/story/ticket key+slug chain) with this ticket's initial scoping context — this
@@ -269,13 +290,18 @@ entry is genuinely new information a reader wouldn't otherwise think to go looki
 
 ## Relationship to `assign-tasks`
 
-Replaces it. `assign-tasks`'s FE/BE bracket-tag convention on spec-kit's raw `tasks.md` grammar was
-too coarse for the actual ask (ticket granularity, not just FE/BE labeling) — this skill's
-right-sizing step subsumes that classification; a ticket still ends up FE-, BE-, or shared-scoped,
-just as one axis of a richer split, not the only one.
+Replaces it. `assign-tasks`'s FE/BE bracket-tag convention operated on spec-kit's raw `tasks.md`
+grammar — too coarse for the actual ask (ticket granularity, not just FE/BE labeling). This
+skill's right-sizing step (Step 7) subsumes that job at the right granularity: FE/BE/SHARED is
+now an explicit label written on each ticket at creation time (Step 9), reusing `assign-tasks`'s
+own file-path-then-keyword signal — not just an implicit side-effect of how tickets happen to
+split, as an earlier version of this note claimed before the labeling was actually wired up.
 
 ## Explicit defaults (chosen absent further user input — revisit if wrong)
 
+- FE/BE/SHARED scope is a real Jira label written at Step 9, not just a description someone reads
+  — this is what lets `build-frontend`/`build-backend` pick up a ticket by its label directly,
+  with no separate classification step needed at build time.
 - `openspec/specs/*` and `openspec/components/*` live at **company** level in the vault, not
   per-epic — a mined capability/component is meant to be found and reused by a *later, unrelated*
   epic, so it can't live nested inside the epic that happened to mine it first.
