@@ -102,13 +102,23 @@ from descriptions alone.
    + `middleware.ts` — removed. All Database patterns were hardcoded to the Supabase client SDK
    (`supabase.from()`, `supabase.rpc()`) — removed (Query Optimization, Transaction Pattern
    entirely; Repository Pattern's interface stays, only its Supabase-specific implementation was
-   removed). JWT Validation used raw `jsonwebtoken` instead of Auth.js — removed. RBAC was a
-   hand-rolled permission map instead of CASL — removed. Structured Logging was a hand-rolled
-   console logger instead of Winston — removed. Kept everything with no such conflict: RESTful API
-   structure, Service Layer, N+1 prevention (already stack-agnostic in its own example), both
-   Redis/caching patterns, centralized error handling, retry-with-backoff, rate limiting (already
-   written stack-agnostically, per the original finding), and background jobs (no locked decision
-   it contradicts, even though its in-memory queue is a real quality concern worth catching in
+   removed). JWT Validation used raw `jsonwebtoken` instead of Auth.js — removed. Structured
+   Logging was a hand-rolled console logger instead of Winston — removed. Kept everything with no
+   such conflict: RESTful API structure, Service Layer, N+1 prevention (already stack-agnostic in
+   its own example), both Redis/caching patterns, centralized error handling, retry-with-backoff,
+   rate limiting (already written stack-agnostically, per the original finding), and background
+   jobs (no locked decision it contradicts, even though its in-memory queue is a real quality
+   concern worth catching in
+
+   **RBAC reversal, same day:** initially removed here too (hand-rolled permission map vs. this
+   project's then-decision, CASL) — but the underlying decision itself flipped hours later. Saqib
+   wants hand-rolled RBAC as his own default across projects generally (not CASL), and for
+   `blackboxlabs` specifically decided CASL was overkill for its actual permission model — a small
+   fixed role enum with straightforward per-role capabilities doesn't need a full authorization
+   library. Reversed in `docs/auth.md` and `AGENTS.md`'s decision register, and the pattern
+   restored here to match. Good illustration of why this file says "regenerate, don't hand-edit
+   piecemeal" — the filtering answer is only as current as the locked decision it's checked
+   against.
    review rather than the concern this filtering pass targets).
 
 ## TODOs (block turning this into a real `SKILL.md`)

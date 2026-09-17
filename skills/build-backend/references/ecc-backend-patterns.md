@@ -9,12 +9,15 @@ metadata:
 > `affaan-m/ECC`, `skills/backend-patterns/SKILL.md` (MIT), fetched 2026-09-17, then
 > **filtered for this project** (2026-09-17) against `blackboxlabs`'s own locked stack
 > (`AGENTS.md`'s decision register) — patterns hardcoded to the Supabase client SDK,
-> Pages Router middleware, raw `jsonwebtoken`, a hand-rolled RBAC map, or console-based
-> logging were removed, since this project uses raw `pg`, App Router + `middleware.ts`,
-> Auth.js, CASL, and Winston respectively for each of those. See
-> `build-backend/DESIGN_NOTES.md` for exactly what was removed and why. This file is
-> project-specific now, not the generic upstream copy — regenerate it (don't hand-edit
-> further piecemeal) if the upstream source or this project's locked stack changes.
+> Pages Router middleware, raw `jsonwebtoken`, or console-based logging were removed,
+> since this project uses raw `pg`, App Router + `middleware.ts`, Auth.js, and Winston
+> respectively for each of those. The hand-rolled RBAC pattern was briefly removed too
+> (this project's decision register named CASL at the time) and **restored the same
+> day** once that decision itself was reversed — see `docs/auth.md`'s "Authorization
+> (RBAC)" section for why. See `build-backend/DESIGN_NOTES.md` for the full history.
+> This file is project-specific now, not the generic upstream copy — regenerate it
+> (don't hand-edit further piecemeal) if the upstream source or this project's locked
+> stack changes.
 
 # Backend Development Patterns
 
@@ -264,6 +267,51 @@ serverless or multi-instance environments.
 Keep the backend layer responsible for choosing the integration point and error
 shape; use `api-design` for the HTTP contract and `security-review` for abuse
 case review.
+
+## Authorization
+
+### Role-Based Access Control
+
+```typescript
+type Permission = 'read' | 'write' | 'delete' | 'admin'
+
+interface User {
+  id: string
+  role: 'admin' | 'moderator' | 'user'
+}
+
+const rolePermissions: Record<User['role'], Permission[]> = {
+  admin: ['read', 'write', 'delete', 'admin'],
+  moderator: ['read', 'write', 'delete'],
+  user: ['read', 'write']
+}
+
+export function hasPermission(user: User, permission: Permission): boolean {
+  return rolePermissions[user.role].includes(permission)
+}
+
+export function requirePermission(permission: Permission) {
+  return (handler: (request: Request, user: User) => Promise<Response>) => {
+    return async (request: Request) => {
+      const user = await requireAuth(request)
+
+      if (!hasPermission(user, permission)) {
+        throw new ApiError(403, 'Insufficient permissions')
+      }
+
+      return handler(request, user)
+    }
+  }
+}
+
+// Usage - HOF wraps the handler
+export const DELETE = requirePermission('delete')(
+  async (request: Request, user: User) => {
+    // Handler receives authenticated user with verified permission
+    return new Response('Deleted', { status: 200 })
+  }
+)
+```
 
 ## Background Jobs & Queues
 
