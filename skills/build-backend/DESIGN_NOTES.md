@@ -90,6 +90,29 @@ trusting a sub-agent's self-report without independently re-running the command.
 superpowers (see above), after reading both sources' actual skill files rather than deciding
 from descriptions alone.
 
+4. **Decided (2026-09-17):** `references/ecc-backend-patterns.md` (copied verbatim from
+   `affaan-m/ECC`, MIT) is the raw, unfiltered pattern library — kept as-is, never hand-edited per
+   project (same decision as `build-frontend`'s open question 6, see that file). Confirmed by
+   reading it in full — this one has **real, direct conflicts**, not just gaps, against
+   `blackboxlabs`'s own locked decisions in `AGENTS.md`: its Middleware Pattern is Pages-Router
+   API-route style (`NextApiHandler`, `req`/`res`), not App Router Route Handlers +
+   `middleware.ts`; all 3 Database patterns are hardcoded to the **Supabase client SDK**
+   (`supabase.from()`, `supabase.rpc()`), not raw `pg`; JWT Validation uses raw `jsonwebtoken`
+   instead of Auth.js; RBAC is a hand-rolled permission map instead of CASL; Structured Logging is
+   a hand-rolled console logger instead of Winston. (Caching/Redis, error handling, and rate
+   limiting sections have no such conflict — rate limiting in particular is already written
+   stack-agnostically.) **Still open, needs designing before this becomes real skill logic**
+   (identical shape to `build-frontend`'s open question 6 — solve once, reuse the same mechanism
+   for both skills):
+   - `design.md`'s exact shape/location per project (real file vs. a `doc_map_source`-style
+     pointer to wherever a project already documents this, e.g. `blackboxlabs`'s own `AGENTS.md`
+     decision register).
+   - Whether the build-time filter silently drops/rewrites non-matching patterns or always
+     surfaces a "this pattern assumes X, your project decided Y" flag before proceeding — matters
+     more here than for frontend, since several of these aren't just alternate approaches, they're
+     patterns that would be flatly wrong to apply as-is (e.g. writing Supabase calls into a
+     raw-`pg` codebase).
+
 ## TODOs (block turning this into a real `SKILL.md`)
 
 1. Resolve open question 3 first — if spec-kit's spec format doesn't reliably number acceptance
