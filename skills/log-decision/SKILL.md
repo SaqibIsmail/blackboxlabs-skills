@@ -4,8 +4,9 @@ description: >
   Utility skill for a hierarchical decision log in an Obsidian vault — write mode records why
   something was built a certain way, query mode reads prior entries back, walking up the
   company → epic → story → ticket chain. Called by other pipeline skills (define-epic,
-  plan-feature, senior-engineer, resolve-pr-comments, build-frontend, build-backend) via the
-  Skill tool, and directly invocable when the user wants to record or ask about a decision
+  plan-feature, senior-engineer, resolve-pr-comments, build-frontend, build-backend,
+  research-reference) via the Skill tool, and directly invocable when the user wants to record or
+  ask about a decision
   mid-conversation. Use when the user says "let's record this decision", "ADR this", "we decided
   to...", or "why did we choose X?".
 argument-hint: 'write --level <company|epic|story|ticket> --doc <scope|scoping-calls> "<context>" "<decision>" "<consequences>" | query --ticket <key> | query --epic <key>'
