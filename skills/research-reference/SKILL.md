@@ -30,6 +30,11 @@ ai-website-cloner-template`'s `clone-website` skill (34.5k★, MIT), narrowed to
 instead of a whole-page clone, and dropped its parallel-worktree-builder runtime entirely (not
 this skill's job — `build-frontend`/`build-backend` already own that).
 
+**Not for content/structure questions** — "what fields/actions should this contain" (as opposed to
+"how does this render/animate") is `research-ux`'s job, a sibling skill for a different kind of
+unknown. A `spike` ticket carries a `research-mechanism` or `research-ux` label telling the caller
+which one applies.
+
 ## Step 1 — Read context
 
 Read `PROJECT.md.stack` (frontend/backend frameworks and animation libraries already in use —

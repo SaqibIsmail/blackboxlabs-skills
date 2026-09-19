@@ -316,3 +316,21 @@ blocked by more than one prior ticket is treated as a signal the split itself ne
 not a case to link twice. Step 9 then creates a real `Blocks`/`is blocked by` Jira issue link for
 each one — tickets are already created in Step 7's sequence order, so a blocker's real key always
 exists by the time its dependent is created.
+
+## Content/structure research is a different unknown than mechanism research (2026-09-19)
+
+Saqib's own example: a ticket might need to know what a car-listing card should even *contain* —
+a picture, a price, what else — which has nothing to do with how anything animates or renders.
+Step 5 previously only recognized "a concrete visual/mechanism reference exists" (→
+`research-reference`) or "no idea at all yet" (→ a design spike) — no case for "we know roughly
+what this should look like, we just don't know what it needs to *contain*."
+
+Added a new `research-ux` skill (see its own `DESIGN_NOTES.md`) for exactly this — it looks at real
+comparable examples in the domain and writes a cited content/structure recommendation, the same
+way `research-reference` investigates a live site's mechanism, just for a different kind of
+question. Step 5 now recognizes this as a fourth, orthogonal case (a page can need both a mechanism
+spike and a content spike as two separate tickets). Step 7/9 gained a new label axis,
+`research-mechanism`/`research-ux`, so `build` can tell which research skill a spike ticket needs
+without re-deriving it from prose — same reasoning as the existing `frontend`/`backend`/`shared`
+scope label. The existing blocker-link mechanism (added the same day, above) already covers a
+content-research spike blocking its dependent build ticket — nothing new needed there.

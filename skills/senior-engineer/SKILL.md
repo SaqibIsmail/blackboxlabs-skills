@@ -142,6 +142,17 @@ yet).
     separate session.
 - **An idea exists with no concrete reference** (verbal description only): no research spike
   needed — proceed straight to Step 6.
+- **The epic/story doesn't yet know what content, structure, or primary actions a page or
+  component needs** — a different, orthogonal unknown from the three above (all about visual
+  mechanism or its absence; this one is about what the thing needs to *contain*, e.g. "what should
+  a car-listing card show" rather than "how does its hover effect work"). Not mutually exclusive
+  with the mechanism case — a single page can need both, as two separate spike tickets. Spike a
+  separate research ticket using `research-ux` (not `research-reference` — that skill has no
+  concept of "which fields belong here," this one has no concept of CSS/DOM/animation). It looks
+  at real comparable examples in the domain and writes a concrete, cited content/structure
+  recommendation, grounded in the epic's own audience/purpose. Same discipline as the mechanism
+  case: findings embedded directly in the dependent build ticket's description, and logged via
+  `log-decision`.
 
 ## Step 6 — Decide the feature split
 
@@ -221,6 +232,12 @@ And <additional_criteria, one per line as needed>
 Classify each ticket as `task`, `spike` (research/design unknowns — includes the Step 4/5 spikes
 above), or `bug` (only when the epic is itself a fix).
 
+**A `spike` ticket also gets exactly one of `research-mechanism` or `research-ux`** — which
+research skill `build` should dispatch when it picks the ticket up: `research-mechanism` for a
+Step 5 visual/mechanism reference spike, `research-ux` for a Step 5 content/structure spike. A
+design-spike ticket (no idea exists yet at all) carries neither — it's not handled by either
+research skill.
+
 **Also classify each ticket's scope — `frontend`, `backend`, or `shared`** (a separate axis from
 type, above; a ticket has exactly one of each). Signal, in order — the same one `assign-tasks`
 worked out, reused here rather than reinvented:
@@ -261,6 +278,11 @@ no native `Bug`/`Spike` issue type (common in a default Jira template), use `Tas
 classification) to the ticket's labels, alongside any type label above (e.g. a spike ticket
 carries both `spike` and `frontend`). Plain Jira labels, no project setup required — the same
 mechanism already used for `spike`/`bug`, not a new one.
+
+**Research-kind label** — a `spike` ticket also carries whichever of `research-mechanism` /
+`research-ux` Step 7 assigned it (a design-spike with no idea yet carries neither), alongside
+`spike` and its scope label — e.g. a content-research spike carries `spike`, `research-ux`, and
+`frontend`. Same plain-label mechanism, no new setup.
 
 **Blocker link, when Step 7 identified one.** Create tickets in the same order Step 7 sequenced
 them, so a dependent ticket's blocker (an earlier ticket in this same pass) already has a real
