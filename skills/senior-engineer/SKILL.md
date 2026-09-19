@@ -261,6 +261,17 @@ has one) the relevant `scoping-calls.md`. Because a ticket's own file is created
 time now, not just linked to a pre-existing epic/feature entry, there's no ordering problem the way
 there was under the old flat-numbered scheme — see Step 10 for what still comes later.
 
+**Also embed, in the same description, two things Step 8's draft view already showed you but this
+step previously left out of the real ticket:**
+
+- **This ticket's source `T0xx` task IDs** (e.g. "Source tasks: T012, T014, T015") — without this
+  written down, a downstream builder has no mechanical way to isolate which lines of `tasks.md`
+  belong to this ticket and has to guess from wording alone.
+- **The Step 4 baseline link, when one exists** — `openspec/specs/<capability>/spec.md` or
+  `openspec/components/<component-name>/interface.md`, whichever this ticket's investigation
+  produced or reused — alongside the `scope.md`/`scoping-calls.md` links above. Skip this line
+  entirely for a genuinely greenfield ticket with no baseline.
+
 **For a large epic, group tickets under an intermediate tier, not one flat list.** Jira has no
 native nested-Epic support (without premium Advanced Roadmaps) — use the project's `Story` issue
 type as the grouping/theme tier (one per logical section of the epic), with the concrete tickets

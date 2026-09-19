@@ -282,3 +282,20 @@ Fixed: Step 7 now classifies scope (frontend/backend/shared) as a second axis al
 (task/spike/bug), reusing `assign-tasks`'s own file-path-then-keyword signal rather than
 reinventing one. Step 9 now writes it as a real label, the same mechanism already used for
 `spike`/`bug` — no new Jira setup, no Components, no custom field.
+
+## Two more Step 9 gaps found while designing the downstream `build` skill (2026-09-19)
+
+Found while designing `build` (the unified successor to `build-frontend`/`build-backend`,
+currently a plan, not yet a skill): Step 9's actual ticket-creation content was missing two things
+Step 8's own draft view already showed the user, silently dropping them once a ticket became real.
+
+1. **Source `T0xx` task IDs never got written into the ticket.** `build`'s own consult chain needs
+   to isolate exactly which `tasks.md` lines belong to a given ticket, mechanically — without the
+   IDs on the ticket itself, that meant matching the ticket's AC text against `tasks.md` by
+   wording, an unreliable substitute for a fact Step 7 already knew at grouping time.
+2. **The Step 4 baseline link (`openspec/specs/*` or `openspec/components/*`) was embedded for
+   the epic/story context but never for a mined baseline specifically**, even when Step 4 produced
+   one and it directly grounded the ticket's own scope.
+
+Fixed: Step 9 now embeds both, same "embed, don't just link" convention already used for the
+vault-file path and `scope.md`/`scoping-calls.md` links.
