@@ -2,6 +2,11 @@
 
 Status: design agreed, not implemented. Two TODOs and a few open questions block turning this into an actual SKILL.md — see bottom.
 
+**Not final (2026-09-11):** flagged for re-discussion now that the epic layer
+(`founder-vision`→`define-epic`→`senior-engineer`) exists upstream. This skill now receives
+tickets produced by `senior-engineer`'s right-sizing step rather than a simpler upstream source —
+worth revisiting whether anything here needs to change as a result before treating it as settled.
+
 ## What this is
 
 A single top-level command that orchestrates two existing skills — **Impeccable**
@@ -142,3 +147,37 @@ Loops until approved.
    description), does it still count as Mode 1, or fall back to Mode 2?
 4. Is one `/build-frontend` call always scoped to exactly one page/route, or
    could it target a multi-page flow in a single run?
+
+## Open questions (added 2026-09-10 — pipeline integration)
+
+5. `assign-tasks` (a new scrum-master skill, see `../assign-tasks/DESIGN_NOTES.md`) will produce
+   `[FE]`-tagged tasks from a shared `spec.md`/`plan.md`/`tasks.md` per feature. Should
+   `/build-frontend` accept a ticket/task reference (e.g. a `FE-<slug>` ID or a `tasks.md` line)
+   as an alternate input alongside its current free-text description, so the scrum-master skill
+   can hand it work directly instead of a human re-describing the task in prose? If so, does the
+   Step 3 `shape` brief get derived from the referenced spec/task instead of interviewed fresh —
+   and does that skip or shorten the interview this skill currently always does?
+
+## Open questions (added 2026-09-17 — design.md-driven pattern filtering)
+
+6. **Resolved 2026-09-17: filter once per project into a clean copy, not per build run.**
+   Reconsidered the original plan (keep the raw ECC file forever, have `/build-frontend` filter it
+   live against a `design.md` on every run) — per-run filtering is the same wasted, repeated-
+   judgment-call problem already rejected for FE/BE/SHARED ticket labeling (see
+   `senior-engineer/DESIGN_NOTES.md`): don't re-derive the same answer every time when it can be
+   settled once. Reuses a pattern this skill already has: `Step 1`'s theme-file hash check, which
+   only regenerates `DESIGN.md` when the hash changes rather than every run. Same mechanism here —
+   hash the raw `references/ecc-frontend-patterns.md` plus this project's own stack docs
+   (`docs/design-system.md` + `AGENTS.md`'s decision register, in `blackboxlabs`'s case — no
+   separate `design.md` file needed; `define-project`'s `doc_map_source` pointer already resolves
+   to wherever a project documents this), regenerate the filtered copy only if either source
+   changed.
+   **Applied for real against `blackboxlabs`** (`docs/design-system.md` + `AGENTS.md`'s decision
+   register): removed the Render Props `DataLoader` and the custom `useQuery` hook (both reinvent
+   TanStack Query, the project's actual decided data-fetching library), and the Context+Reducer
+   pattern (competes with Zustand, the decided state library). Fixed the animation example's
+   import from the pre-rebrand `framer-motion` package name to `motion/react` — same library
+   design-system.md already calls for, just an outdated import path, not a real conflict. Kept
+   everything else (composition/compound-component patterns, memoization, code-splitting,
+   `@tanstack/react-virtual`, forms, error boundaries, accessibility) — none of it assumes a
+   library this project doesn't already use.
