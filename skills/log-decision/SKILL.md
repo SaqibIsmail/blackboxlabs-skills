@@ -107,6 +107,46 @@ entirely if none were weighed>
 5. **Return the written file's path** to the caller — always, not optionally. This is the
    mechanism `senior-engineer` uses to embed a back-link in every ticket it creates (see "Ticket ↔
    decision back-link," below).
+6. **Maintain graph connectivity** — see below. Runs on every write, not a separate mode callers
+   ask for.
+
+## Graph connectivity — parent link + children table
+
+The folder tree is the real index (see "Explicit defaults" below) — but Obsidian's graph view only
+draws a line between two notes that actually link to each other; it doesn't read folder nesting.
+Without this, every `scope.md`/`scoping-calls.md`/ticket file sits in the graph as an disconnected
+island even though the folder structure makes the hierarchy obvious to a human. Every write also
+maintains two things, so that same hierarchy is real in the graph and clickable:
+
+1. **This file gets a `**Parent:**` line** — a vault-root-relative wikilink to the file one level
+   up, readable alias, placed right after the frontmatter, before the rest of the content:
+   `**Parent:** [[<company-slug>/<epic-key>-<slug>/scope\|<epic title>]]`. Company-level files
+   (`project.md`, company `scoping-calls.md`) have no parent.
+2. **The parent file gets (or keeps) a `## Children` table row for this file** — append a row if
+   the table exists; create the table (and, if this is the first child ever recorded for that
+   parent, the parent file itself with a minimal scaffold — e.g. a story's `scoping-calls.md` that
+   has never had a real decision logged yet) if it doesn't. Never overwrite or remove a row.
+
+**Link syntax**: always the vault-root-relative path, never a bare filename — `scope.md` and
+`scoping-calls.md` repeat at every epic/story, so `[[scope]]` alone is ambiguous the moment there's
+more than one epic. Inside a table cell, escape the alias pipe: `[[<company-slug>/<epic-key>-<slug>
+/scope\|<epic title>]]`. Title text is the slug, de-hyphenated and sentence-cased — never invented
+beyond that.
+
+**Table columns, by level:**
+- `project.md`'s `## Epics` table: `| Key | Link |`
+- An epic's `scope.md`'s `## Children` table: `| Key | Link | Type |` (`Type` is `Story` or
+  `Ticket` — a ticket sits directly here only when the epic skipped the Story tier)
+- A story's `scoping-calls.md`'s `## Children` table: `| Key | Link |` (every row here is a ticket)
+
+**The one exception to "this skill doesn't manage `project.md`"**: writing `scope.md` for a brand
+new epic also appends one row to `project.md`'s `## Epics` table — narrowly, only that table, never
+any other field `define-project` owns. Without this, the graph's top level stays permanently
+disconnected from everything below it, since nothing else ever touches `project.md`.
+
+This doesn't reintroduce a flat index — the folder tree is still the real, authoritative index;
+these tables and parent lines just make that same hierarchy visible to Obsidian's graph and
+navigable by click, which folder nesting alone can't do.
 
 ## Mode: query
 
@@ -152,7 +192,10 @@ the only way to find it.
   permanent identity; the slug (generated once, never renamed) for human readability while browsing.
 - No global flat index file (no `README.md` of every decision) — the folder tree itself is the
   index; Jira is the index of *tickets*, this vault is the index of *why*, and nesting keeps the two
-  aligned without a third list to maintain.
+  aligned without a third list to maintain. The per-level `## Children` tables (Graph connectivity,
+  above) don't reverse this — each is scoped to one parent's own direct children, not a flat
+  cross-project list, added in 2026-09-19 purely so Obsidian's graph can render the same hierarchy
+  that already existed in the folder tree.
 - `scope.md` is the one non-append-only document this skill manages — a current-state description,
   overwritten on a deliberate re-scope, not a growing log.
 - Company-level `scoping-calls.md` is expected to be rare — most decisions belong to one epic or

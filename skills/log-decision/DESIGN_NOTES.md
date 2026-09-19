@@ -185,3 +185,33 @@ those skills' own `DESIGN_NOTES.md`. Also open: `PROJECT.md` itself can't fully 
 vault without breaking the bootstrap (nothing would know where the vault *is* without first
 reading `PROJECT.md`) — resolved by leaving a minimal pointer stub at the project root; see
 `define-project/DESIGN_NOTES.md`.
+
+## Graph was disconnected — nothing actually linked to anything (2026-09-19)
+
+Saqib caught this live in his own vault: tickets weren't connected to their epic, epics weren't
+connected to the company file — the graph view showed every note as an island, even though the
+folder tree makes the hierarchy obvious to a person browsing it. Root cause: nothing this skill
+writes has ever used an actual `[[wikilink]]` — every cross-reference so far is a plain path in
+frontmatter or prose, which Obsidian's graph doesn't read at all.
+
+Fixed by adding parent-link + children-table maintenance as a standard part of every write (see
+"Graph connectivity" in `SKILL.md`) — not a new mode, a side effect of the existing one. Two real
+gotchas surfaced designing it:
+
+1. **Bare `[[scope]]`/`[[scoping-calls]]` links are ambiguous** — those exact filenames repeat at
+   every single epic and story. Every link has to be vault-root-relative, never a bare filename.
+2. **A story's `scoping-calls.md` doesn't always exist** — it's only ever created lazily, on the
+   first real decision logged for that story. Several real stories in `blackboxlabs`'s own vault
+   had none yet, so they had nothing to hold a `## Children` table at all. Resolved by letting the
+   connectivity step create the file with just the parent-link + empty children scaffold, same as
+   it would for a real decision — the file no longer implies "a decision was logged here," just
+   "this story exists."
+
+Also required one narrow, explicit exception to "this skill doesn't manage `project.md`" — writing
+a new epic's `scope.md` now also appends one row to `project.md`'s `## Epics` table, since nothing
+else ever touches that file and the graph's top level would otherwise stay permanently
+disconnected regardless of what happens below it.
+
+**Also fixed the same day**: the real, already-existing vault files in `blackboxlabs` predate this
+fix and needed retrofitting by hand (a one-time backfill, not something this skill does — it only
+maintains connectivity going forward from here).
