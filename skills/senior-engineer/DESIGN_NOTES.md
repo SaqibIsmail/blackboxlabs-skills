@@ -299,3 +299,20 @@ Step 8's own draft view already showed the user, silently dropping them once a t
 
 Fixed: Step 9 now embeds both, same "embed, don't just link" convention already used for the
 vault-file path and `scope.md`/`scoping-calls.md` links.
+
+## Ticket dependencies made a real Jira link, not just list order (2026-09-19)
+
+Saqib's ask: `tasks.md` already lists tasks in the order they should be done, but the tickets
+Step 9 creates from them carried no explicit dependency signal beyond that same list order — a
+reader (or a build skill) could see ticket B came after ticket A, but not that B was specifically
+*blocked by* A, as opposed to just scheduled later. The concrete case named: a build ticket that
+can't start until a research spike or a specific backend ticket finishes first.
+
+Fixed at both steps, same "identify the signal, then write it as a real artifact" split as the
+FE/BE/SHARED labeling fix above: Step 7 now identifies each ticket's one direct blocker (if any)
+during grouping — deliberately singular, since right-sizing's own "no forward dependencies" rule
+already keeps real dependencies direct and adjacent rather than deep chains; a ticket that looks
+blocked by more than one prior ticket is treated as a signal the split itself needs re-checking,
+not a case to link twice. Step 9 then creates a real `Blocks`/`is blocked by` Jira issue link for
+each one — tickets are already created in Step 7's sequence order, so a blocker's real key always
+exists by the time its dependent is created.

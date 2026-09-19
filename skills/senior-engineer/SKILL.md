@@ -193,6 +193,16 @@ mechanism behind Step 4/5's spike rule, not a separate check to remember here: i
 contains the research task, this step's own grouping logic (risk-boundary criterion) naturally
 splits it out.
 
+**Also identify each ticket's direct blocker, if it has one** — not just its position in the
+sequence. Most dependencies are already singular by construction: a spike unblocks exactly the
+one build ticket that needs its findings; a shared-resource dependency (a frontend ticket needing
+a backend ticket's API/contract first, or vice versa) means whichever of the pair touches that
+resource second is blocked by whichever touches it first. Record which one specific prior ticket
+(by its planned position — real Jira keys don't exist yet at this point) each dependent ticket is
+blocked by. A ticket that seems blocked by more than one prior ticket is a signal to re-check the
+split itself, or whether the "no forward dependencies" rule above is actually satisfied yet — not
+something to resolve by linking it to several blockers at once.
+
 For each ticket, write a description in BMAD's story format:
 
 ```
@@ -251,6 +261,14 @@ no native `Bug`/`Spike` issue type (common in a default Jira template), use `Tas
 classification) to the ticket's labels, alongside any type label above (e.g. a spike ticket
 carries both `spike` and `frontend`). Plain Jira labels, no project setup required — the same
 mechanism already used for `spike`/`bug`, not a new one.
+
+**Blocker link, when Step 7 identified one.** Create tickets in the same order Step 7 sequenced
+them, so a dependent ticket's blocker (an earlier ticket in this same pass) already has a real
+Jira key by the time the dependent ticket is created. Right after creating it, call
+`jira_create_issue_link` with the standard `Blocks`/`is blocked by` relationship pointing at that
+one specific blocker — query `getIssueLinkTypes` once if this project's Jira renames or lacks the
+built-in type, and fall back to a plain sentence in the description citing the blocker's key if
+so. Only tickets Step 7 actually flagged as dependent get this link — most tickets have none.
 
 **Creating a ticket also seeds its own vault file.** Call `log-decision` (write, `level: ticket`,
 passing the epic/story/ticket key+slug chain) with this ticket's initial scoping context — this
