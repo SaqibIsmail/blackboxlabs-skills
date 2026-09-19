@@ -3,7 +3,7 @@ name: research-reference
 description: >
   Investigates one concrete UI/animation/component reference (a live site or an existing
   component) in full technical detail, then maps the real mechanism onto this project's own
-  tech stack. Called by build-frontend/build-backend when they pick up a spike-labeled research
+  tech stack. Called by build when they pick up a spike-labeled research
   ticket — not a sequential pipeline stage of its own, and not invoked directly from a bare ask.
   Use when a ticket says "research how X works before adapting it," or the user names a live site
   or existing component and asks how it actually works.
@@ -28,7 +28,7 @@ never has to guess a value or re-derive the mechanism themselves — then transl
 project's own stack. Cherry-picks its investigation discipline from `JCodesMore/
 ai-website-cloner-template`'s `clone-website` skill (34.5k★, MIT), narrowed to one reference
 instead of a whole-page clone, and dropped its parallel-worktree-builder runtime entirely (not
-this skill's job — `build-frontend`/`build-backend` already own that).
+this skill's job — `build` already own that).
 
 **Not for content/structure questions** — "what fields/actions should this contain" (as opposed to
 "how does this render/animate") is `research-ux`'s job, a sibling skill for a different kind of
@@ -38,7 +38,7 @@ which one applies.
 ## Step 1 — Read context
 
 Read `PROJECT.md.stack` (frontend/backend frameworks and animation libraries already in use —
-never introduce a new one silently, see Step 5). If invoked by `build-frontend`/`build-backend`,
+never introduce a new one silently, see Step 5). If invoked by `build`,
 read the handed-off ticket reference and its own `log-decision` vault file for what specifically
 needs researching and any prior context. If invoked directly by the user, take the reference and
 goal from the command arguments.

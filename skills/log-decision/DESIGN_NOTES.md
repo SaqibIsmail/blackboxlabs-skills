@@ -108,7 +108,7 @@ consent, since `vault_path` is almost certainly outside this repo (a personal Ob
 | `define-epic` | Yes — first entry when the epic is scoped (scope, non-goals, why-now) | On resume, if this epic already has entries |
 | `plan-feature` | Yes — entry when `plan.md` finalizes (scope, chosen approach, explicit non-goals), one per feature under the epic | On resume, if this feature already has entries |
 | `senior-engineer` | Enriches the epic's entry with `ticket-refs` once tickets exist; also writes when investigation surfaces a non-obvious scoping call | Before investigating, checks for prior entries on this epic or the systems it touches |
-| `build-frontend` / `build-backend` | Only when a non-obvious deviation from the plan actually occurs during implementation — not every run | Before implementing, checks for a prior decision that constrains this feature |
+| `build` | Only when a non-obvious deviation from the plan actually occurs during implementation — not every run | Before implementing, checks for a prior decision that constrains this feature |
 | `research-reference` | Yes — the findings once investigation completes; separately, if a new library/dependency decision is surfaced | Before investigating a reference, checks whether it was already researched for a prior ticket |
 | `resolve-pr-comments` | Yes, always — records why a review comment was resolved the way it was | **Yes, hard requirement** — before editing anything |
 | `pentest-app` / `audit-seo` | Optional — only for a deliberate accepted-risk/exception | — |

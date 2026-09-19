@@ -1,5 +1,13 @@
 # /build-backend — Pipeline Design (draft, not yet a working skill)
 
+**Status (2026-09-19): superseded by `build`.** This skill never went live — it was always a
+draft with unresolved open questions (see "Not final" and "Open questions" below). The unified
+`build` skill now owns backend-scope ticket implementation directly. Kept here, not deleted,
+because its TDD (`obra/superpowers`'s Iron Law, watch-the-test-fail, anti-rationalization table)
+and verification-before-completion (`NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE`)
+cherry-pick research is still the basis `build`'s own notes build on. Not invoked by anything —
+do not implement this file as a `SKILL.md`; implement `build` instead.
+
 **Not final (2026-09-11):** flagged for re-discussion now that the epic layer
 (`founder-vision`→`define-epic`→`senior-engineer`) exists upstream. Tickets now come from
 `senior-engineer`'s right-sizing step, not directly from spec-kit/`assign-tasks` as assumed when

@@ -1,6 +1,6 @@
 # Setup — commands to run in a target repo
 
-Run these once per repo, before `build-frontend`/`build-backend` can call into this skill.
+Run these once per repo, before `build` can call into this skill.
 
 ## 1. Prerequisites
 
@@ -42,7 +42,7 @@ up.
 
 ## 4. Run it
 
-Normally invoked by `build-frontend`/`build-backend` when either picks up a spike-labeled ticket.
+Normally invoked by `build` when either picks up a spike-labeled ticket.
 Can also be run directly for ad hoc research, with no ticket involved:
 
 ```

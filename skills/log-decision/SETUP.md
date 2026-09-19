@@ -1,7 +1,7 @@
 # Setup — commands to run in a target repo
 
 Run these once per repo, before other pipeline skills that call `log-decision` (`define-epic`,
-`plan-feature`, `senior-engineer`, and later `resolve-pr-comments`/`build-frontend`/`build-backend`).
+`plan-feature`, `senior-engineer`, `build`, and later `resolve-pr-comments`).
 
 ## 1. Prerequisites
 

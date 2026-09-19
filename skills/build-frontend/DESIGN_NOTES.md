@@ -1,5 +1,12 @@
 # /build-frontend — Pipeline Design (draft, not yet a working skill)
 
+**Status (2026-09-19): superseded by `build`.** This was a real, implemented, working skill — but
+per the repo owner's own explicit instruction it is now fully retired too: not used for anything
+going forward, not even standalone. Kept here, not deleted, because its Impeccable +
+`design-taste-frontend` (anti-slop design-taste) integration is still the basis `build`'s own
+frontend-scope work (B3.5's surface-brief + design-read step) builds on. Do not implement or
+invoke this file as a `SKILL.md` — use `build` instead.
+
 Status: design agreed, not implemented. Two TODOs and a few open questions block turning this into an actual SKILL.md — see bottom.
 
 **Not final (2026-09-11):** flagged for re-discussion now that the epic layer

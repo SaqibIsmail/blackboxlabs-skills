@@ -124,7 +124,7 @@ yet).
 - **No idea exists:** propose a design spike ticket first (e.g. "Design: `<page/flow>` layout and
   states"). If the user wants to proceed anyway rather than block on it: the resulting
   functional ticket(s) describe the UI requirement needed to complete the task, plus an explicit
-  **"No design decided yet"** line in the description — `build-frontend` makes the actual design
+  **"No design decided yet"** line in the description — `build` makes the actual design
   decision when it picks the ticket up.
 - **An idea exists with a concrete reference** (a live site, an existing component, an animation
   seen somewhere): **always** spike a separate research ticket first — never let a build ticket
@@ -250,7 +250,7 @@ worked out, reused here rather than reinvented:
 2. **Keyword fallback** (UI/component/page/style vs. service/route/schema/migration) when the
    path is ambiguous or the task predates any file existing yet.
 
-This is what lets `build-frontend`/`build-backend` pick up their own tickets directly later,
+This is what lets `build` pick up its own tickets directly later,
 without a separate dispatcher agent re-deriving the same signal with less context than this step
 already has.
 
@@ -351,7 +351,7 @@ split, as an earlier version of this note claimed before the labeling was actual
 ## Explicit defaults (chosen absent further user input — revisit if wrong)
 
 - FE/BE/SHARED scope is a real Jira label written at Step 9, not just a description someone reads
-  — this is what lets `build-frontend`/`build-backend` pick up a ticket by its label directly,
+  — this is what lets `build` pick up a ticket by its label directly,
   with no separate classification step needed at build time.
 - `openspec/specs/*` and `openspec/components/*` live at **company** level in the vault, not
   per-epic — a mined capability/component is meant to be found and reused by a *later, unrelated*
