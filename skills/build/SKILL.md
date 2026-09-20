@@ -4,13 +4,16 @@ description: >
   Unified builder for one Jira ticket, or — given a Story key — every ticket under it in one
   batched run. Reads the shared context chain once per run, not once per ticket, then for a Story
   runs every spike ticket first (since implementation tickets may depend on their findings),
-  followed by every task/bug ticket through one continuous implementer subagent and one continuous
-  reviewer subagent, each resumed task-to-task rather than re-spawned, so the worktree, branch,
-  ledger, and already-loaded context carry across the whole Story instead of being re-paid per
-  ticket. A single ticket key still runs solo, the same mechanics, just with a batch of one. Forks
-  the scope-conditioned implementer/reviewer briefs by the ticket's `scope` label
-  (frontend/backend/shared) via file-path pointer, never an inlined copy — not the control flow
-  itself. Supersedes build-frontend and build-backend outright — neither stays in use.
+  followed by every task/bug ticket: one continuous implementer subagent builds the whole batch's
+  task queue back-to-back (resumed task-to-task via SendMessage, not re-spawned, self-QA only
+  between tasks), then one reviewer subagent is dispatched once, after the batch is fully built, to
+  review every task at full per-task depth plus cross-task coherence in a single consolidated pass,
+  followed by one fix loop over the combined findings. Worktree, branch, ledger, and already-loaded
+  context carry across the whole Story instead of being re-paid per ticket. A single ticket key
+  still runs solo, the same mechanics, just with a batch of one. Forks the scope-conditioned
+  implementer/reviewer briefs by the ticket's `scope` label (frontend/backend/shared) via file-path
+  pointer, never an inlined copy — not the control flow itself. Supersedes build-frontend and
+  build-backend outright — neither stays in use.
 argument-hint: '<ticket-key-or-story-key>'
 user-invocable: true
 allowed-tools:
@@ -37,12 +40,13 @@ below shares, then runs every `spike` ticket in the batch first (Branch A: dispa
 research skill, independently verifies its findings, embeds them — nothing gets trusted
 unverified), because a `task`/`bug` ticket may be blocked by one. Only once every spike in the
 batch is done does Branch B start: `subagent-driven-development`'s engine — one worktree, one
-ledger, one continuous implementer subagent and one continuous reviewer subagent (each resumed
-per task via `SendMessage`, not re-spawned), a fix loop, a final whole-branch review, then
-finish — over the batch's whole task/bug set, forking only the implementer/reviewer's brief
-*content* by each ticket's `scope` label (`frontend`/`backend`/`shared`), never the control flow
-itself. Supersedes `build-frontend` and `build-backend` outright — neither stays in use, for any
-case.
+ledger, one continuous implementer subagent (resumed per task via `SendMessage`, not re-spawned)
+that builds the whole batch's task queue back-to-back with only its own self-QA between tasks, then
+one reviewer subagent dispatched once, after the whole batch is built, over the whole batch's diff
+at full per-task depth plus cross-task coherence, then one consolidated fix loop, then finish —
+over the batch's whole task/bug set, forking only the implementer/reviewer's brief *content* by
+each ticket's `scope` label (`frontend`/`backend`/`shared`), never the control flow itself.
+Supersedes `build-frontend` and `build-backend` outright — neither stays in use, for any case.
 
 **Why batching exists at all:** Steps 1–9 below — reading the ticket chain, the feature plan, doc
 routing, mined baselines, coding-standards docs, this repo's own pattern reference — cost real
@@ -107,12 +111,13 @@ never surfaces it on its own. **Check the blocking ticket's own embedded descrip
 once a spike passes A5 its write-up is embedded directly in the ticket it blocks (this pipeline's
 "embed, don't just link" convention), and Step 2 already fetched that description in full. Only
 fall back to reading the blocker's separate vault file when the ticket predates that embed. Extract
-**two distinct named pieces**, not one — a caller two steps downstream (B4a/B4b, resumed hours
-later via `SendMessage`) needs both without re-fetching the blocker's ticket description itself:
+**two distinct named pieces**, not one — a caller two steps downstream (B4a, resumed hours later
+via `SendMessage`, and B6, dispatched once after the batch is built) needs both without re-fetching
+the blocker's ticket description itself:
 - `reference_urls`: the `Reference source(s):` line (see `research-reference/SKILL.md` Step 7).
 - `build_fidelity_checklist`: the full, literal text of the spike's `Build-fidelity checklist`
   section — every measured value and every named interactive mechanism, verbatim. This is the
-  actual thing Branch B builds and reviews against (see B4a/B4b below) — `reference_urls` alone is
+  actual thing Branch B builds and reviews against (see B4a/B6 below) — `reference_urls` alone is
   not enough to carry forward, since the whole point of the checklist is that nobody downstream
   should need to go back to the live site to reconstruct it.
 
@@ -186,7 +191,7 @@ not a research dispatch.
     concrete file/component it becomes here) *and* a `Build-fidelity checklist` (its own required
     third part, per `research-reference/SKILL.md` Step 7) itemizing every measured value and every
     distinct interactive mechanism found — missing the checklist fails this check even if the prose
-    above it is thorough, since the checklist (not the prose) is what B4b's reviewer later checks
+    above it is thorough, since the checklist (not the prose) is what B6's reviewer later checks
     the finished build against line-by-line. For `research-ux`, the near-mandatory/differentiator
     split *and* the recommended set for this specific ticket — a flat undifferentiated list fails
     this check regardless of how detailed it looks. Either skill: missing or "TBD" on its required
@@ -257,16 +262,16 @@ if wrong>`.
   anonymously into a generic context bucket, since B3.5 needs to cite it specifically. **Each
   ticket's own `reference_urls: <url1>, <url2>, ...` and `build_fidelity_checklist: <verbatim
   text>`** get the same named-pointer treatment when Step 3 extracted them — omit both fields
-  entirely for a ticket with no such provenance, rather than writing them empty; B4a and B4b both
+  entirely for a ticket with no such provenance, rather than writing them empty; B4a and B6 both
   key off `reference_urls`' presence per-task to decide whether a visual-comparison pass applies to
   that task, and read `build_fidelity_checklist` directly from the ledger rather than re-fetching
   the blocking ticket's description each time they're resumed.
 
   **A resume is for picking up an interrupted batch, not for patching around a process change
   mid-flight.** If `build`'s own steps changed (a `SKILL.md` edit) after this batch's B4 loop
-  already ran once, that is not a resume — re-dispatch a fresh B4a implementer and a fresh B4b
-  reviewer through the *updated* steps for the affected task(s), rather than the orchestrating
-  session patching the result by hand outside the loop.
+  already ran once, that is not a resume — re-dispatch a fresh B4a implementer for the affected
+  task(s) through the *updated* steps, and re-run B6's review over the resulting diff, rather than
+  the orchestrating session patching the result by hand outside the loop.
 - **B3 — Model tiering**, recorded per task in the ledger before dispatching — never inherited
   silently from the session default. Choose per task, not off a fixed table: boilerplate/simple
   CRUD work → the cheapest tier; typical feature logic → the standard tier; security-sensitive,
@@ -310,13 +315,15 @@ if wrong>`.
     never shipped as-is: replace it with a token the project **already declares** — `DESIGN.md`'s
     own `colors:` block or `docs/design-system.md`/the project's real CSS custom properties — never
     an invented value. Log the swap via `log-decision` citing both numbers. This does not replace
-    B4b's independent check below — a pairing can pass here and still get broken by how an
+    B6's independent check below — a pairing can pass here and still get broken by how an
     implementer actually wires it up.
   - `polish` (final alignment pass) is deferred to B6, not repeated per task.
   - **`extract`** doesn't belong here at all — it's a periodic, non-blocking suggestion at B9 once
     several tickets have landed.
-- **B4 — One continuous implementer, one continuous reviewer, resumed task-to-task, not
-  re-spawned:**
+- **B4 — One continuous implementer, resumed task-to-task, not re-spawned, builds the whole
+  batch's task queue back-to-back. No independent review happens inside this loop** — every task
+  gets only its own self-QA before the implementer moves on to the next one. The whole batch is
+  built before B6 dispatches any independent review:
 
   - **B4a) Spawn ONE implementer subagent for the whole batch, once, before the task loop
     starts** (via `Task`). Its opening brief carries what used to be re-pasted into every
@@ -333,10 +340,11 @@ if wrong>`.
     - `shared` → both.
     - The batch's ordered task queue (ticket key + task ID + AC per entry), and instruction to
       work it in order: **finish one task's self-QA (`critique` + `audit`, non-negotiable
-      regardless of which build command(s) it used), report done, then stop and wait** — don't
-      start the next task until told to. This is what lets the orchestrator interleave an
-      independent reviewer pass between tasks while the implementer's own context (everything it
-      already read, every decision it already made this batch) stays intact for the next one.
+      regardless of which build command(s) it used), report done, then move straight to the next
+      task** — no independent review happens between tasks, and the implementer does not wait for
+      one. Its own context (everything it already read, every decision it already made this batch)
+      carries forward task-to-task the same way it always did; what changed is that nothing
+      external interrupts the queue until every task in it is built.
 
     Then, for each task in Step 4's order: `SendMessage` the same implementer (not a fresh `Task`
     — it's already alive) with just that task's own AC, ticket key, and, when set,
@@ -350,7 +358,7 @@ if wrong>`.
     same interactions, same coordinates, no new measurement, at real token cost (a full live-site
     sweep runs tens of thousands of tokens in screenshots alone). If a checklist line is genuinely
     ambiguous or contradictory once you're actually building against it — not "I'd feel more
-    confident checking," a specific, nameable gap — that's a **Research-gap exception** (see B4c):
+    confident checking," a specific, nameable gap — that's a **Research-gap exception** (see B7):
     stop and let the orchestrator dispatch `research-reference` back for that one narrow question,
     rather than opening a browser yourself. If the implementer judges a checklist line doesn't fit
     this task at all, it logs a Ruling naming exactly which line and why, and flags it in its own
@@ -365,13 +373,23 @@ if wrong>`.
     For a `shared` task: backend half first, always — frontend's task then imports the real shared
     type backend's TDD work just created, rather than guessing at a shape.
 
-  - **B4b) Spawn ONE reviewer subagent for the whole batch, once**, the same way — via `Task`,
-    separate from the implementer, with its own opening brief as file-path pointers (doc-map rows,
-    coding-standards docs, `database-reviewer`'s checklist for DB-touching tasks) rather than
-    pasted content. Then, per task, `SendMessage` it that task's real diff plus:
-    - the ticket's own AC (Given/When/Then) and `T0xx` task text;
-    - **fast, task-scoped self-QA**: lint + typecheck + this task's own affected tests, run for
-      real with the output read — not the full suite (that's B6's job);
+  - **B4b) Ledger update, per task**: task id, ticket key, model used, self-QA result (pass/fail +
+    what `critique`/`audit` found and fixed). No reviewer verdict yet — no independent review has
+    happened at this point in the batch; that's B6's job, once, after every task above is built.
+- **B5** — repeat B4's per-task build-and-self-QA cycle for every remaining task in the batch's
+  ordered queue, driven by the orchestrating session, using the same persistent implementer
+  throughout — no re-spawn between tasks on the happy path, and no review dispatched between them
+  either.
+- **B6 — One reviewer subagent, dispatched once, after every task in the batch is built.** This
+  single pass now carries the full depth an earlier per-task reviewer used to apply separately to
+  each task, plus the cross-task/whole-branch checks that only make sense once everything exists
+  together — merged into one dispatch instead of split across N+1 review rounds:
+
+  - Spawn it via `Task`, most-capable model, with its own opening brief as file-path pointers
+    (doc-map rows, coding-standards docs, `database-reviewer`'s checklist for DB-touching tasks)
+    rather than pasted content.
+  - **For every task in the batch, in order**, check:
+    - the ticket's own AC (Given/When/Then) and `T0xx` task text against that task's real diff;
     - for backend: confirm the criterion-ID tag exists and the test genuinely failed then passed —
       re-run it, don't take the implementer's word for it;
     - **contrast check, mandatory for every `frontend`/`shared` task, unconditional** (does not
@@ -391,50 +409,54 @@ if wrong>`.
       third) time. A checklist line the implementer flagged as a deliberately skipped Ruling is
       recorded here as a known, disclosed gap, not silently passed. If the built result and the
       checklist seem to genuinely disagree in a way that isn't resolvable by re-reading either one
-      — not routine due diligence — that's a Research-gap exception (see B4c), same as B4a: flag it
-      rather than opening a browser to adjudicate it yourself.
+      — not routine due diligence — that's a Research-gap exception (see B7): flag it rather than
+      opening a browser to adjudicate it yourself.
+  - **Then, once over the whole batch**: full test suite plus standards-score run fresh (not the
+    per-task subset any earlier design would have scoped this to — there is no earlier per-task
+    pass left to have already covered it), and cross-task coherence — the same file/pattern
+    reintroduced across tickets, duplicated constants that should be shared, anything only visible
+    with every task's diff in view at once.
+  - **Output: one consolidated findings list**, each finding tagged with the task/ticket it belongs
+    to and marked blocking or non-blocking, not a separate verdict per task.
 
-    *Trade-off, on record*: because this reviewer persists across every task in the batch instead
-    of being re-spawned fresh each time, it could start anchoring toward consistency with its own
-    prior verdicts in this Story rather than judging each task independently — worth watching for
-    if review quality on later tasks in a long batch starts looking rubber-stamped relative to the
-    first few. If that shows up in practice, the fix is switching the reviewer back to a fresh
-    dispatch per task while keeping this same pointer-based brief — the persistence choice and the
-    pointer-vs-copy choice are independent and can be reverted separately.
-
-  - **B4c) Fix loop, max 5 rounds:**
-    - **Rounds 1–3**: `SendMessage` the *same* implementer with the reviewer's findings — it's
-      already alive with the whole task's context loaded, so this is a plain continuation, not a
-      reload.
-    - **Rounds 4–5**: this harness fixes an agent's model tier at spawn time — there's no way to
-      bump an already-running agent to a more-capable tier, only spawn a new one with a `model`
-      override. A fresh spawn is unavoidable here, but it doesn't need Steps 1–9's full context
-      again: hand the new higher-tier agent a **compact escalation package** — the reviewer's
-      specific failure findings from rounds 1–3, the task's own AC/checklist, and the same file
-      pointers B4a already used — not the original doc bundle. By round 4 the unknown is narrow
-      (what's failing), not the whole ticket from zero. Once that one task resolves (pass, or
-      round-5 exhaustion → escalate to the user via `AskUserQuestion`, logged as a Ruling), this
-      escalated agent is discarded — the batch's original long-lived implementer resumes for the
-      *next* task in the queue, not the escalated one.
-    - **Research-gap exception**: if a finding traces back to the ticket's *embedded research
-      findings themselves* being wrong or incomplete in practice — not an implementer mistake —
-      don't resume the implementer to guess again with no new information. Dispatch whichever
-      research skill produced the original findings once more, scoped narrowly to just that gap,
-      re-run A3's verification on the correction, update the ticket's embedded findings, then
-      resume the implementer with the correction. Counts as one fix round, same cap. Only applies
-      to a ticket with real research provenance behind it (Branch A ran for it earlier).
-    - **A visual-comparison failure is not a separate mechanism** — same 5-round cap, same
-      round-5 escalation. The one exception: if the mismatch traces back to the research write-up
-      itself being too thin to build from, treat it as a Research-gap exception instead.
-  - **B4d) Ledger update**: task id, ticket key, model used, round count, reviewer verdict.
-- **B5** — repeat B4's per-task send/review/fix cycle for every remaining task in the batch's
-  ordered queue, driven by the orchestrating session, using the same two persistent subagents
-  throughout — no re-spawn between tasks on the happy path.
-- **B6 — Final whole-branch review, most-capable model, over the whole batch's diff** — every
-  ticket's tasks together, since they share one branch/PR now: cross-task coherence plus the
-  self-QA content fork run at repo scope — real commands run fresh, real output read, no "should
-  pass" claims.
-- **B7 — Fix loop** for B6 findings, same mechanics as B4c.
+  Because this whole pass runs once, in a single dispatch, it doesn't carry the "N prior review
+  reports already sitting in this reviewer's own context by the time it reaches task N" cost or the
+  matching anchoring-toward-its-own-earlier-verdicts risk an interleaved persistent per-task
+  reviewer would have. The trade-off moves elsewhere instead: **a defect in an early task isn't
+  caught until the whole batch is built**, so if a later task copies or builds on top of it, the fix
+  may have to touch more files than if it had been caught right after the task that introduced it.
+  For a `shared` ticket specifically — frontend's task already builds against backend's real output
+  within B4a (backend half first, always) — a wrong backend shape means every frontend task built
+  against it this batch is wrong too, not just flagged once. This is a known, disclosed trade-off of
+  batching review to the end, not a solved one; if it proves costly in practice for `shared`-heavy
+  batches, the fix is a narrow mid-batch checkpoint after backend's half of a `shared` task
+  specifically, not reverting the whole design.
+- **B7 — One fix loop over B6's consolidated findings list, max 5 rounds:**
+  - **Rounds 1–3**: `SendMessage` the *same* implementer with the full findings list from B6,
+    grouped by task — it's already alive with the whole batch's context loaded, so this is a plain
+    continuation, not a reload. The implementer fixes everything outstanding across every flagged
+    task in the round, not one finding at a time.
+  - **Rounds 4–5**: this harness fixes an agent's model tier at spawn time — there's no way to bump
+    an already-running agent to a more-capable tier, only spawn a new one with a `model` override. A
+    fresh spawn is unavoidable here, but it doesn't need Steps 1–9's full context again: hand the
+    new higher-tier agent a **compact escalation package** — B6's specific failure findings still
+    outstanding after rounds 1–3, each flagged task's own AC/checklist, and the same file pointers
+    B4a already used — not the original doc bundle. Once the remaining findings resolve (or round-5
+    exhaustion → escalate to the user via `AskUserQuestion`, logged as a Ruling), this escalated
+    agent is discarded.
+  - **Re-verification**: after each round's fixes, B6's reviewer (same subagent, resumed) re-checks
+    only what that round touched — not a full re-run of every check across the whole batch again.
+  - **Research-gap exception**: if a finding traces back to a ticket's *embedded research findings
+    themselves* being wrong or incomplete in practice — not an implementer mistake — don't resume
+    the implementer to guess again with no new information. Dispatch whichever research skill
+    produced the original findings once more, scoped narrowly to just that gap, re-run A3's
+    verification on the correction, update the ticket's embedded findings, then resume the
+    implementer with the correction. Counts as one fix round, same cap. Only applies to a ticket
+    with real research provenance behind it (Branch A ran for it earlier).
+  - **A visual-comparison failure is not a separate mechanism** — same 5-round cap, same round-5
+    escalation. The one exception: if the mismatch traces back to the research write-up itself
+    being too thin to build from, treat it as a Research-gap exception instead.
+  - **Ledger update**: per finding, which task it belonged to, round count, final verdict.
 - **B8 — Log non-obvious deviations** to `log-decision` — whenever a non-obvious scoping or
   implementation call was actually made during the build that isn't already captured elsewhere.
   Naturally Story-scoped for a batch run.
@@ -465,12 +487,16 @@ if wrong>`.
   Chosen because the same context-reuse argument for the implementer/reviewer applies to review
   overhead too — reviewing one coherent Story-sized PR beats reviewing N small ones that all touch
   the same page.
-- **One continuous implementer and one continuous reviewer per batch, each resumed via
-  `SendMessage` task-to-task, not re-spawned per task.** This is the main lever against context
-  bloat: Steps 1–9's context, plus whatever static docs each subagent reads on its own, get paid
-  once per batch instead of once per task. The reviewer's persistence is a deliberate trade-off
-  against per-task independence (see B4b's note) — revisit that one specifically, independent of
-  everything else here, if review quality drifts on longer batches.
+- **One continuous implementer per batch, resumed via `SendMessage` task-to-task, not re-spawned
+  per task; one reviewer, dispatched once after the whole batch is built, not resumed per task at
+  all.** This is the main lever against context bloat: Steps 1–9's context, plus whatever static
+  docs each subagent reads on its own, get paid once per batch instead of once per task, and the
+  reviewer never accumulates N prior review rounds' worth of its own history before reaching the
+  last task — it sees every task exactly once, fresh, in one pass. The earlier design (reviewer
+  resumed per task, interleaved with the implementer) had a documented trade-off where persistence
+  risked anchoring toward its own prior verdicts on a long batch; that risk doesn't apply to a
+  single-dispatch reviewer. The trade-off that replaces it — an early defect not caught until the
+  whole batch is built — is recorded at B6.
 - **Pointers over pasted content, everywhere except the Build-fidelity checklist.** Every doc that
   used to get read by the orchestrator and re-pasted into a subagent's dispatch prompt (pattern
   references, standards docs, doc-map rows, `impeccable` routing) is now handed over as a file
@@ -479,7 +505,7 @@ if wrong>`.
   line by line, not summarized or re-derived from a path.
 - **Live-browsing `reference_urls` happens exactly once per reference, inside Branch A's research
   dispatch — never again in Branch B.** Earlier versions of this skill had `research-reference`
-  browse live *and* B4a's implementer browse live *and* B4b's reviewer browse live — three full
+  browse live *and* B4a's implementer browse live *and* the reviewer browse live — three full
   passes over the same site for one ticket. A real batch run (SCRUM-11, 2026-09-20) showed why this
   was pure waste: the implementer's live re-browse hit the same clicks at the same coordinates as
   the original research pass and surfaced nothing the checklist didn't already have, and a later
@@ -487,34 +513,35 @@ if wrong>`.
   entirely from the checklist. Each full live-site sweep runs tens of thousands of tokens in
   screenshots alone; three per ticket was the single largest cost driver in that run, well ahead of
   the per-task re-dispatch problem the rest of this batching redesign targets. The fix: `A1`'s
-  research dispatch is the only place a browser opens for the reference site. B4a builds and B4b
-  reviews strictly against `build_fidelity_checklist`. The **Research-gap exception** (B4c) is the
+  research dispatch is the only place a browser opens for the reference site. B4a builds and B6
+  reviews strictly against `build_fidelity_checklist`. The **Research-gap exception** (B7) is the
   one sanctioned way back to the live site — a specific, named gap the checklist can't answer,
   never a routine "let me double-check."
-- **Tier escalation (B4c rounds 4–5) requires a fresh agent spawn — this harness has no
+- **Tier escalation (B7 rounds 4–5) requires a fresh agent spawn — this harness has no
   running-agent model-tier upgrade** — but the fresh spawn gets a compact escalation package
   (specific failure + AC/checklist + pointers), not a full Steps 1–9 reload, and is discarded after
-  its one task; the batch's original implementer resumes the queue afterward.
-- Self-QA runs at two tiers, not one flat check: B4b's fast per-task subset (lint, typecheck, this
-  task's own affected tests) against the resolved standards docs, and B6's full suite plus
-  standards-score across the whole batch's diff. `resolve-pr-comments`/Greptile remains a third,
-  later gate on the opened PR.
+  its findings resolve; the batch's original implementer resumes afterward.
+- Self-QA runs at two tiers, not one flat check: B4a's own per-task subset (lint, typecheck, this
+  task's own affected tests, `critique`/`audit`) against the resolved standards docs, and B6's full
+  suite plus standards-score across the whole batch's diff, run once after every task is built.
+  `resolve-pr-comments`/Greptile remains a third, later gate on the opened PR.
 - Every backend test file/block is tagged `AC-<N>: <criterion text>` against `spec.md`'s real
   criteria — an implemented AC with no matching tag fails review, and a tag citing a nonexistent
   AC fails it too.
-- Visual comparison against a `research-reference`-sourced reference lives inside B4b's existing
-  reviewer (one subagent judges code/spec compliance and visual similarity together), not a
-  separate dedicated subagent — and a real mismatch is blocking, following B4c's existing 5-round
-  fix loop. `research-reference` (Branch A) is the only place that visits the live reference site;
-  B4a and B4b both work from `build_fidelity_checklist` alone and do not re-visit it, per the
-  live-browsing bullet above.
+- Visual comparison against a `research-reference`-sourced reference lives inside B6's single
+  reviewer pass (one subagent judges code/spec compliance and visual similarity together, for every
+  task in the batch), not a separate dedicated subagent — and a real mismatch is blocking, following
+  B7's 5-round fix loop. `research-reference` (Branch A) is the only place that visits the live
+  reference site; B4a and B6 both work from `build_fidelity_checklist` alone and do not re-visit it,
+  per the live-browsing bullet above.
 - The visual comparison is graded against `research-reference`'s own `Build-fidelity checklist`
   item by item, not a holistic "looks about right" impression — and it's a screenshot-first check.
   A checklist item the implementer explicitly chose to skip is recorded as a disclosed gap, not
   silently waved through.
 - A `SKILL.md` process change mid-batch is not something an interrupted-session resume (B2) covers
-  — re-run the affected task(s) through a fresh B4a/B4b send under the *updated* steps rather than
-  the orchestrating session hand-patching the result outside the loop.
+  — re-run the affected task(s) through a fresh B4a implementer send under the *updated* steps, then
+  re-run B6's review over the resulting diff, rather than the orchestrating session hand-patching
+  the result outside the loop.
 - Backend resilience/perf choices are either already required by the AC, or logged as an
   architectural call via `log-decision` — no mandatory ritual gate on every task beyond the one
   conditional retry/cache/backoff prompt carried in the backend brief.
@@ -535,8 +562,9 @@ if wrong>`.
   once at the top of B3.5, directly, since a Story already *is* one page in this pipeline; a solo
   run over one ticket still checks `log-decision` at the Story level first in case a sibling ticket
   outside this run already logged it.
-- Both B4c (per task) and B7 (final review) fix loops cap at 5 rounds, escalating to the user via
-  `AskUserQuestion` on exhaustion rather than forcing a merge through.
+- B7's fix loop, run once over the whole batch's consolidated findings list, caps at 5 rounds —
+  each round addresses everything outstanding across every flagged task, not one finding at a time
+  — escalating to the user via `AskUserQuestion` on exhaustion rather than forcing a merge through.
 - Only four things pause Branch B for the user: an irreversible/destructive op, a
   security-sensitive action, a side effect outside the worktree (push/merge/publish to shared
   state), or a plan so broken every path forward is a guess. Everything else is a judgment call,
@@ -549,8 +577,9 @@ if wrong>`.
   ticket-driven work — neither is invoked by this skill or offered as a fallback for anything.
 - **WCAG contrast is checked twice, at two different times, and neither substitutes for the
   other**: once at B3.5 whenever `DESIGN.md`/`.impeccable/design.json` is actually created or
-  changed (validates what the design system *declares*), and again, unconditionally, at every
-  B4b review of a `frontend`/`shared` task regardless of whether `reference_urls` is set (validates
-  what the real diff *renders*). A failing pairing is fixed by swapping in a token the project
-  already declares — never a new/invented color — logged via `log-decision` with the before/after
-  ratio. This is a blocking failure at both points, same as a missed AC or a visual mismatch.
+  changed (validates what the design system *declares*), and again, unconditionally, at B6's single
+  review pass, for every `frontend`/`shared` task in the batch regardless of whether `reference_urls`
+  is set (validates what the real diff *renders*). A failing pairing is fixed by swapping in a token
+  the project already declares — never a new/invented color — logged via `log-decision` with the
+  before/after ratio. This is a blocking failure at both points, same as a missed AC or a visual
+  mismatch.
