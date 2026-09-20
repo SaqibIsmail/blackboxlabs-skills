@@ -70,9 +70,25 @@ it, or let it appear in a logged command string; read it via shell env expansion
 Check `issuetype`:
 
 - **Story** → this is a **Story-batch run**. Also query `searchJiraIssuesUsingJql`-equivalent REST
-  (`GET .../search?jql=parent=<key> ORDER BY key`) for every child Subtask, and pull each one's
-  `type`/`scope` labels, AC body, embedded `T0xx` task-ID list, and blocker links the same way.
-  Everything from here on operates over **the batch** — the Story plus its children.
+  (`GET .../search?jql=parent=<key> ORDER BY key`, which returns each child's `status` for free) for
+  every child Subtask, and pull each one's `type`/`scope` labels, `status`, AC body, embedded `T0xx`
+  task-ID list, and blocker links the same way.
+
+  **Filter to `status: To Do` only — the batch touches nothing else.** A child ticket already `In
+  Progress`, `In Review`, `Blocked`, or `Done` is excluded from the batch entirely: not re-built,
+  not re-researched, not re-reviewed, not transitioned. It likely already has its own worktree,
+  branch, or PR in flight from a separate run (solo or otherwise) — this batch has no business
+  touching that state. This is a status check, not a merge/reconciliation problem: don't try to
+  detect or reconcile another run's branch, just leave any non-`To Do` ticket alone entirely and
+  report which ones were skipped and why, once, before Step 4 orders what's left. The one exception:
+  a `To Do` ticket in the batch that's blocked by an excluded (already-`Done`) ticket still reads
+  that blocker's embedded findings normally per Step 3 — reading a finished sibling's output isn't
+  touching its ticket. A `To Do` ticket blocked by a non-`Done` excluded ticket (`In Progress`/`In
+  Review`/`Blocked`) has no findings to read yet either — leave it out of this batch too, same as
+  its blocker, rather than guessing at unfinished work.
+
+  Everything from here on operates over **the batch** — the filtered `To Do` subset of the Story's
+  children, not the Story's full child list.
 - **Subtask / Task / Bug** → this is a **solo run**. The batch is that one ticket alone. Every step
   below still applies; a batch of one just means Step 4's ordering and the cross-ticket sharing in
   Steps 5–9 and Branch B are no-ops.
@@ -436,6 +452,14 @@ if wrong>`.
 - **A Story key triggers a batch run; a Subtask/Task/Bug key triggers a solo run over a batch of
   one** — same steps either way, since every step is written in terms of "the batch." Detected
   from the fetched issue's own `issuetype` at Step 2, never guessed from the key's shape.
+- **A Story-batch run only ever touches `status: To Do` children.** `In Progress`, `In Review`,
+  `Blocked`, and `Done` tickets are excluded outright, no exceptions — they may have their own
+  worktree/branch/PR already in flight from an earlier solo or batch run, and this run has no way
+  to know what state that work is actually in. This is a plain status filter, not an attempt to
+  detect, merge, or reconcile another run's branch — simpler and safer than trying to be clever
+  about partial state. A `Done` blocker's embedded findings are still read normally (reading a
+  finished sibling's output isn't touching its ticket); a non-`Done` excluded blocker's dependent
+  `To Do` ticket is excluded too, since there's nothing finished yet to read.
 - **One worktree, one branch, one PR per batch** — a Story-batch run's every child ticket commits
   to the same branch and ships as one PR; a solo run's branch still covers just its one ticket.
   Chosen because the same context-reuse argument for the implementer/reviewer applies to review
