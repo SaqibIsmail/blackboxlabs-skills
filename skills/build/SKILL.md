@@ -90,9 +90,15 @@ blocker-link step) — a blocker is a sibling in the hierarchy, not an ancestor,
 never surfaces it on its own. **Check the blocking ticket's own embedded description first** —
 once a spike passes A5 its write-up is embedded directly in the ticket it blocks (this pipeline's
 "embed, don't just link" convention), and Step 2 already fetched that description in full. Only
-fall back to reading the blocker's separate vault file when the ticket predates that embed. Either
-way, extract the `Reference source(s):` line (see `research-reference/SKILL.md` Step 7) as
-`reference_urls` — Branch B's B4a/B4b need the real URL to browse themselves, not a paraphrase.
+fall back to reading the blocker's separate vault file when the ticket predates that embed. Extract
+**two distinct named pieces**, not one — a caller two steps downstream (B4a/B4b, resumed hours
+later via `SendMessage`) needs both without re-fetching the blocker's ticket description itself:
+- `reference_urls`: the `Reference source(s):` line (see `research-reference/SKILL.md` Step 7).
+- `build_fidelity_checklist`: the full, literal text of the spike's `Build-fidelity checklist`
+  section — every measured value and every named interactive mechanism, verbatim. This is the
+  actual thing Branch B builds and reviews against (see B4a/B4b below) — `reference_urls` alone is
+  not enough to carry forward, since the whole point of the checklist is that nobody downstream
+  should need to go back to the live site to reconstruct it.
 
 ## Step 4 — Order the batch
 
@@ -233,10 +239,12 @@ if wrong>`.
   reconstructs context from the ledger alone. The epic's `scope.md` entry (from Step 3's walk-up)
   gets its own named pointer — `epic_goal_ref: <path to the epic's scope.md>` — not folded
   anonymously into a generic context bucket, since B3.5 needs to cite it specifically. **Each
-  ticket's own `reference_urls: <url1>, <url2>, ...`** gets the same named-pointer treatment when
-  Step 3 extracted one — omit the field entirely for a ticket with no such provenance, rather than
-  writing it empty; B4a and B4b both key off its presence per-task to decide whether a
-  visual-comparison pass applies to that task.
+  ticket's own `reference_urls: <url1>, <url2>, ...` and `build_fidelity_checklist: <verbatim
+  text>`** get the same named-pointer treatment when Step 3 extracted them — omit both fields
+  entirely for a ticket with no such provenance, rather than writing them empty; B4a and B4b both
+  key off `reference_urls`' presence per-task to decide whether a visual-comparison pass applies to
+  that task, and read `build_fidelity_checklist` directly from the ledger rather than re-fetching
+  the blocking ticket's description each time they're resumed.
 
   **A resume is for picking up an interrupted batch, not for patching around a process change
   mid-flight.** If `build`'s own steps changed (a `SKILL.md` edit) after this batch's B4 loop
@@ -315,15 +323,22 @@ if wrong>`.
       already read, every decision it already made this batch) stays intact for the next one.
 
     Then, for each task in Step 4's order: `SendMessage` the same implementer (not a fresh `Task`
-    — it's already alive) with just that task's own AC, ticket key, and `reference_urls` if set.
-    **The one thing that still gets embedded verbatim, never a pointer**: the source spike's
-    `Build-fidelity checklist`, in full — it's small, and it must be checked line-by-line, not
-    summarized. When it's set, the implementer is instructed to actually browse each
-    `reference_urls` entry itself (whatever browser-automation tool the harness provides) before
-    building, not just work from the research write-up's prose summary — a written description is
-    not the same input as looking at the real thing. If the implementer judges a checklist line
-    doesn't fit, it logs a Ruling naming exactly which line and why, and flags it in its own
-    done-report — never a silent simplification.
+    — it's already alive) with just that task's own AC, ticket key, and, when set,
+    `build_fidelity_checklist` in full, verbatim — it's small, and it must be checked line-by-line,
+    not summarized.
+
+    **Build strictly from the checklist. Do not browse `reference_urls` by default.** This
+    reverses an earlier version of this step (live-tested against a real ticket): the checklist
+    exists precisely so nobody downstream has to re-derive it, and a real run showed the
+    implementer re-browsing the reference site found nothing the checklist didn't already have —
+    same interactions, same coordinates, no new measurement, at real token cost (a full live-site
+    sweep runs tens of thousands of tokens in screenshots alone). If a checklist line is genuinely
+    ambiguous or contradictory once you're actually building against it — not "I'd feel more
+    confident checking," a specific, nameable gap — that's a **Research-gap exception** (see B4c):
+    stop and let the orchestrator dispatch `research-reference` back for that one narrow question,
+    rather than opening a browser yourself. If the implementer judges a checklist line doesn't fit
+    this task at all, it logs a Ruling naming exactly which line and why, and flags it in its own
+    done-report — never a silent simplification either way.
 
     For a `backend` task, the reality check that used to run "per task, never cached" (reading the
     real Flyway migrations, grepping real route handlers for reuse-vs-new) still runs **per task**
@@ -349,12 +364,19 @@ if wrong>`.
       or reuse the dev server, screenshot or read computed styles) — a source-only read isn't
       enough, since a correct token declaration can still get overridden or dropped by the real
       build;
-    - **visual comparison, when that task's `reference_urls` is set**: browse the reference and the
-      real built result, checklist-driven against the source spike's `Build-fidelity checklist`
-      line by line — screenshot at true resolution first, DOM/computed-style queries only to
-      confirm a number the screenshot already flagged, never as a substitute for looking. A
-      checklist line the implementer flagged as a deliberately skipped Ruling is recorded here as a
-      known, disclosed gap, not silently passed.
+    - **visual comparison, when that task's `build_fidelity_checklist` is set**: check the real
+      built result against the checklist, line by line — screenshot the built component at true
+      resolution first, DOM/computed-style queries only to confirm a number the screenshot already
+      flagged, never as a substitute for looking. **Do not browse `reference_urls` by default** —
+      same reasoning as B4a: the checklist is the distilled, already-verified record of what the
+      reference does, and re-browsing it to check a checklist that was itself built from browsing
+      it is circular spend, not independent verification. The reviewer's actual independence comes
+      from checking the *built* component fresh, not from re-visiting the source a second (or
+      third) time. A checklist line the implementer flagged as a deliberately skipped Ruling is
+      recorded here as a known, disclosed gap, not silently passed. If the built result and the
+      checklist seem to genuinely disagree in a way that isn't resolvable by re-reading either one
+      — not routine due diligence — that's a Research-gap exception (see B4c), same as B4a: flag it
+      rather than opening a browser to adjudicate it yourself.
 
     *Trade-off, on record*: because this reviewer persists across every task in the batch instead
     of being re-spawned fresh each time, it could start anchoring toward consistency with its own
@@ -431,6 +453,20 @@ if wrong>`.
   path; the subagent reads or greps only what a given task actually needs. The Build-fidelity
   checklist stays embedded verbatim in every per-task message — it's small, and it must be checked
   line by line, not summarized or re-derived from a path.
+- **Live-browsing `reference_urls` happens exactly once per reference, inside Branch A's research
+  dispatch — never again in Branch B.** Earlier versions of this skill had `research-reference`
+  browse live *and* B4a's implementer browse live *and* B4b's reviewer browse live — three full
+  passes over the same site for one ticket. A real batch run (SCRUM-11, 2026-09-20) showed why this
+  was pure waste: the implementer's live re-browse hit the same clicks at the same coordinates as
+  the original research pass and surfaced nothing the checklist didn't already have, and a later
+  task in the same batch never even opened the reference site despite being allowed to — it built
+  entirely from the checklist. Each full live-site sweep runs tens of thousands of tokens in
+  screenshots alone; three per ticket was the single largest cost driver in that run, well ahead of
+  the per-task re-dispatch problem the rest of this batching redesign targets. The fix: `A1`'s
+  research dispatch is the only place a browser opens for the reference site. B4a builds and B4b
+  reviews strictly against `build_fidelity_checklist`. The **Research-gap exception** (B4c) is the
+  one sanctioned way back to the live site — a specific, named gap the checklist can't answer,
+  never a routine "let me double-check."
 - **Tier escalation (B4c rounds 4–5) requires a fresh agent spawn — this harness has no
   running-agent model-tier upgrade** — but the fresh spawn gets a compact escalation package
   (specific failure + AC/checklist + pointers), not a full Steps 1–9 reload, and is discarded after
@@ -445,9 +481,9 @@ if wrong>`.
 - Visual comparison against a `research-reference`-sourced reference lives inside B4b's existing
   reviewer (one subagent judges code/spec compliance and visual similarity together), not a
   separate dedicated subagent — and a real mismatch is blocking, following B4c's existing 5-round
-  fix loop. `research-reference` itself doesn't save a screenshot during its own investigation
-  (Branch A) — it passes the live URL forward via its `Reference source(s):` line, and B4a/B4b both
-  re-visit the real site directly rather than working from a potentially-stale capture.
+  fix loop. `research-reference` (Branch A) is the only place that visits the live reference site;
+  B4a and B4b both work from `build_fidelity_checklist` alone and do not re-visit it, per the
+  live-browsing bullet above.
 - The visual comparison is graded against `research-reference`'s own `Build-fidelity checklist`
   item by item, not a holistic "looks about right" impression — and it's a screenshot-first check.
   A checklist item the implementer explicitly chose to skip is recorded as a disclosed gap, not
