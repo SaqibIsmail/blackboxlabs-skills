@@ -66,6 +66,11 @@ ancestor, so `log-decision`'s own walk-up never surfaces it on its own. This is 
 `research-ux`/`research-reference` spike's findings actually reach the ticket that depends on
 them, not just tickets under the same story/epic.
 
+**If the blocker is a `research-reference` spike**, extract its `Reference source(s):` line (see
+`research-reference/SKILL.md` Step 7) — the exact live URL(s) it investigated. This isn't just
+prose context: Branch B's B4a and B4b (below) need the real URL to browse themselves, not a
+paraphrase of what it looks like. Carry it forward as `reference_urls` (B2's ledger).
+
 ## Step 4 — Load the feature plan
 
 Read `specs/<feature>/{spec.md,plan.md,tasks.md}`, then isolate this ticket's own `T0xx` subset.
@@ -122,7 +127,11 @@ not a research dispatch.
 - **A3 — Verify (the real gate), adapted by which skill ran:**
   - **Structural completeness**: for `research-reference`, both halves present and non-placeholder
     — the real-mechanism write-up (library/DOM/keyframes/trigger) *and* the stack-mapping (the
-    concrete file/component it becomes here). For `research-ux`, the near-mandatory/differentiator
+    concrete file/component it becomes here) *and* a `Build-fidelity checklist` (its own required
+    third part, per `research-reference/SKILL.md` Step 7) itemizing every measured value and every
+    distinct interactive mechanism found — missing the checklist fails this check even if the prose
+    above it is thorough, since the checklist (not the prose) is what B4b's reviewer later checks
+    the finished build against line-by-line. For `research-ux`, the near-mandatory/differentiator
     split *and* the recommended set for this specific ticket — a flat undifferentiated list fails
     this check regardless of how detailed it looks. Either skill: missing or "TBD" on its required
     half fails.
@@ -144,10 +153,11 @@ not a research dispatch.
 - **A4 — On failure**: don't embed anything. Either send `research-reference` back with the
   specific named gap (cap 2 corrective rounds), or — if the gap is a genuine open stack decision —
   stop and ask via `AskUserQuestion` rather than resolve it silently.
-- **A5 — On pass**: embed the verified write-up (both halves) directly in the ticket description
-  (embed, never just link — this pipeline's standing convention). Append a short "verified `<date>`
-  by `build` — passes structural/stack-fidelity/concreteness gate" entry to the ticket's own vault
-  file via `log-decision` (write mode, `level: ticket`) — not a raw file edit, so the same
+- **A5 — On pass**: embed the verified write-up (both halves, plus the `Build-fidelity checklist`
+  for `research-reference`) directly in the ticket description (embed, never just link — this
+  pipeline's standing convention). Append a short "verified `<date>` by `build` — passes
+  structural/stack-fidelity/concreteness gate" entry to the ticket's own vault file via
+  `log-decision` (write mode, `level: ticket`) — not a raw file edit, so the same
   graph-connectivity maintenance (parent link + children table) that every other vault write gets
   still applies here.
 - **A6 — Close the ticket**: `GET .../issue/<key>/transitions` to find the right transition ID,
@@ -181,7 +191,18 @@ if wrong>`.
   epic's `scope.md` entry (from Step 3's walk-up) gets its own named pointer —
   `epic_goal_ref: <path to the epic's scope.md>` — not folded anonymously into a generic "Steps
   1–7 context" bucket, since B3.5 needs to cite it specifically and a generic bucket would make
-  that a re-derivation instead of a lookup.
+  that a re-derivation instead of a lookup. **`reference_urls: <url1>, <url2>, ...`** gets the same
+  named-pointer treatment when Step 3 extracted one from a `research-reference` blocker — omit the
+  field entirely when the ticket has no such provenance, rather than writing it empty; B4a and B4b
+  both key off its presence to decide whether a visual-comparison pass applies at all.
+
+  **A resume is for picking up an interrupted ticket, not for patching around a process change
+  mid-flight.** If `build`'s own steps changed (a `SKILL.md` edit) after this ticket's B4 loop
+  already ran once, that is not a resume — re-dispatch a fresh B4a implementer and a fresh B4b
+  reviewer through the *updated* steps for the affected task(s), rather than the orchestrating
+  session patching the result by hand outside the loop. An orchestrator editing files directly to
+  "fix" a finding is exactly the failure mode the implementer → reviewer → fix-loop structure
+  exists to avoid — a one-shot change with no independent second pass checking it.
 - **B3 — Model tiering**, recorded per task in the ledger before dispatching — never inherited
   silently from the session default. Choose per task, not off a fixed table: boilerplate/simple
   CRUD work → the cheapest tier; typical feature logic → the standard tier; security-sensitive,
@@ -255,6 +276,18 @@ if wrong>`.
       hardcodes "always build then motion." **The one non-negotiable:** self-QA (`critique` +
       `audit`) runs before reporting done, regardless of which build command(s) were used — a
       completion discipline, not a stylistic pick, that feeds directly into B4b's review.
+      **When the ledger's `reference_urls` is set**, the brief includes those exact URL(s)
+      explicitly and instructs the implementer to actually browse each one itself (whatever
+      browser-automation tool the harness provides) before/while building — not just work from
+      `research-reference`'s prose summary of it. A written mechanism description is not the same
+      input as looking at the real thing, and the implementer is the one making the concrete
+      visual calls (spacing, proportions, type treatment) that a summary can't fully specify. The
+      brief also carries the research's own `Build-fidelity checklist` in full, verbatim — **every
+      line on it must land in the build.** If the implementer judges a line doesn't fit (e.g. an
+      interactive mechanism it decides is out of scope for this ticket), that's not a silent
+      simplification it makes on its own: it logs a Ruling naming exactly which line it's skipping
+      and why, and flags it in its own done-report so B4b's reviewer (and the user, if it survives
+      to B9) sees the omission called out rather than discovering it missing on their own.
     - `backend` → **first, a reality check, run per task and never cached**, since schema/routes
       can change between tickets unlike frontend's page brief:
       - **DB**: read the project's real Flyway migration files (not a schema doc) to build the
@@ -302,6 +335,30 @@ if wrong>`.
       RLS-equivalent access checks, no `SELECT *`, no N+1, short transactions).
     - **Fast, task-scoped self-QA**: lint + typecheck + this task's own affected tests, run for
       real with the output read — not the full suite (that's B6's job).
+    - **Visual comparison, when the ledger's `reference_urls` is set** (frontend/shared UI work
+      built from a `research-reference` spike): browse each reference URL and the actual built
+      result yourself — start or reuse the project's dev server and navigate to wherever the new
+      component actually renders (a Storybook story if one exists for it, otherwise a minimal
+      temporary render). This check is **checklist-driven, not a vibe check**: pull the research's
+      own `Build-fidelity checklist` (embedded in the ticket, see A5) and go down it line by line —
+      every measured value and every named interactive mechanism gets its own explicit
+      match/mismatch/missing verdict. A line the implementer's brief flagged as a deliberately
+      skipped Ruling (per B4a) still gets recorded here as a known, disclosed gap, not silently
+      passed. "Looks similar overall" is not an acceptable substitute for going through the actual
+      list.
+
+      **Screenshot at true resolution, not a scaled-down thumbnail** — take the screenshot at the
+      real viewport size the checklist's numbers were measured at (e.g. 1440px desktop), not
+      whatever a tool's default preview size happens to be; a compressed thumbnail hides exactly
+      the edge-padding and small-spacing problems this check exists to catch. **Look at the image
+      first.** A DOM query (`getBoundingClientRect`, computed styles) is only ever used *after* the
+      screenshot already shows something looks right, to confirm the exact number matches the
+      checklist line — it is never a substitute for looking, and "the element is technically
+      present in the DOM with the right attributes" is not a passing visual verdict on its own.
+
+      This whole check is a required part of the same PASS/FAIL verdict as the code/spec checks
+      above, not a separate soft note — a real visual mismatch, or a missing checklist item, fails
+      the review exactly like a missed AC does.
   - **B4c) Fix loop, max 5 rounds**: rounds 1–3 resume the same implementer; rounds 4–5 dispatch a
     fresh implementer on a more-capable tier. Round 5 exhausted → escalate to the user via
     `AskUserQuestion`, logged as a Ruling — never silently forced through.
@@ -315,6 +372,11 @@ if wrong>`.
       the correction, update the ticket's embedded findings, then resume the implementer with the
       correction. Counts as one fix round, same cap. Only applies to a ticket with real research
       provenance behind it (Branch A ran for it earlier).
+    - **A visual-comparison failure is not a separate mechanism** — it resumes the implementer
+      (or escalates on round 4-5) exactly like any other B4b finding, same 5-round cap, same
+      round-5 escalation to the user. The one exception: if the mismatch actually traces back to
+      `research-reference`'s own write-up being too thin to build from (not an implementer
+      execution mistake), treat it as a Research-gap exception per the bullet above instead.
   - **B4d) Ledger update**: task id, model used, round count, reviewer verdict.
 - **B5** — Repeat B4 for every task in the subset.
 - **B6 — Final whole-branch review**, most-capable model, over the whole diff: cross-task
@@ -343,6 +405,22 @@ if wrong>`.
 - Every backend test file/block is tagged `AC-<N>: <criterion text>` against `spec.md`'s real
   criteria — an implemented AC with no matching tag fails review, and a tag citing a nonexistent
   AC fails it too.
+- Visual comparison against a `research-reference`-sourced reference lives inside B4b's existing
+  task reviewer (one dispatch judges code/spec compliance and visual similarity together), not a
+  separate dedicated subagent — and a real mismatch is blocking, following B4c's existing 5-round
+  fix loop rather than a softer non-blocking flag. `research-reference` itself doesn't save a
+  screenshot during its own investigation (Branch A) — it passes the live URL forward via its
+  `Reference source(s):` line, and B4a/B4b both re-visit the real site directly rather than working
+  from a potentially-stale capture.
+- The visual comparison is graded against `research-reference`'s own `Build-fidelity checklist`
+  item by item, not a holistic "looks about right" impression — and it's a screenshot-first check:
+  look at a true-resolution image before running any DOM/computed-style query, since a query only
+  confirms a number a screenshot already flagged, never substitutes for looking. A checklist item
+  the implementer explicitly chose to skip (logged as a Ruling, per B4a) is recorded as a disclosed
+  gap here, not silently waved through.
+- A `SKILL.md` process change mid-ticket is not something an interrupted-session resume (B2) covers
+  — re-run the affected task(s) through a fresh B4a/B4b under the *updated* steps rather than the
+  orchestrating session hand-patching the result outside the loop.
 - Backend resilience/perf choices are either already required by the AC, or logged as an
   architectural call via `log-decision` — there's no mandatory ritual gate on every task beyond
   the one conditional retry/cache/backoff prompt carried in the backend brief.

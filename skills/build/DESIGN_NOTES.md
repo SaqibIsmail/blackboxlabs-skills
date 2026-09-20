@@ -260,3 +260,69 @@ REST API directly (`https://<jira_site_url>/rest/api/3/...`, HTTP Basic Auth wit
 transition+comment, B9's transition) now says this explicitly instead of assuming an MCP tool.
 `senior-engineer` still assumes `jira-integration` for ticket creation — not fixed here, since that
 wasn't part of this change; worth revisiting the same way if it turns out to have the same gap.
+
+## Visual comparison against the real reference, not just its prose write-up (2026-09-19)
+
+Live-testing this skill against a real ticket (`SCRUM-11`, navbar) surfaced a real gap: Branch B's
+implementer never actually looked at the reference site `research-reference` investigated for the
+blocking spike (`SCRUM-9`) — it only had that skill's prose write-up (mechanism + stack-mapping) to
+go on. Nothing checked, after the build, that the finished component actually resembled what was
+researched. The result looked plausible on paper (right positioning, right tokens, right motion
+timing) but was visually thin next to the actual reference, and Saqib called this out directly.
+
+Three decisions, asked and confirmed directly:
+
+1. **Where the visual check lives**: folded into B4b's existing task reviewer (one dispatch judges
+   code/spec compliance and visual similarity together) rather than a new dedicated
+   visual-verifier subagent. Simpler, and the reviewer already has to look at the built result
+   either way.
+2. **How a mismatch is handled**: blocking, following the exact same B4c fix loop and 5-round cap
+   as any other reviewer finding — not a softer "flag for later polish" path. A visual gap is a
+   real gap, not a nice-to-have.
+3. **Whether `research-reference` should save a screenshot during its own investigation**: no —
+   it passes the live URL forward via a new, mechanically-extractable `Reference source(s):` line
+   (see `research-reference/SKILL.md` Step 7) instead. The builder and reviewer both re-visit the
+   real site directly, so they see it as it exists now rather than a capture that could grow stale.
+
+Mechanically: Step 3 now extracts `Reference source(s):` from a `research-reference`-sourced
+blocker's write-up; B2's ledger carries it as a named pointer, `reference_urls` (same pattern as
+`epic_goal_ref`), omitted entirely when there's no such provenance; B4a's frontend brief includes
+the URL(s) and requires the implementer to actually browse them (not just read the summary) before
+building; B4b's reviewer does the same and adds a required visual-similarity verdict to its
+existing PASS/FAIL gate, not a separate check with its own outcome.
+
+## Retrospective: research findings silently dropped at build time (2026-09-19/20)
+
+Live-testing `SCRUM-11` (navbar) surfaced a deeper failure than the visual-comparison gate above
+was built to catch, on the very first ticket it ran against. Saqib looked at the built result
+twice and called it bad both times; tracing why revealed four compounding gaps, not one:
+
+1. **A researched interactive mechanism (`v7labs.com`'s hover-expanding mega-menu) was silently
+   dropped** when the implementer's brief was written — a unilateral simplification ("no dropdown
+   for now"), never surfaced as a decision. The A3 gate checks that `research-reference`'s
+   write-up is complete; nothing checked that the *build* actually implemented what it said.
+2. **Verification kept checking DOM/functional correctness as a proxy for "looks right."** A link's
+   `href` being present and correct says nothing about whether the page reads as designed — these
+   are different questions, and treating one as evidence for the other let real gaps (missing edge
+   padding, a broken flex layout) pass unnoticed.
+3. **Screenshots were taken at a scaled-down size** and elements clipped near the edge were waved
+   off as "a display artifact, confirmed not a real bug via `getBoundingClientRect`" — exactly
+   backwards: the DOM query should confirm what a full-resolution screenshot already shows, not
+   explain away what a compressed one hides.
+4. **When the visual-comparison gate above was added mid-ticket, the ticket wasn't re-run through
+   it.** The orchestrating session dispatched one more "fix it" subagent and did the before/after
+   comparison itself, informally — the same one-shot-implementer-self-reports-success shape the
+   whole `subagent-driven-development` engine exists to avoid, just performed by the orchestrator
+   instead of a subagent.
+
+Fixes, all in `SKILL.md` now:
+- `research-reference`'s Step 7 requires a `Build-fidelity checklist` — every measured value *and*
+  every named interactive mechanism as its own checkable line, not folded into prose.
+- A3's structural-completeness check fails if that checklist is missing, same as a missing mapping.
+- B4a's brief carries the checklist verbatim; the implementer can't drop a line without logging a
+  Ruling naming which one and why.
+- B4b's visual-comparison check is checklist-driven (line by line, explicit match/mismatch/missing)
+  and screenshot-first (true resolution; a DOM query only confirms a number after the image already
+  shows something, never substitutes for looking).
+- B2 states explicitly that a `SKILL.md` process change mid-ticket forces a fresh B4a/B4b re-run
+  under the updated steps, not an orchestrator hand-patch outside the loop.

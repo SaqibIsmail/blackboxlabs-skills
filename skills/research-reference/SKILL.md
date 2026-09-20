@@ -107,12 +107,35 @@ dependency on your own judgment.
 ## Step 7 — Write the output
 
 Produce one write-up covering both Step 5 (the real mechanism) and Step 6 (the stack-mapped
-implementation guidance) — never just one. Embed it directly wherever the caller needs it (the
-ticket's own description, per this pipeline's existing "embed, don't just link" convention) —
-don't leave the calling builder to go find it. Call `log-decision` (write) recording the
-reference and findings, so a later ticket touching the same reference doesn't re-investigate
+implementation guidance) — never just one. Lead it with a clearly labeled
+**`Reference source(s):`** line listing the exact URL(s)/identifier(s) actually investigated (e.g.
+`Reference source(s): https://v7labs.com, https://demo-powerai.sitesplaced.com`) — separate from
+the prose mechanism description, not buried inside a sentence. This is a mechanical requirement,
+not a style preference: `build`'s implementer and reviewer subagents extract this line to browse
+the real reference themselves later (see `build/SKILL.md`'s B4a/B4b) — a URL paraphrased into prose
+is not reliably extractable the same way. Embed the whole write-up directly wherever the caller
+needs it (the ticket's own description, per this pipeline's existing "embed, don't just link"
+convention) — don't leave the calling builder to go find it. Call `log-decision` (write) recording
+the reference and findings, so a later ticket touching the same reference doesn't re-investigate
 from scratch (Step 2). If Step 6 flagged a new-library decision, that's what gets recorded here
 specifically, for the user to resolve before the build ticket proceeds.
+
+**End the write-up with a `Build-fidelity checklist`** — a literal itemized list, not a
+restatement of the prose above it. This is the single most important output of this skill, because
+it's the only thing `build`'s reviewer (see `build/SKILL.md` B4b) checks the finished component
+against line-by-line. Live-testing this skill against a real ticket showed why prose alone fails:
+a paragraph description of a reference's hover-expanding mega-menu got read, understood, and then
+quietly dropped at build time anyway — nothing forced anyone to confirm it against a checklist
+before calling the ticket done. Two kinds of line belong on it:
+- **Every measured value** from Step 4's sweeps: exact px/rem for spacing, padding, gaps, sizes —
+  not just "generous spacing," the actual number, and specifically including edge/container
+  padding (the gap from the viewport edge to the first element), which is easy to measure
+  everything *except*.
+- **Every distinct interactive mechanism** found in the click/hover/scroll sweeps, named as its own
+  line — e.g. "Header expands from 96px to 448px on hover, revealing a panel" — not folded into the
+  general mechanism prose where it can be skimmed past or silently scoped out.
+
+Each line should be independently checkable by someone who never read the prose above it.
 
 ## Explicit defaults (chosen absent further user input — revisit if wrong)
 
