@@ -252,6 +252,17 @@ if wrong>`.
     judgment call, not a tracked, capped resource. `impeccable`'s own docs support a
     `[target]`-scoped `overdrive` per component/section, so a page can have more than one flourish
     moment if the task calls for it.
+  - **Mandatory contrast check, any time `init`/`document`/`extract` above actually creates or
+    changes `DESIGN.md` or `.impeccable/design.json`.** For every text/background color pairing
+    declared in `DESIGN.md`'s `components` frontmatter (and the sidecar's matching CSS), compute
+    the real WCAG 2.1 relative-luminance contrast ratio — normal text needs ≥4.5:1, large text
+    (≥24px, or ≥19px bold) and UI components/graphical objects need ≥3:1. A failing pairing is
+    never shipped as-is: replace it with a token the project **already declares** — `DESIGN.md`'s
+    own `colors:` block or `docs/design-system.md`/the project's real CSS custom properties — never
+    an invented value. Log the swap via `log-decision` (ticket or story level, whichever this
+    surface's dial-set was logged at) citing both numbers (failing ratio → passing ratio). This is
+    the tool's own generation step; it does not replace B4b's independent check below — a pairing
+    can pass here and still get broken by how an implementer actually wires it up.
   - `polish` (final alignment pass) is deferred to B6, not repeated per task.
   - **`extract`** (consolidates repeated patterns *actually built* across tickets into
     `DESIGN.md` — not related to `PROJECT.md.stack`, which stays the separate "what libraries are
@@ -335,6 +346,20 @@ if wrong>`.
       RLS-equivalent access checks, no `SELECT *`, no N+1, short transactions).
     - **Fast, task-scoped self-QA**: lint + typecheck + this task's own affected tests, run for
       real with the output read — not the full suite (that's B6's job).
+    - **Contrast check, mandatory for every `frontend`/`shared` task, unconditional** (unlike the
+      visual-comparison check below, this does **not** require `reference_urls` to be set — it
+      applies to any UI built at all, referenced or not). For every text/background color pairing
+      actually rendered in this task's diff — grep the built component's classNames/inline styles
+      for the real `text-*`/`bg-*` token pairs it uses, don't just re-read `DESIGN.md`'s intent —
+      compute the WCAG 2.1 contrast ratio against the same thresholds as B3.5 (≥4.5:1 normal text,
+      ≥3:1 large text/UI components). Read the actual live-rendered result (start/reuse the dev
+      server, screenshot or read computed styles), not just the source — B3.5's design-time check
+      only validates what `DESIGN.md` *declares*; this validates what actually *renders*, since a
+      correct token declaration can still get overridden, mis-cascaded, or dropped by the real
+      build (exactly the class of bug that slips through a source-only read). A failing pairing
+      fails this review exactly like a missed AC: the fix is to swap in a token the project already
+      declares — never invent a new color — re-verify the number for real, and re-screenshot to
+      confirm the fix actually rendered, not just that the source now says the right class name.
     - **Visual comparison, when the ledger's `reference_urls` is set** (frontend/shared UI work
       built from a `research-reference` spike): browse each reference URL and the actual built
       result yourself — start or reuse the project's dev server and navigate to wherever the new
@@ -452,3 +477,10 @@ if wrong>`.
   ticket predates those embeds.
 - `build` supersedes both `build-frontend` and `build-backend` outright, for every case, not just
   ticket-driven work — neither is invoked by this skill or offered as a fallback for anything.
+- **WCAG contrast is checked twice, at two different times, and neither substitutes for the
+  other**: once at B3.5 whenever `DESIGN.md`/`.impeccable/design.json` is actually created or
+  changed (validates what the design system *declares*), and again, unconditionally, at every
+  B4b review of a `frontend`/`shared` task regardless of whether `reference_urls` is set (validates
+  what the real diff *renders*). A failing pairing is fixed by swapping in a token the project
+  already declares — never a new/invented color — logged via `log-decision` with the before/after
+  ratio. This is a blocking failure at both points, same as a missed AC or a visual mismatch.
