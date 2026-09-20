@@ -45,8 +45,13 @@ skill in this pipeline already makes.
 
 ## Step 2 — Read the ticket
 
-Fetch it via `jira-integration`'s `jira_get_issue` — `type`/`scope` labels, parent Epic/Story keys,
-the story/AC body, and its embedded `T0xx` task-ID list when the ticket description carries one.
+Fetch it via a direct REST call — `GET https://<ticketing.jira_site_url>/rest/api/3/issue/<key>`,
+HTTP Basic Auth with `<ticketing.jira_email>:$JIRA_API_TOKEN` (the token read from this project's
+own `.env`, matching `ticketing.auth_env`; the email/site are non-secret and come straight from
+`PROJECT.md`) — not through an MCP-based `jira-integration` tool. Never hardcode the token, echo
+it, or let it appear in a logged command string; read it via shell env expansion only. Pull
+`type`/`scope` labels, parent Epic/Story keys, the story/AC body, and its embedded `T0xx` task-ID
+list when the ticket description carries one.
 
 ## Step 3 — Query `log-decision`
 
@@ -145,8 +150,10 @@ not a research dispatch.
   file via `log-decision` (write mode, `level: ticket`) — not a raw file edit, so the same
   graph-connectivity maintenance (parent link + children table) that every other vault write gets
   still applies here.
-- **A6 — Close the ticket** (transition per `PROJECT.md.ticketing`) and comment that the dependent
-  build ticket can proceed with the mapping now embedded and verified.
+- **A6 — Close the ticket**: `GET .../issue/<key>/transitions` to find the right transition ID,
+  then `POST .../issue/<key>/transitions` with it, and `POST .../issue/<key>/comment` noting that
+  the dependent build ticket can proceed with the mapping now embedded and verified — same direct
+  REST + `.env` auth as Step 2, no MCP tool involved.
 
 Branch A never touches git — no worktree, no implementer dispatch, no PR.
 
@@ -321,7 +328,8 @@ if wrong>`.
   present its exact menu — **(1) merge locally, (2) push + open a PR, (3) keep as-is** — and wait
   for the user's choice; don't assume PR-by-default even though that's the most likely pick. Update
   the ledger with the outcome; enrich the ticket's `log-decision` entry; transition the Jira ticket
-  (e.g. to "In Review"). **Frontend/shared tickets only:** after several tickets have landed for
+  (e.g. to "In Review") via the same direct REST + `.env` auth as Step 2/A6. **Frontend/shared
+  tickets only:** after several tickets have landed for
   this project, suggest (never force) running `impeccable extract` to consolidate repeated built
   patterns into `DESIGN.md`.
 

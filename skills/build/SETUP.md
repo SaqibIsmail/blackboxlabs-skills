@@ -11,9 +11,13 @@ Run these once per repo, before using `/build` there.
 - **`log-decision`** — queried at the start of every ticket (ticket → story → epic → company
   walk-up, plus a blocker's own vault file when one is linked) and written to throughout: Branch
   A's verify entry, B3.5's per-page surface-brief cache, B8's deviation log, B9's finish entry.
-- **`jira-integration`** (ECC) — ticket read (`jira_get_issue`) and write (comments, label/status
-  transitions) for every ticket `build` touches. Confirm the `mcp-atlassian` MCP server is
-  configured (see `../define-project/SETUP.md` step 2) before your first run.
+- **Direct Jira REST access, not `jira-integration`/MCP** — a `.env` file in the target repo with
+  `JIRA_API_TOKEN` set (matching `PROJECT.md.ticketing.auth_env`), gitignored. `build` authenticates
+  with HTTP Basic Auth (`ticketing.jira_email`:`$JIRA_API_TOKEN`) directly against
+  `https://<ticketing.jira_site_url>/rest/api/3/...` for every ticket read/write, comment, and
+  transition — no MCP server or installed `jira-integration` skill involved. Confirm
+  `curl -u "$JIRA_EMAIL:$JIRA_API_TOKEN" ".../rest/api/3/myself"` returns your real account before
+  running `/build` for the first time.
 - **A worktree tool, for Branch B (task/bug tickets) only** — spike tickets (Branch A) never touch
   git, so this isn't needed to run `build` against a research spike. Two ways to satisfy it,
   in priority order:
@@ -43,7 +47,6 @@ scope. Choose project-scoped for a single repo.
 
 ```bash
 npx skills add https://github.com/Leonxlnx/taste-skill --skill "design-taste-frontend"
-npx skills add https://github.com/affaan-m/ecc --skill "jira-integration"
 ```
 
 ## 3. Install build itself

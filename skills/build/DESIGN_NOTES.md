@@ -241,3 +241,22 @@ history, matching this repo's own never-delete convention), not deleted, and not
 going forward, including as a standalone fallback for any use case. Their own `DESIGN_NOTES.md`
 files get that banner added directly; their dated history stays untouched underneath it, same as
 every other superseded file in this repo.
+
+## Jira access is direct REST + `.env`, not `jira-integration`/MCP (2026-09-19)
+
+Every prior draft of this skill (and `senior-engineer`'s own design) assumed `jira-integration`
+(ECC), an MCP-based Jira read/write tool, as the ticket-access mechanism. Live-testing this skill
+against `blackboxlabs`'s real Jira surfaced that this assumption was never actually verified end to
+end: no `jira-integration` skill was installed anywhere, this session's own Atlassian connector was
+scoped to a different org's site entirely, and the project's own `.mcp.json`-declared `mcp-atlassian`
+server needs a session restart to load — none of which is a reliable path to depend on for every
+`build` invocation.
+
+Saqib's resolution: put `JIRA_API_TOKEN` in the target repo's own gitignored `.env` (matching
+`PROJECT.md.ticketing.auth_env`, which already named this exact variable) and call the Jira Cloud
+REST API directly (`https://<jira_site_url>/rest/api/3/...`, HTTP Basic Auth with
+`jira_email`:`$JIRA_API_TOKEN`) — verified live against the real `blackboxlabss.atlassian.net` for
+`SCRUM-19` before adopting this. Every Jira touchpoint in `SKILL.md` (Step 2's read, A6's
+transition+comment, B9's transition) now says this explicitly instead of assuming an MCP tool.
+`senior-engineer` still assumes `jira-integration` for ticket creation — not fixed here, since that
+wasn't part of this change; worth revisiting the same way if it turns out to have the same gap.
