@@ -76,12 +76,15 @@ Restart or reload your Claude Code session in this repo so the newly installed s
 /build SCRUM-19
 ```
 
-Pass a ticket key, not free text — `build` reads that ticket's `type` label to fork: a
-`spike`-labeled ticket runs research-only (Branch A — no code, no worktree, dispatches into
-`research-reference`/`research-ux`), while a `task`/`bug`-labeled ticket runs the full
-worktree → implement → review → fix-loop → finish engine (Branch B), forking only the per-task
-implementer's brief by the ticket's `scope` label (`frontend`/`backend`/`shared`).
+Pass a ticket key **or a Story key**, not free text. A Story key runs every `To Do` child under it
+as one batch (one worktree, one PR); a Subtask/Task/Bug key runs solo, the same mechanics over a
+batch of one. Either way, `build` reads each ticket's `type` label to fork: every `spike`-labeled
+ticket in the batch runs research-only first (Branch A — no code, no worktree, dispatches into
+`research-reference`/`research-ux`), then every `task`/`bug`-labeled ticket runs through the shared
+worktree → implement (whole batch, back-to-back) → review (once, over the whole batch) → fix-loop
+→ finish engine (Branch B) — forking only the implementer's and reviewer's brief *content* by each
+ticket's `scope` label (`frontend`/`backend`/`shared`), never the control flow itself.
 
-If `.build/SCRUM-19/progress.md` already exists in the repo from an earlier interrupted run,
-`/build SCRUM-19` resumes it — it reads the ledger and picks up at the first task without a
-`complete` line, rather than re-dispatching tasks already done.
+If `.build/<story-key-or-ticket-key>/progress.md` already exists in the repo from an earlier
+interrupted run, `/build SCRUM-19` resumes it — it reads the ledger and picks up at the first task
+without a `complete` line, rather than re-dispatching tasks already done.
