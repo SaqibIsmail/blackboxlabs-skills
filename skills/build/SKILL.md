@@ -339,12 +339,14 @@ if wrong>`.
       anti-rationalization table, delete-means-delete, the `AC-<N>` criterion-ID bridge).
     - `shared` → both.
     - The batch's ordered task queue (ticket key + task ID + AC per entry), and instruction to
-      work it in order: **finish one task's self-QA (`critique` + `audit`, non-negotiable
-      regardless of which build command(s) it used), report done, then move straight to the next
-      task** — no independent review happens between tasks, and the implementer does not wait for
-      one. Its own context (everything it already read, every decision it already made this batch)
-      carries forward task-to-task the same way it always did; what changed is that nothing
-      external interrupts the queue until every task in it is built.
+      work it in order: **finish one task's self-QA — `critique`+`audit` (`impeccable`'s commands)
+      for a `frontend` task; the TDD discipline above (watch-it-fail, anti-rationalization table,
+      delete-means-delete, the `AC-<N>` tag) plus the reality check below for a `backend` task;
+      both halves for `shared` — non-negotiable either way**, report done, then move straight to
+      the next task — no independent review happens between tasks, and the implementer does not
+      wait for one. Its own context (everything it already read, every decision it already made
+      this batch) carries forward task-to-task the same way it always did; what changed is that
+      nothing external interrupts the queue until every task in it is built.
 
     Then, for each task in Step 4's order: `SendMessage` the same implementer (not a fresh `Task`
     — it's already alive) with just that task's own AC, ticket key, and, when set,
@@ -374,7 +376,8 @@ if wrong>`.
     type backend's TDD work just created, rather than guessing at a shape.
 
   - **B4b) Ledger update, per task**: task id, ticket key, model used, self-QA result (pass/fail +
-    what `critique`/`audit` found and fixed). No reviewer verdict yet — no independent review has
+    what the task's self-QA — `critique`/`audit` for frontend, TDD discipline + reality check for
+    backend — found and fixed). No reviewer verdict yet — no independent review has
     happened at this point in the batch; that's B6's job, once, after every task above is built.
 - **B5** — repeat B4's per-task build-and-self-QA cycle for every remaining task in the batch's
   ordered queue, driven by the orchestrating session, using the same persistent implementer
@@ -522,9 +525,10 @@ if wrong>`.
   (specific failure + AC/checklist + pointers), not a full Steps 1–9 reload, and is discarded after
   its findings resolve; the batch's original implementer resumes afterward.
 - Self-QA runs at two tiers, not one flat check: B4a's own per-task subset (lint, typecheck, this
-  task's own affected tests, `critique`/`audit`) against the resolved standards docs, and B6's full
-  suite plus standards-score across the whole batch's diff, run once after every task is built.
-  `resolve-pr-comments`/Greptile remains a third, later gate on the opened PR.
+  task's own affected tests, plus `critique`/`audit` for frontend or the TDD discipline + reality
+  check for backend) against the resolved standards docs, and B6's full suite plus standards-score
+  across the whole batch's diff, run once after every task is built. `resolve-pr-comments`/Greptile
+  remains a third, later gate on the opened PR.
 - Every backend test file/block is tagged `AC-<N>: <criterion text>` against `spec.md`'s real
   criteria — an implemented AC with no matching tag fails review, and a tag citing a nonexistent
   AC fails it too.
