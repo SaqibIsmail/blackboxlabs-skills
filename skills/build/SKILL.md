@@ -335,14 +335,19 @@ if wrong>`.
       (design read + dial-set — this one is small enough to pass directly, it's the *output* of a
       dedicated step, not a doc to re-read).
     - `backend` → the path to Step 9's `ecc-backend-patterns.md`, `postgres-patterns`/
-      `database-migrations`, `api-design`, and the TDD content (Iron Law, mandatory watch-it-fail,
-      anti-rationalization table, delete-means-delete, the `AC-<N>` criterion-ID bridge).
+      `database-migrations`, `api-design`, `test-driven-development.md` (the real Iron Law,
+      Red-Green-Refactor cycle, and Common Rationalizations table — vendored in full, not
+      paraphrased) and `verification-before-completion.md` (the real Iron Law and Gate Function for
+      "no completion claims without fresh evidence"), plus the `AC-<N>` criterion-ID bridge (this
+      project's own convention, not part of either vendored file).
     - `shared` → both.
     - The batch's ordered task queue (ticket key + task ID + AC per entry), and instruction to
       work it in order: **finish one task's self-QA — `critique`+`audit` (`impeccable`'s commands)
-      for a `frontend` task; the TDD discipline above (watch-it-fail, anti-rationalization table,
-      delete-means-delete, the `AC-<N>` tag) plus the reality check below for a `backend` task;
-      both halves for `shared` — non-negotiable either way**, report done, then move straight to
+      for a `frontend` task; `test-driven-development.md` +
+      `verification-before-completion.md` above (Red-Green-Refactor, watch-it-fail, delete-means-
+      delete, no completion claims without fresh evidence) plus the `AC-<N>` tag and the reality
+      check below for a `backend` task; both halves for `shared` — non-negotiable either way**,
+      report done, then move straight to
       the next task — no independent review happens between tasks, and the implementer does not
       wait for one. Its own context (everything it already read, every decision it already made
       this batch) carries forward task-to-task the same way it always did; what changed is that

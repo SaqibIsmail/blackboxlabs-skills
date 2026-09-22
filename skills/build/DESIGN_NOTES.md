@@ -34,7 +34,14 @@ skills:
   (both `obra/superpowers`, 288.8k★, MIT) — carried over from `build-backend`'s draft
   `DESIGN_NOTES.md`, where both were already read in full and adopted (the Iron Law, the mandatory
   watch-it-fail step, the anti-rationalization table, delete-means-delete; and "no completion claims
-  without fresh verification evidence").
+  without fresh verification evidence"). **Correction, 2026-09-21**: for months this only existed as
+  that one-line summary inside `build/SKILL.md` itself — unlike `using-git-worktrees`/
+  `finishing-a-development-branch` (also `obra/superpowers`), these two were never actually vendored
+  as full copies into `skills/build/references/`, so the backend implementer never saw the real
+  content, only the summary's five named concepts. Fixed: both files copied verbatim into
+  `skills/build/references/test-driven-development.md` and
+  `references/verification-before-completion.md`, and `SKILL.md`'s B4a brief now points at them
+  directly instead of paraphrasing.
 - **Backend reality-check reference material — `affaan-m/ECC`** (262.9k★, MIT): five new reference
   files (below). `garrytan/gstack` (133.7k★, MIT) and BMAD-METHOD (`bmad-code-org/BMAD-METHOD`,
   53.2k★, no asserted license) were checked live for the same need and had nothing relevant — only
