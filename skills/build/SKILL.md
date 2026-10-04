@@ -467,40 +467,24 @@ if wrong>`.
 - **B8 — Log non-obvious deviations** to `log-decision` — whenever a non-obvious scoping or
   implementation call was actually made during the build that isn't already captured elsewhere.
   Naturally Story-scoped for a batch run.
-- **B9 — Finish.** Run `finishing-a-development-branch`'s real flow: verify tests are green, then
-  present its exact menu — **(1) merge locally, (2) push + open a PR, (3) keep as-is** — and wait
-  for the user's choice. **One PR for the whole batch** — its description lists every child
+- **B9 — Finish.** Verify tests are green, then **always push the branch and open a PR** — no
+  menu, no waiting on the user's choice (this supersedes `finishing-a-development-branch`'s
+  merge/push/keep menu; its test-green gate still applies, and if tests aren't green, fix first
+  rather than opening a red PR). **One PR for the whole batch** — its description lists every child
   ticket key it resolves. Update the ledger with the outcome; enrich the ticket's (and, for a
   batch run, the Story's) `log-decision` entry; transition **every** ticket in the batch to "In
   Review" via the same direct REST + `.env` auth as Step 2/A6, looped over the set. **Frontend/shared
   batches only:** after several tickets have landed for this project, suggest (never force) running
   `impeccable extract` to consolidate repeated built patterns into `DESIGN.md`.
-- **B10 — External CI handoff, only after B9's option (2).** `standards-ci.yml` (`Standards
-  Review`) and Greptile (`Greptile Review`, 5/5 confidence required) are required branch-protection
-  checks on the opened PR — real gates `build` doesn't own or run itself, per the target repo's own
-  `docs/hosting.md`.
-  - **Don't poll for CI.** Both checks take real wall-clock time to run; sitting in a loop checking
-    status burns turns for nothing. Stop here instead: report the PR link, that CI is running, and
-    ask the user to look at the actual built result (the design, the live PR) and report back
-    whenever they're ready — this session resumes on that message, not on a timer.
-  - **On resume**, read what's actually posted: the standards sticky/inline comments (real scores,
-    real violations) and Greptile's inline findings, via the same direct GitHub access already used
-    elsewhere in this pipeline — plus whatever feedback the user gave from having looked at it
-    themselves. Both count as real input, same standing as a B6 finding.
-  - **One more review pass**, B6's reviewer resumed (same subagent, same full depth) over the final
-    batch state, this time factoring in the CI/Greptile findings and the user's feedback together —
-    not a second independent pass blind to what external CI already said.
-  - **Fix loop**, same B7 mechanics. For a Greptile finding specifically, follow this repo's own
-    documented dispute loop (`docs/hosting.md`): fix it if it's real; if it isn't, reply to
-    Greptile's inline comment explaining why (Greptile reads replies and remembers) rather than
-    silently overriding it.
-  - **Re-trigger, once fixes are pushed**: comment `/standards` on the PR (the real, confirmed
-    trigger — `standards-ci.yml` listens for `issue_comment` bodies starting with `/standards`) to
-    force a fresh score, and `@greptile review this PR again` to force a fresh Greptile pass —
-    both real, confirmed trigger phrases, not guessed at.
-  - This is a lighter, inline version of what the still-draft `resolve-pr-comments` skill is meant
-    to own eventually (per this repo's own `DESIGN_NOTES.md`) — once that skill exists as a real
-    `SKILL.md`, B10 should delegate to it instead of duplicating this logic here.
+- **B10 — Hand off to `/resolve-pr-comments`, immediately after B9 opens the PR.** `standards-ci.yml`
+  (`Standards Review`) and Greptile (`Greptile Review`, 5/5 confidence required) are required
+  branch-protection checks on the opened PR — real gates `build` doesn't own or run itself, per the
+  target repo's own `docs/hosting.md`. Don't wait on them, don't poll them, and don't fix their
+  findings here: invoke the `resolve-pr-comments` skill via the Skill tool, passing the PR
+  URL/number, the branch name, the worktree path, and the batch's ticket keys. That skill owns the
+  whole loop from here (read findings → fix or dispute with fresh agents → re-trigger → repeat
+  until all CI is green → message the user to merge). `build`'s own run ends once that skill
+  returns its final report.
 
 ## Explicit defaults (chosen absent further user input — revisit if wrong)
 
@@ -558,8 +542,7 @@ if wrong>`.
   task's own affected tests, plus `critique`/`audit` for frontend or the TDD discipline + reality
   check for backend) against the resolved standards docs, and B6's full suite plus standards-score
   across the whole batch's diff, run once after every task is built. Standards-CI/Greptile remain a
-  third, later gate on the opened PR — B10 now handles that handoff inline rather than leaving it
-  unowned; `resolve-pr-comments` (still draft-only) is meant to absorb this eventually.
+  third, later gate on the opened PR — B10 hands it to `resolve-pr-comments`, which owns it.
 - Every backend test file/block is tagged `AC-<N>: <criterion text>` against `spec.md`'s real
   criteria — an implemented AC with no matching tag fails review, and a tag citing a nonexistent
   AC fails it too.

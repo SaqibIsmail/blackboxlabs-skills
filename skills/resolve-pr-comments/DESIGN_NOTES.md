@@ -1,4 +1,9 @@
-# /resolve-pr-comments — Pipeline Design (draft, not yet a working skill)
+# /resolve-pr-comments — Pipeline Design
+
+**Update 2026-10-03:** now implemented as `SKILL.md`, invoked by `build` B10 right after it
+auto-opens the PR (runs locally via the Skill tool, not the Actions-based design below). Loops fresh
+agents until all CI is green, then messages the user to merge. The sections below are the earlier
+draft design, kept for rationale.
 
 **Not final (2026-09-11):** flagged for re-discussion now that the epic layer
 (`founder-vision`→`define-epic`→`senior-engineer`) exists upstream. The PRs this skill reacts to
