@@ -29,6 +29,17 @@ allowed-tools:
   - AskUserQuestion
   - EnterWorktree
   - ExitWorktree
+  - mcp__graphify__list_repositories
+  - mcp__graphify__graph_stats
+  - mcp__graphify__graphify_rank_files
+  - mcp__graphify__query_graph
+  - mcp__graphify__graphify_find
+  - mcp__graphify__graphify_callers
+  - mcp__graphify__graphify_callees
+  - mcp__graphify__graphify_file_neighbors
+  - mcp__graphify__graphify_impact
+  - mcp__graphify__impact_and_risk
+  - mcp__graphify__graphify_tests_for
 license: MIT
 ---
 
@@ -166,6 +177,38 @@ This is a different source from Steps 6/8 — this repo's own pre-filtered gener
 target repo's own docs. **These get handed to Branch B's implementer as a file path, not pasted
 content** — see B4a.
 
+## Step 9.5 — Code-graph pre-pass (only when Graphify is connected)
+
+Optional, and skipped silently when it doesn't apply: run it only if the `graphify` MCP tools are
+available in this session **and** `list_repositories` shows the target repo (matched by the
+`owner/name` from `git remote get-url origin`) as `queryable: true`. Otherwise every step below
+behaves exactly as if this step didn't exist — no prompt to install it, no error.
+
+When it applies, once for the batch:
+
+- **Record the graph's commit.** `graph_stats` returns the commit the index was built from — write
+  it to the ledger as `graph_commit` (B2). Everything the graph says describes *that* commit, not
+  the worktree. If it's behind the batch's base commit, note the gap; the graph is still useful for
+  code that hasn't changed since.
+- **Per ticket, map AC → code.** `graphify_rank_files` with the ticket's AC text, then
+  `query_graph` with `skeleton: true` (signatures only — cheap) for the top hits. Keep the result
+  as a short `graph_map` per ticket: the files and symbols this ticket most likely touches, as
+  `path:line` pointers, not bodies.
+- **Blast radius of what will change.** For the main symbols in each `graph_map`,
+  `graphify_impact` (or `impact_and_risk` when the ticket touches shared/core code) — record the
+  callers and dependents outside the ticket's own files as `graph_impact`. This is the list B6
+  later checks the diff against.
+- **Cross-ticket overlap.** Two tickets in the batch whose `graph_map`s name the same symbol are a
+  coordination point — note it in Step 4's ordering (the earlier ticket's change is what the later
+  one builds on), and flag it for B6's cross-task coherence check.
+- **Linked tests.** `graphify_tests_for` on each `graph_map` symbol → `graph_tests` per ticket, the
+  test files B4a's self-QA runs first.
+
+All of it goes into the ledger as pointers (B2), never pasted into a dispatch. **Staleness rule,
+everywhere below:** the graph never sees this batch's own edits. For any file the batch has already
+changed, `Read`/`Grep` on the worktree wins over the graph; the graph stays authoritative only for
+code the batch hasn't touched.
+
 ## Step 10 — Run every spike in the batch first
 
 For each `spike`-type ticket in the batch, in Step 4's order, run Branch A to completion (through
@@ -182,7 +225,10 @@ not a research dispatch.
 
 - **A1** — Dispatch the chosen skill (via `Skill`) with the reference/subject, "what it needs to
   become"/"why it matters" from the ticket, plus Steps 1–9's gathered context. `build` is
-  `research-reference`'s documented caller and `research-ux`'s only caller.
+  `research-reference`'s documented caller and `research-ux`'s only caller. When Step 9.5 ran,
+  also pass the spike's `graph_map` plus one `query_graph` answer to "how does this codebase
+  already do <the thing being researched>?" — so the stack-mapping half names the existing
+  component/file it should extend instead of proposing a new one blind.
 - **A2** — Re-read the actual write-up wherever Step 6/7 of the dispatched skill put it (ticket
   description / its `log-decision` entry) as fresh input — its own "done" claim isn't the gate.
 - **A3 — Verify (the real gate), adapted by which skill ran:**
@@ -265,7 +311,9 @@ if wrong>`.
   entirely for a ticket with no such provenance, rather than writing them empty; B4a and B6 both
   key off `reference_urls`' presence per-task to decide whether a visual-comparison pass applies to
   that task, and read `build_fidelity_checklist` directly from the ledger rather than re-fetching
-  the blocking ticket's description each time they're resumed.
+  the blocking ticket's description each time they're resumed. When Step 9.5 ran, the ledger also
+  carries `graph_commit` once for the batch and, per ticket, `graph_map`, `graph_impact`, and
+  `graph_tests` — pointers only, omitted entirely when Step 9.5 didn't run.
 
   **A resume is for picking up an interrupted batch, not for patching around a process change
   mid-flight.** If `build`'s own steps changed (a `SKILL.md` edit) after this batch's B4 loop
@@ -341,6 +389,13 @@ if wrong>`.
       "no completion claims without fresh evidence"), plus the `AC-<N>` criterion-ID bridge (this
       project's own convention, not part of either vendored file).
     - `shared` → both.
+    - **When Step 9.5 ran**: the ledger path for the `graph_*` fields, `graph_commit`, the
+      staleness rule (worktree beats graph for any file this batch already changed), and how to use
+      the graph instead of broad grepping: start each task from its `graph_map`; before changing a
+      function's signature or behavior, `graphify_callers` on it so every caller gets updated in
+      the same task; `graphify_find`/`query_graph` to locate an existing helper before writing a
+      new one; and in self-QA, run that task's `graph_tests` first, before the rest of its
+      affected tests.
     - The batch's ordered task queue (ticket key + task ID + AC per entry), and instruction to
       work it in order: **finish one task's self-QA — `critique`+`audit` (`impeccable`'s commands)
       for a `frontend` task; `test-driven-development.md` + `verification-before-completion.md`
@@ -399,6 +454,12 @@ if wrong>`.
     - the ticket's own AC (Given/When/Then) and `T0xx` task text against that task's real diff;
     - for backend: confirm the criterion-ID tag exists and the test genuinely failed then passed —
       re-run it, don't take the implementer's word for it;
+    - **caller/impact coverage, when Step 9.5 ran**: for every symbol whose signature or behavior
+      the task's diff changed, `graphify_callers` (and the ticket's `graph_impact`) lists who
+      depends on it — any caller outside the diff that should have changed and didn't is a
+      blocking finding. Callers are taken from the graph only for files the batch didn't touch;
+      for files it did, confirm with `Grep` on the worktree. `graphify_tests_for` on the same
+      symbols confirms the changed behavior has a linked test;
     - **contrast check, mandatory for every `frontend`/`shared` task, unconditional** (does not
       require `reference_urls`) — grep the built component's real classNames/inline styles for the
       actual token pairs used, compute WCAG 2.1 contrast against the live-rendered result (start
@@ -422,7 +483,9 @@ if wrong>`.
     per-task subset any earlier design would have scoped this to — there is no earlier per-task
     pass left to have already covered it), and cross-task coherence — the same file/pattern
     reintroduced across tickets, duplicated constants that should be shared, anything only visible
-    with every task's diff in view at once.
+    with every task's diff in view at once. When Step 9.5 ran, start from its cross-ticket overlap
+    list — those shared symbols are where two tickets' changes most likely collide — and use
+    `graphify_find` on any new helper the batch added to check an equivalent didn't already exist.
   - **Output: one consolidated findings list**, each finding tagged with the task/ticket it belongs
     to and marked blocking or non-blocking, not a separate verdict per task.
 
@@ -593,6 +656,12 @@ if wrong>`.
   ticket predates those embeds.
 - `build` supersedes both `build-frontend` and `build-backend` outright, for every case, not just
   ticket-driven work — neither is invoked by this skill or offered as a fallback for anything.
+- **Graphify is an optional accelerator, never a dependency.** Step 9.5 and every `graph_*` use
+  downstream run only when the `graphify` MCP is connected and the target repo is indexed and
+  queryable; otherwise the skill runs exactly as it did without it. The graph describes the commit
+  it was indexed at, never this batch's edits — so it is used to *plan* (find the code, size the
+  blast radius, pick the tests) and to check callers in code the batch didn't touch, while
+  `Read`/`Grep` on the worktree stays the source of truth for anything the batch changed.
 - **WCAG contrast is checked twice, at two different times, and neither substitutes for the
   other**: once at B3.5 whenever `DESIGN.md`/`.impeccable/design.json` is actually created or
   changed (validates what the design system *declares*), and again, unconditionally, at B6's single
