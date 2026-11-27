@@ -38,6 +38,27 @@ The required checks, per the target repo's `docs/hosting.md`:
 
 If the target repo's `docs/hosting.md` names different checks or trigger phrases, those win.
 
+## Cloud or Mac? Pick once, at the start
+
+Run `echo "$CLAUDE_CODE_REMOTE"` once.
+
+- **Empty → Mac / local session.** Use `gh` exactly as written below.
+- **`true` → Claude Code cloud session.** Don't use `gh` for PRs here (cloud sessions allow it for
+  search only). Use the GitHub tools (prefixed `mcp__github__` in cloud sessions) instead:
+
+  | `gh` in this skill | GitHub tool |
+  |---|---|
+  | resolve the PR: number, head branch, repo (Step 1) | `pull_request_read` with `method: "get"` |
+  | `gh pr checks <pr>` (Steps 2, 6) | `pull_request_read` with `method: "get_check_runs"` (Greptile Review is a check run too; a required check missing from the list hasn't started yet, so treat it as pending) |
+  | `gh pr view <pr> --comments` (Step 2) | `pull_request_read` with `method: "get_comments"` and `"get_reviews"` |
+  | `gh api .../pulls/<pr>/comments` (Step 2) | `pull_request_read` with `method: "get_review_comments"` (threads, with resolved/outdated state) |
+  | reply on an inline comment (Step 4) | `add_reply_to_pull_request_comment` (`commentId` is the number after `#discussion_r` in the comment's `html_url`) |
+  | `/standards`, `@greptile review this PR again` (Step 4) | `add_issue_comment` on the PR number |
+
+  Waiting on checks (Step 2): call `subscribe_pr_activity` for the PR once, then end the turn with
+  a short status line. CI results and new comments arrive as new turns. Don't poll or `sleep`.
+  Push fixes with `git push` as usual.
+
 ## Step 1 — Gather the minimum context
 
 1. Resolve the PR: number, head branch, repo. Use `gh` (or `gh-axi` if present).

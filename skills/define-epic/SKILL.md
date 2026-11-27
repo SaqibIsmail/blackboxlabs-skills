@@ -21,6 +21,19 @@ Scopes one whole-feature ask into a Jira epic. Does not decide how many tickets 
 features it becomes — that's `senior-engineer`'s job, later. This skill only answers "what are we
 building and why," precisely enough that `senior-engineer` has real scope to investigate against.
 
+## Cloud or Mac? (Jira calls)
+
+Run `echo "$CLAUDE_CODE_REMOTE"` once. Empty means a Mac / local session: follow the steps exactly
+as written. `true` means a Claude Code cloud session: Jira goes through the **Atlassian
+connector**, using `jira-integration`'s "Cloud or Mac?" tool map. The Jira names in this skill are
+the Mac (`mcp-atlassian`) names. In the cloud:
+
+- `jira_search` (Step 2) → `searchJiraIssuesUsingJql`, same JQL. Step 2's `/search/jql` API note
+  doesn't apply; the connector already uses the current endpoint.
+- `jira_create_issue` (Step 5) → `createJiraIssue` with `issueType: "Epic"`. Write the description
+  as Markdown with the same headings, bullets and bold labels; the connector turns it into ADF.
+- No Atlassian connector tools in a cloud session → stop and tell the user to connect it in claude.ai.
+
 ## Step 1 — Read context
 
 Read `PROJECT.md` (the project-root stub, then `<vault_path>/<company-slug>/project.md` for the

@@ -68,6 +68,31 @@ re-spawned per task re-pays whatever it needs to read to do the task; the same i
 resumed via `SendMessage` for the next task, already has it. Batching is that idea applied at both
 levels — the orchestrating session's own context, and each dispatched subagent's.
 
+## Cloud or Mac? Pick once, at the start
+
+Run `echo "$CLAUDE_CODE_REMOTE"` once.
+
+- **Empty → Mac / local session.** Everything below runs exactly as written: Jira by direct REST
+  with `.env` auth, GitHub with `gh`.
+- **`true` → Claude Code cloud session.** There is no `.env` and no Jira token. Every "direct REST +
+  `.env` auth" step below uses the **Atlassian connector** instead, and the "not through an MCP
+  tool" / "no MCP tool involved" lines below apply to the Mac only. `cloudId` is the host of
+  `ticketing.jira_site_url`; if that is empty, call `getAccessibleAtlassianResources` once.
+
+  | REST call in this skill | Atlassian connector |
+  |---|---|
+  | `GET .../issue/<key>` (Step 2) | `getJiraIssue` with `view: "evidence"` (type, status, labels, description, links) |
+  | `GET .../search/jql?jql=parent=<key> ORDER BY key` (Step 2) | `searchJiraIssuesUsingJql`, same JQL, `view: "evidence"` |
+  | `GET .../issue/<key>/transitions` (A6, B9) | `executeRead` with `name: "listJiraIssueTransitions"` |
+  | `POST .../issue/<key>/transitions` (A6, B9) | `transitionJiraIssue` with that `transitionId` |
+  | `POST .../issue/<key>/comment` (A6) | `addOrEditJiraIssueComment` (Markdown body) |
+
+  GitHub in the cloud: don't use `gh` for PRs (cloud sessions allow it for search only). Push with `git push` as usual, open the
+  B9 PR with the GitHub tool `create_pull_request`, and leave CI waiting to `resolve-pr-comments`.
+  Graphify tools are usually missing in the cloud; the Graphify step already skips itself then.
+- **`true`, but no Atlassian connector tools in your tool list** → stop and tell the user to
+  connect the Atlassian connector in claude.ai. Never ask for a token in chat.
+
 ## Step 1 — Read `PROJECT.md`
 
 Read the project-root stub, then `<vault_path>/<company-slug>/project.md` for the rest — stack,
@@ -85,7 +110,7 @@ it, or let it appear in a logged command string; read it via shell env expansion
 Check `issuetype`:
 
 - **Story** → this is a **Story-batch run**. Also query `searchJiraIssuesUsingJql`-equivalent REST
-  (`GET .../search?jql=parent=<key> ORDER BY key`, which returns each child's `status` for free) for
+  (`GET .../search/jql?jql=parent=<key> ORDER BY key`, which returns each child's `status` for free) for
   every child Subtask, and pull each one's `type`/`scope` labels, `status`, AC body, embedded `T0xx`
   task-ID list, and blocker links the same way.
 
