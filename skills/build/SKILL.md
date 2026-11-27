@@ -2,18 +2,13 @@
 name: build
 description: >
   Unified builder for one Jira ticket, or — given a Story key — every ticket under it in one
-  batched run. Reads the shared context chain once per run, not once per ticket, then for a Story
-  runs every spike ticket first (since implementation tickets may depend on their findings),
-  followed by every task/bug ticket: one continuous implementer subagent builds the whole batch's
-  task queue back-to-back (resumed task-to-task via SendMessage, not re-spawned, self-QA only
-  between tasks), then one reviewer subagent is dispatched once, after the batch is fully built, to
-  review every task at full per-task depth plus cross-task coherence in a single consolidated pass,
-  followed by one fix loop over the combined findings. Worktree, branch, ledger, and already-loaded
-  context carry across the whole Story instead of being re-paid per ticket. A single ticket key
-  still runs solo, the same mechanics, just with a batch of one. Forks the scope-conditioned
-  implementer/reviewer briefs by the ticket's `scope` label (frontend/backend/shared) via file-path
-  pointer, never an inlined copy — not the control flow itself. Supersedes build-frontend and
-  build-backend outright — neither stays in use.
+  batched run. Reads the shared context chain once per run, runs every spike ticket first, then
+  every task/bug ticket: one continuous implementer subagent builds the whole batch back-to-back
+  (resumed via SendMessage, self-QA between tasks), then one reviewer subagent reviews the whole
+  batch at full per-task depth plus cross-task coherence, followed by one fix loop. Worktree,
+  branch, ledger and loaded context carry across the Story. A single ticket key runs the same way,
+  as a batch of one. Picks the implementer/reviewer briefs by the ticket's `scope` label
+  (frontend/backend/shared). Supersedes build-frontend and build-backend.
 argument-hint: '<ticket-key-or-story-key>'
 user-invocable: true
 allowed-tools:
