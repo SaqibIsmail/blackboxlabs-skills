@@ -28,6 +28,22 @@ Investigates one epic and turns it into small, ordered, individually-implementab
 never guessing at scope, never letting a ticket grow bigger than one coding agent can hold in its
 head at once.
 
+## Cloud or Mac? (Jira calls)
+
+Run `echo "$CLAUDE_CODE_REMOTE"` once. Empty means a Mac / local session: follow the steps exactly
+as written. `true` means a Claude Code cloud session: Jira goes through the **Atlassian
+connector**, using `jira-integration`'s "Cloud or Mac?" tool map. The Jira names in this skill are
+the Mac (`mcp-atlassian`) names. In the cloud:
+
+- `jira_get_issue` (Step 1) → `getJiraIssue` with `view: "evidence"`.
+- `jira_create_issue` (Step 9) → `createJiraIssue`. Put the ticket under its epic with
+  `parent: <epic key>` (that is how tickets already hang under epics in Jira). Write descriptions
+  as Markdown with the same headings, bullets and bold labels; the connector turns them into ADF.
+- `jira_create_issue_link` (Step 9 blockers) → `executeWrite` with `name: "createJiraIssueLink"`,
+  `linkType: "Blocks"`, `inwardIssue: <blocker>`, `outwardIssue: <blocked ticket>`.
+- `getIssueLinkTypes` → `executeRead` with `name: "listJiraIssueLinkTypes"`.
+- No Atlassian connector tools in a cloud session → stop and tell the user to connect it in claude.ai.
+
 ## Step 1 — Read context
 
 Read `PROJECT.md` (the project-root stub, then `<vault_path>/<company-slug>/project.md` for the

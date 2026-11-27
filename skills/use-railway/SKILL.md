@@ -51,6 +51,15 @@ Optional: an already configured in-process CLI MCP (`railway mcp local`) can sup
 
 Prefer `railway api` (CLI 5.28+) for GraphQL execution. The legacy `scripts/railway-api.sh` remains a compatibility fallback for older CLIs; see [request.md](references/request.md).
 
+### Claude Code cloud sessions (check first)
+
+Run `echo "$CLAUDE_CODE_REMOTE"` once. Empty means a Mac, a local machine or a Railway cloud-agent VM: follow this skill exactly as written. `true` means a Claude Code cloud session. There, these rules come before the intent routing and preflight below:
+
+- The `railway` CLI is not installed or logged in, and there is no `~/.railway/config.json`. Skip the CLI preflight and the skill-freshness check. Don't install the CLI or run `railway login`.
+- Use the **Railway MCP tools** for everything (the claude.ai Railway connector, prefixed `mcp__Railway__` in cloud sessions): for example `whoami`, `list-projects`, `list-services`, `get-logs`, `list-deployments`, `set-variables`, `redeploy`, and `railway-agent` for multi-step work. Resolve IDs with `list-services`, not `railway status --json`.
+- CLI-only jobs don't work in the cloud: `railway up` from the current folder, `railway run`, `railway ssh`, and the database scripts (`scripts/analyze-*.py`, `dal.py`, `railway-api.sh`). Say so in one line, offer an MCP route if one fits (for example `create-deployment` or `redeploy` from the connected repo), or ask the user to run it on their Mac.
+- No Railway MCP tools in your tool list → stop and tell the user to connect the Railway connector in claude.ai.
+
 ## Parsing Railway URLs
 
 Users often paste Railway dashboard URLs. Extract IDs before doing anything else:

@@ -18,6 +18,45 @@ Retrieve, analyze, and update Jira tickets directly from your AI coding workflow
 - Linking merge requests or branches to a Jira issue
 - Searching for issues by JQL query
 
+## Cloud or Mac? Pick the path first
+
+Run `echo "$CLAUDE_CODE_REMOTE"` once, before any Jira call.
+
+- **Empty → Mac / local session.** Use Option A or B below, exactly as written.
+- **`true` → Claude Code cloud session.** There is no `mcp-atlassian` server, no `uvx` config and
+  no `.env` token here. Skip Options A and B and use the **Atlassian connector** (the claude.ai
+  connector; its tools are prefixed `mcp__Atlassian_MCP__` in cloud sessions) with the map below.
+- **`true`, but no Atlassian connector tools in your tool list** → stop and tell the user to
+  connect the Atlassian connector in claude.ai. Never ask for a token in chat.
+
+### Atlassian connector: tool map
+
+`cloudId` is the Jira site host from `PROJECT.md` → `ticketing.jira_site_url` (for example
+`yourorg.atlassian.net`). If that is empty, call `getAccessibleAtlassianResources` once and reuse
+the result.
+
+| `mcp-atlassian` / REST | Atlassian connector |
+|---|---|
+| `jira_search`, `GET /search/jql` | `searchJiraIssuesUsingJql` (`jql`) |
+| `jira_get_issue`, `GET /issue/<key>` | `getJiraIssue` (`issueIdOrKey`; `view: "evidence"` adds labels, parent, links) |
+| `jira_create_issue` | `createJiraIssue` (`projectKey`, `issueType`, `summary`, `description`, `labels`, `parent`) |
+| `jira_update_issue` | `editJiraIssue` |
+| `jira_add_comment` | `addOrEditJiraIssueComment` |
+| `jira_get_transitions` | `executeRead` with `name: "listJiraIssueTransitions"` |
+| `jira_transition_issue` | `transitionJiraIssue` (`transitionId` from the line above) |
+| `jira_create_issue_link` | `executeWrite` with `name: "createJiraIssueLink"` (`linkType`, `inwardIssue`, `outwardIssue`) |
+| link types (`getIssueLinkTypes`) | `executeRead` with `name: "listJiraIssueLinkTypes"` |
+| `jira_get_sprint_issues` | `searchJiraIssuesUsingJql` with `sprint in openSprints()` |
+
+Connector rules:
+- Pass `cloudId` as a top-level argument, on `executeRead` / `executeWrite` too.
+- An issue sits under its epic through the `parent` field (set it on `createJiraIssue`), not a link.
+- `createJiraIssueLink` with `linkType: "Blocks"` reads "`inwardIssue` blocks `outwardIssue`".
+- Descriptions and comments take **Markdown**. The connector turns headings, bullets and bold into
+  real Atlassian Document Format, so write structure, not one long paragraph.
+- For anything not in the table, call `discover` with what you want to do. Never guess an
+  operation name.
+
 ## Prerequisites
 
 ### Option A: MCP Server (Recommended)
@@ -161,7 +200,7 @@ jira_curl -X POST \
 ```bash
 jira_curl -G \
   --data-urlencode "jql=project = PROJ AND status = 'In Progress'" \
-  "$JIRA_URL/rest/api/3/search"
+  "$JIRA_URL/rest/api/3/search/jql"
 ```
 
 ## Analyzing a Ticket
